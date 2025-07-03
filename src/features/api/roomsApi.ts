@@ -15,6 +15,10 @@ export const roomsApi = createApi({
       query: (id) => `room/${id}`,
       providesTags: (result, error, id) => [{ type: 'Room', id }],
     }),
+    getRoomByHotelId: builder.query<TRoom, number>({
+      query: (id) => `hotel/${id}/rooms`,
+      providesTags: (result, error, id) => [{ type: 'Room', id }],
+    }),
     createRoom: builder.mutation<TRoom, Partial<TRoom>>({
       query: (newRoom) => ({
         url: 'room',
@@ -44,6 +48,7 @@ export const roomsApi = createApi({
 export const {
   useGetRoomsQuery,
   useGetRoomByIdQuery,
+  useGetRoomByHotelIdQuery,
   useCreateRoomMutation,
   useUpdateRoomMutation,
   useDeleteRoomMutation,

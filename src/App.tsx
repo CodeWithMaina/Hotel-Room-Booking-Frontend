@@ -18,6 +18,8 @@ import { Ticket } from "./dashboard/AdminDashboard/Ticket";
 import { UserDashboard } from "./dashboard/UserDashboard/Dashboard";
 import { UserBookings } from "./dashboard/UserDashboard/Bookings";
 import { UserTickets } from "./dashboard/UserDashboard/Tickets";
+import { HotelDetailsPage } from "./pages/HotelDetailsPage";
+import { RoomDetailsPage } from "./pages/RoomDetailsPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -40,6 +42,14 @@ function App() {
     {
       path: "/about",
       element: <About />,
+    },
+    {
+      path: "/hotel/:id",
+      element: <HotelDetailsPage />,
+    },
+    {
+      path: "/room/:id",
+      element: <RoomDetailsPage />,
     },
     {
       path: "/register",

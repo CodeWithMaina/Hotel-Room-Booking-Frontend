@@ -61,3 +61,5 @@ export default tseslint.config({
 | Text on Form        | `text-gray-700`                             | `#374151` |
 | Light Text/Hint     | `text-gray-500`                             | `#6B7280` |
 | Form Background     | `bg-white`                                  | `#FFFFFF` |
+
+Tailwindcss, daisyUi, reactjs, typescript, sonner, lucide icons, sweetalert and react-hot-toast and modals where necessary.

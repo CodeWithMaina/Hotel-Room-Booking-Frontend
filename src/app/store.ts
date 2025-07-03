@@ -13,6 +13,9 @@ import {
   paymentsApi,
   ticketsApi
 } from "../features/api";
+import { amenitiesApi } from "../features/api/amenitiesApi";
+import { addressesApi } from "../features/api/addressesApi";
+import { entityAmenitiesApi } from "../features/api/entityAmenitiesApi";
 
 // Auth persist config
 const authPersistConfig = {
@@ -33,6 +36,9 @@ export const store = configureStore({
     [bookingsApi.reducerPath]: bookingsApi.reducer,
     [paymentsApi.reducerPath]: paymentsApi.reducer,
     [ticketsApi.reducerPath]: ticketsApi.reducer,
+    [amenitiesApi.reducerPath]: amenitiesApi.reducer,
+    [addressesApi.reducerPath]: addressesApi.reducer,
+    [entityAmenitiesApi.reducerPath]: entityAmenitiesApi.reducer,
     
     // Regular reducers
     auth: persistAuthReducer
@@ -50,6 +56,9 @@ export const store = configureStore({
       roomsApi.middleware,
       bookingsApi.middleware,
       paymentsApi.middleware,
+      amenitiesApi.middleware,
+      addressesApi.middleware,
+      entityAmenitiesApi.middleware,
       ticketsApi.middleware
     ),
 });
