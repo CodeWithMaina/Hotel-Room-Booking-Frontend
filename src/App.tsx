@@ -15,6 +15,9 @@ import { Booking } from "./dashboard/AdminDashboard/Booking";
 import { Hotels } from "./dashboard/AdminDashboard/Hotels";
 import { Users } from "./dashboard/AdminDashboard/Users";
 import { Ticket } from "./dashboard/AdminDashboard/Ticket";
+import { UserDashboard } from "./dashboard/UserDashboard/Dashboard";
+import { UserBookings } from "./dashboard/UserDashboard/Bookings";
+import { UserTickets } from "./dashboard/UserDashboard/Tickets";
 
 function App() {
   const router = createBrowserRouter([
@@ -76,6 +79,28 @@ function App() {
         },
         {
           path: "/admin/settings",
+          element: <Settings />,
+        },
+      ],
+    },
+    {
+      path: "/user",
+      element: <DashboardPage />,
+      children: [
+        {
+          path: "/user/dashboard",
+          element: <UserDashboard />,
+        },
+        {
+          path: "/user/booking-details",
+          element: <UserBookings />,
+        },
+        {
+          path: "/user/tickets",
+          element: <UserTickets />,
+        },
+        {
+          path: "/user/settings",
           element: <Settings />,
         },
       ],

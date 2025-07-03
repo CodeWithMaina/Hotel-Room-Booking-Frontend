@@ -1,31 +1,61 @@
+// store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import { authApi } from "../features/api/authApi";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import storage from "redux-persist/lib/storage";
-import {persistReducer, persistStore} from "redux-persist";
-import authReducer from "../features/auth/authSlice"
+import { persistReducer, persistStore } from "redux-persist";
+import authReducer from "../features/auth/authSlice";
+import { authApi } from "../features/api/authApi";
+import { 
+  usersApi,
+  hotelsApi,
+  roomsApi,
+  bookingsApi,
+  paymentsApi,
+  ticketsApi
+} from "../features/api";
 
-// Auht persist config
+// Auth persist config
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["email","token","userId","userType","isAuthenticated"]
+  whitelist: ["firstName", "email", "token", "userId", "userType", "isAuthenticated"]
 };
 
-
-const persistAuthReducer = persistReducer(authPersistConfig, authReducer)
+const persistAuthReducer = persistReducer(authPersistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
+    // API reducers
     [authApi.reducerPath]: authApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer,
+    [hotelsApi.reducerPath]: hotelsApi.reducer,
+    [roomsApi.reducerPath]: roomsApi.reducer,
+    [bookingsApi.reducerPath]: bookingsApi.reducer,
+    [paymentsApi.reducerPath]: paymentsApi.reducer,
+    [ticketsApi.reducerPath]: ticketsApi.reducer,
+    
+    // Regular reducers
     auth: persistAuthReducer
   },
 
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'] // Needed for redux-persist
+      }
+    }).concat(
+      authApi.middleware,
+      usersApi.middleware,
+      hotelsApi.middleware,
+      roomsApi.middleware,
+      bookingsApi.middleware,
+      paymentsApi.middleware,
+      ticketsApi.middleware
+    ),
 });
 
 setupListeners(store.dispatch);
 export const persistor = persistStore(store);
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

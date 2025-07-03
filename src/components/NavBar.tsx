@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
-  const { isAuthenticated, userType } = useSelector(
+  const { isAuthenticated, userType, firstName } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -82,29 +82,29 @@ const Navbar: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-400 text-black font-medium rounded-lg hover:from-blue-300 hover:to-blue-400 transition-all duration-200 shadow-lg hover:shadow-blue-400/25"
               >
                 <User className="w-4 h-4" />
-                <span>{userType || "Profile"}</span>
+                <span>{firstName || "Profile"}</span>
               </button>
 
               {isProfileDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-md rounded-xl border border-yellow-400/20 shadow-2xl">
                   <div className="py-2">
                     {userType === "user" ? (
-                      <a
-                        href="/"
+                      <Link
+                        to="/user/dashboard"
                         className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
                       >
                         <LayoutDashboard className="w-4 h-4" />
                         <span>Dashboard</span>
-                      </a>
+                      </Link>
                     ) : (
                       userType === "admin" && (
-                        <a
-                          href="/"
-                          className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-blue-400 hover:bg-yellow-400/10 transition-colors"
+                        <Link
+                          to="/admin/dashboard"
+                          className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
                         >
                           <LayoutDashboard className="w-4 h-4" />
                           <span>Dashboard</span>
-                        </a>
+                        </Link>
                       )
                     )}
 
@@ -183,13 +183,26 @@ const Navbar: React.FC = () => {
           {/* For authenticated users */}
           {isAuthenticated ? (
             <div>
-              <Link
-                to="/admin/dashboard"
-                className="btn btn-primary btn-sm w-full mt-2"
-                onClick={() => setIsOpen(false)}
-              >
-                Dashboard
-              </Link>
+              {userType === "user" ? (
+                <Link
+                  to="/user/dashboard"
+                  className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </Link>
+              ) : (
+                userType === "admin" && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                )
+              )}
+
               <Link
                 to="/login"
                 className="btn btn-error btn-sm w-full mt-2"

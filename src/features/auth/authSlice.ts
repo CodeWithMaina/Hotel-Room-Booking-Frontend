@@ -3,6 +3,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthProps {
+  firstName: string | null;
   email: string | null;
   token: string | null;
   userId: number | null;
@@ -11,6 +12,7 @@ interface AuthProps {
 }
 
 const initialState: AuthProps = {
+  firstName: null,
   email: null,
   token: null,
   userId: null,
@@ -26,6 +28,7 @@ export const authSlice = createSlice({
       state,
       action: PayloadAction<AuthProps>
     ) => {
+        state.firstName = action.payload.firstName;
         state.email = action.payload.email;
         state.token = action.payload.token;
         state.userId = action.payload.userId;
@@ -33,6 +36,7 @@ export const authSlice = createSlice({
         state.isAuthenticated = true;
     },
     clearCredentials: (state) => {
+        state.firstName = null;
         state.email = null;
         state.token = null;
         state.userId = null;

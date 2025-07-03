@@ -6,6 +6,7 @@ interface AdminHeaderProps {
 }
 
 const HeaderCard: React.FC<AdminHeaderProps> = ({ userName, userRole }) => {
+
   return (
     <header className="bg-gradient-to-r from-slate-100 to-slate-200 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

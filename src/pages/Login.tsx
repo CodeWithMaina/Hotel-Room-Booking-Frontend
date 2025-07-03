@@ -36,6 +36,7 @@ export const Login = () => {
 
     try {
       const response = await loginUser(loginData).unwrap();
+      console.log(response)
 
       if (!response) {
         toast.error("Invalid response from server");
@@ -43,11 +44,11 @@ export const Login = () => {
       }
 
       if (response?.userType === "admin") {
-        navigate("/about");
+        navigate("/user/dashboard");
         await dispatch(persistCredentials(response));
         toast.success("Welcome to LuxHotel");
       } else if (response?.userType === "user") {
-        navigate("/contact");
+        navigate("/user/dashboard");
         await dispatch(persistCredentials(response));
         toast.success("Welcome to LuxHotel");
       } else {

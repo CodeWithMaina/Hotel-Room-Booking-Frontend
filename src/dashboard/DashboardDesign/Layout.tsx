@@ -1,15 +1,29 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Menu } from "lucide-react";
-import SideNav from "../AdminDashboard/SideNav";
+import AdminSideNav from "../AdminDashboard/AdminSideNav";
+import { Login } from "../../pages/Login";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../app/store";
+import UserSideNav from "../UserDashboard/UserSideNav";
 
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const {userType} = useSelector((state:RootState)=> state.auth)
+  const renderSideNav = () => {
+    switch (userType) {
+      case "admin":
+        return <AdminSideNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />;
+      case "user":
+        return <UserSideNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}/>;
+      default:
+        return <Login/>;
+    }
+  };
 
   return (
     <div className="flex h-screen bg-slate-100 text-gray-700 relative">
-      <SideNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
+      {renderSideNav()}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
         <header className="flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm lg:hidden">
