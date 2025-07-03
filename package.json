@@ -1,13 +1,48 @@
 {
-  "name": "Hotel-Room-Booking-Frontend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "hotel-room-booking-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.10.0"
+  "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@reduxjs/toolkit": "^2.8.2",
+    "@tailwindcss/vite": "^4.1.10",
+    "daisyui": "^5.0.43",
+    "framer-motion": "^12.18.1",
+    "lucide-react": "^0.517.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.58.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.6.2",
+    "react-router-dom": "^7.6.2",
+    "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0",
+    "sonner": "^2.0.5",
+    "sweetalert2": "^11.22.1",
+    "tailwindcss": "^4.1.10",
+    "zod": "^3.25.51"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@types/redux-persist": "^4.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "sass-embedded": "^1.89.2",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
 }
