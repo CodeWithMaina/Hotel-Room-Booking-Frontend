@@ -20,6 +20,7 @@ import { UserBookings } from "./dashboard/UserDashboard/Bookings";
 import { UserTickets } from "./dashboard/UserDashboard/Tickets";
 import { HotelDetailsPage } from "./pages/HotelDetailsPage";
 import { RoomDetailsPage } from "./pages/RoomDetailsPage";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const router = createBrowserRouter([
@@ -117,7 +118,12 @@ function App() {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster position="top-center" />
+    </>
+  );
 }
 
 export default App;

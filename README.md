@@ -62,4 +62,6 @@ export default tseslint.config({
 | Light Text/Hint     | `text-gray-500`                             | `#6B7280` |
 | Form Background     | `bg-white`                                  | `#FFFFFF` |
 
-Tailwindcss, daisyUi, reactjs, typescript, sonner, lucide icons, sweetalert and react-hot-toast and modals where necessary.
+Tailwindcss, daisyUi, reactjs, react-hootk-form, typescript, sonner, lucide icons, sweetalert and react-hot-toast and modals where necessary.
+
+my background is bg-gradient-to-br from-slate-100 to-slate-200
