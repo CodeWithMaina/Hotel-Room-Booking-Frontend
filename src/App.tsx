@@ -16,11 +16,13 @@ import { Hotels } from "./dashboard/AdminDashboard/Hotels";
 import { Users } from "./dashboard/AdminDashboard/Users";
 import { Ticket } from "./dashboard/AdminDashboard/Ticket";
 import { UserDashboard } from "./dashboard/UserDashboard/Dashboard";
-import { UserBookings } from "./dashboard/UserDashboard/Bookings";
+import { Bookings } from "./dashboard/UserDashboard/Bookings";
 import { UserTickets } from "./dashboard/UserDashboard/Tickets";
 import { HotelDetailsPage } from "./pages/HotelDetailsPage";
 import { RoomDetailsPage } from "./pages/RoomDetailsPage";
 import { Toaster } from "react-hot-toast";
+import BookingPage from "./pages/BookingPage";
+import { PaymentPage } from "./pages/PaymentPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -55,6 +57,14 @@ function App() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/booking/:id",
+      element: <BookingPage />,
+    },
+    {
+      path: "/payment/:id",
+      element: <PaymentPage />,
     },
     {
       path: "/login",
@@ -104,7 +114,7 @@ function App() {
         },
         {
           path: "/user/booking-details",
-          element: <UserBookings />,
+          element: <Bookings />,
         },
         {
           path: "/user/tickets",

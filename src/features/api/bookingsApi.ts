@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TBooking } from "../../types/bookingsTypes";
+import type { TBooking, TBookingForm } from "../../types/bookingsTypes";
 
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",
@@ -14,7 +14,8 @@ export const bookingsApi = createApi({
       query: (id) => `booking/${id}`,
       providesTags: (result, error, id) => [{ type: "Booking", id }],
     }),
-    createBooking: builder.mutation<TBooking, Partial<TBooking>>({
+    // Create booking
+    createBooking: builder.mutation<TBookingForm, Partial<TBookingForm>>({
       query: (newBooking) => ({
         url: "booking",
         method: "POST",
@@ -23,8 +24,8 @@ export const bookingsApi = createApi({
       invalidatesTags: ["Booking"],
     }),
     updateBooking: builder.mutation<
-      TBooking,
-      Partial<TBooking> & { bookingId: number }
+      TBookingForm,
+      Partial<TBookingForm> & { bookingId: number }
     >({
       query: ({ bookingId, ...patch }) => ({
         url: `booking/${bookingId}`,

@@ -4,6 +4,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import authReducer from "../features/auth/authSlice";
+import bookingReducer from "../features/slices/bookingSlice";
 import { authApi } from "../features/api/authApi";
 import { 
   usersApi,
@@ -41,7 +42,8 @@ export const store = configureStore({
     [entityAmenitiesApi.reducerPath]: entityAmenitiesApi.reducer,
     
     // Regular reducers
-    auth: persistAuthReducer
+    auth: persistAuthReducer,
+    booking: bookingReducer
   },
 
   middleware: (getDefaultMiddleware) => 
