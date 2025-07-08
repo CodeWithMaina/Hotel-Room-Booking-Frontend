@@ -1,4 +1,4 @@
-import HeaderCard from "../../components/dashboard/HeaderCard";
+import { HeaderCard } from "../../components/dashboard/HeaderCard";
 
 export const HotelOwners = () => {
   const owners = [
@@ -67,7 +67,7 @@ export const HotelOwners = () => {
 
   return (
     <div>
-      <HeaderCard userName="Peter Maina" userRole="Admin"/>
+      <HeaderCard />
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">List Hotel Owners</h2>

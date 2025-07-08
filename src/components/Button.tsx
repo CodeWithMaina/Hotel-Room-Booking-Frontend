@@ -3,6 +3,7 @@ import { cn } from "../lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "outline";
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export const Button: React.FC<ButtonProps> = ({ variant = "primary", className, children, ...props }) => {

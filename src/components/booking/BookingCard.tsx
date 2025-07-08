@@ -1,27 +1,125 @@
-export const BookingCard = ({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) => (
-  <div className="card w-full max-w-sm bg-white shadow-md">
-    <figure className="relative">
-      <img
-        src="https://i.ibb.co/pzZ49vC/blue-origin-farms.jpg"
-        alt="Blue Origin Farms"
-        className="object-cover h-48 w-full"
-      />
-      <span className="absolute top-2 right-2 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded">
-        $200 per night
-      </span>
-    </figure>
-    <div className="card-body text-gray-700">
-      <h2 className="card-title">Blue Origin Farms</h2>
-      <p className="text-sm text-gray-500 mb-2">Galle, Sri Lanka</p>
-      <p className="text-sm">20 Jan - 22 Jan</p>
-      <p className="text-sm">02 Days</p>
-      <p className="text-sm">Galle to Colombo Road 245, Main Street, Galle.</p>
-      <p className="text-sm">Initial Payment $200</p>
-      <p className="text-sm">Total Payment $400</p>
-      <div className="card-actions justify-end mt-2">
-        <button className="btn btn-sm btn-outline btn-primary" onClick={onEdit}>Edit</button>
-        <button className="btn btn-sm btn-outline btn-error" onClick={onDelete}>Delete</button>
+import {
+  CalendarDays,
+  Pencil,
+  Trash2,
+  DollarSign,
+  BedDouble,
+  Clock,
+  CardSim,
+} from "lucide-react";
+import { format, differenceInCalendarDays } from "date-fns";
+
+type Booking = {
+  bookingId?: number;
+  bookingStatus: string;
+  checkInDate: string;
+  checkOutDate: string;
+  totalAmount: string;
+  room: {
+    roomType: string;
+    capacity: number;
+    pricePerNight: string;
+    hotelId: number;
+    roomId: number;
+    isAvailable: boolean;
+    createdAt: string;
+  };
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+export const BookingCard = ({
+  bookingStatus,
+  checkInDate,
+  checkOutDate,
+  totalAmount,
+  room,
+  onEdit,
+  onDelete,
+}: Booking) => {
+  const nights = differenceInCalendarDays(
+    new Date(checkOutDate),
+    new Date(checkInDate)
+  );
+  const formattedCheckIn = format(new Date(checkInDate), "dd MMM yyyy");
+  const formattedCheckOut = format(new Date(checkOutDate), "dd MMM yyyy");
+
+  return (
+    <div className="group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm w-full max-w-sm md:max-w-[340px] font-sans">
+      {/* Image */}
+      <div className="relative">
+        <img
+          src="https://images.unsplash.com/photo-1549294413-26f195200c16?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0"
+          alt={room.roomType}
+          className="w-full h-48 object-cover"
+        />
+        <span className="absolute top-3 right-3 bg-blue-700 text-white text-xs font-semibold px-2 py-1 rounded shadow-md">
+          ${room.pricePerNight} / night
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="p-5 space-y-3 text-slate-800">
+        <h2 className="text-lg font-semibold tracking-tight">
+          {room.roomType}
+        </h2>
+
+        <div className="text-sm space-y-1">
+          <p className="flex items-center gap-2 text-slate-500">
+            <BedDouble size={16} /> Capacity: {room.capacity}
+          </p>
+          <p className="flex items-center gap-2">
+            <CalendarDays size={16} />
+            {formattedCheckIn} → {formattedCheckOut}
+          </p>
+          <p className="flex items-center gap-2">
+            <Clock size={16} />
+            {nights} night{nights > 1 && "s"}
+          </p>
+          <p className="flex items-center gap-2 font-semibold text-blue-700">
+            <DollarSign size={16} /> ${totalAmount}
+          </p>
+        </div>
+
+        {/* Status Badge */}
+        <span
+          className={`inline-block text-xs font-medium px-3 py-1 rounded-full uppercase tracking-wide ${
+            bookingStatus === "Pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : bookingStatus === "Confirmed"
+              ? "bg-green-100 text-green-800"
+              : bookingStatus === "Cancelled"
+              ? "bg-red-100 text-red-800"
+              : "bg-blue-100 text-blue-800"
+          }`}
+        >
+          {bookingStatus}
+        </span>
+
+        {/* Actions */}
+        <div className="pt-4 flex flex-wrap gap-2 justify-between">
+          {bookingStatus === "Pending" && (
+            <button
+              onClick={onEdit}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition"
+            >
+              <CardSim size={16} /> Pay
+            </button>
+          )}
+          <button
+            onClick={onEdit}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+          >
+            <Pencil size={16} /> Edit
+          </button>
+          <button
+            onClick={onDelete}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
+          >
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};

@@ -1,47 +1,71 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { ChevronDown, LogOut, Home } from "lucide-react";
+import { toast } from "react-hot-toast";
+import type { RootState } from "../../app/store";
+import { clearCredentials } from "../../features/auth/authSlice";
 
-interface AdminHeaderProps {
-  userName: string;
-  userRole: string;
-}
+export const HeaderCard: React.FC<{ title?: string }> = ({
+  title = "Welcome To Your Room",
+}) => {
+  const { firstName, userType } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-const HeaderCard: React.FC<AdminHeaderProps> = ({ userName, userRole }) => {
+  const handleLogout = () => {
+    toast.success("Logged out");
+    dispatch(clearCredentials());
+    navigate("/");
+  };
 
   return (
-    <header className="bg-gradient-to-r from-slate-100 to-slate-200 shadow-sm transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 animate-fade-in gap-3">
-          {/* Left: Greeting */}
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-700">
-              Hello, {userName}
-            </h1>
-            <p className="text-sm text-gray-500">Have a nice day</p>
-          </div>
+    <div className="bg-white rounded-xl md:mt-5 shadow-md p-4 mx-5 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p className="text-lg font-semibold text-gray-800">{title}</p>
 
-          {/* Right: User Info */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            {/* Avatar */}
-            <div
-              className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm hover:scale-105 hover:bg-blue-700 transition-all duration-300 cursor-pointer"
-              aria-label="User Avatar"
-              title={userName}
-            >
-              {userName.charAt(0).toUpperCase()}
-            </div>
-
-            {/* Name & Role */}
-            <div className="text-left">
-              <p className="text-sm text-gray-500">{userName}</p>
-              <p className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
-                {userRole}
-              </p>
-            </div>
+      {/* Profile dropdown */}
+      <div className="hidden sm:block dropdown dropdown-end">
+        <div
+          tabIndex={0}
+          role="button"
+          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+        >
+          <img
+            src="https://i.pravatar.cc/100"
+            alt="avatar"
+            className="w-12 h-12 rounded-full object-cover border-2 border-blue-600"
+          />
+          <div className="text-left">
+            <h2 className="text-base font-semibold text-gray-900">{firstName}</h2>
+            <p className="text-sm text-blue-600 capitalize">{userType}</p>
           </div>
+          <ChevronDown className="w-4 h-4 text-gray-500" />
         </div>
+
+        <ul
+          tabIndex={0}
+          className="dropdown-content z-[1] menu p-2 shadow bg-white rounded-box w-40 mt-2"
+        >
+          <li>
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+            >
+              <Home className="w-4 h-4" />
+              Home
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-red-600 hover:text-red-700"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </li>
+        </ul>
       </div>
-    </header>
+    </div>
   );
 };
-
-export default HeaderCard;

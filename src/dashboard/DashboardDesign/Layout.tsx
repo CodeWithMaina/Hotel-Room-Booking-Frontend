@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Menu } from "lucide-react";
 import AdminSideNav from "../AdminDashboard/AdminSideNav";
 import { Login } from "../../pages/Login";
@@ -9,15 +9,25 @@ import UserSideNav from "../UserDashboard/UserSideNav";
 
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const {userType} = useSelector((state:RootState)=> state.auth)
+  const { userType } = useSelector((state: RootState) => state.auth);
   const renderSideNav = () => {
     switch (userType) {
       case "admin":
-        return <AdminSideNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />;
+        return (
+          <AdminSideNav
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        );
       case "user":
-        return <UserSideNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}/>;
+        return (
+          <UserSideNav
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        );
       default:
-        return <Login/>;
+        return <Login />;
     }
   };
 
@@ -26,18 +36,22 @@ export const Layout = () => {
       {renderSideNav()}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm lg:hidden">
+        <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-gray-700"
           >
-            <Menu className="w-6 h-6" />
+            <Menu color="blue" className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-bold">
+            <span className="text-blue-600">Lux</span>
+            <span className="text-gray-900">Hotel.</span>
+          </Link>
         </header>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto ">
           <Outlet />
         </main>
       </div>

@@ -6,13 +6,20 @@ export const bookingsApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
   tagTypes: ["Booking"],
   endpoints: (builder) => ({
+    // Get all bookings
     getBookings: builder.query<TBooking[], void>({
       query: () => "bookings",
       providesTags: ["Booking"],
     }),
+    // Get booking for a single user
+    getBookingByUserId: builder.query({
+      query: (userId:number) => `bookings/user/${userId}`,
+      providesTags: (result, error, userId) => [{ type: "Booking", userId }],
+    }),
+    // Get a single booking with ID
     getBookingById: builder.query<TBooking, number>({
-      query: (id) => `booking/${id}`,
-      providesTags: (result, error, id) => [{ type: "Booking", id }],
+      query: (userId) => `booking/${userId}`,
+      providesTags: (result, error, userId) => [{ type: "Booking", userId }],
     }),
     // Create booking
     createBooking: builder.mutation<TBookingForm, Partial<TBookingForm>>({
@@ -52,4 +59,5 @@ export const {
   useCreateBookingMutation,
   useUpdateBookingMutation,
   useDeleteBookingMutation,
+  useGetBookingByUserIdQuery,
 } = bookingsApi;
