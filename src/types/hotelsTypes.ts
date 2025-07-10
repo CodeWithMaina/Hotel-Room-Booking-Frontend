@@ -1,6 +1,7 @@
 export type THotel = {
   hotelId: number;
   name: string;
+  thumbnail?:string;
   location?: string | null | undefined;
   contactPhone?: string | null;
   category?: string | null;

@@ -17,6 +17,7 @@ import {
 import { amenitiesApi } from "../features/api/amenitiesApi";
 import { addressesApi } from "../features/api/addressesApi";
 import { entityAmenitiesApi } from "../features/api/entityAmenitiesApi";
+import { uploadApi } from "../features/api/imageUploadApi";
 
 // Auth persist config
 const authPersistConfig = {
@@ -39,6 +40,7 @@ export const store = configureStore({
     [ticketsApi.reducerPath]: ticketsApi.reducer,
     [amenitiesApi.reducerPath]: amenitiesApi.reducer,
     [addressesApi.reducerPath]: addressesApi.reducer,
+    [uploadApi.reducerPath]: uploadApi.reducer,
     [entityAmenitiesApi.reducerPath]: entityAmenitiesApi.reducer,
     
     // Regular reducers
@@ -49,7 +51,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'] // Needed for redux-persist
+        ignoredActions: ['persist/PERSIST']
       }
     }).concat(
       authApi.middleware,
@@ -60,6 +62,7 @@ export const store = configureStore({
       paymentsApi.middleware,
       amenitiesApi.middleware,
       addressesApi.middleware,
+      uploadApi.middleware,
       entityAmenitiesApi.middleware,
       ticketsApi.middleware
     ),

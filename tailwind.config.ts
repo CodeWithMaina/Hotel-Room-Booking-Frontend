@@ -1,3 +1,4 @@
+import daisyui from "daisyui";
 export default {
   theme: {
     extend: {
@@ -12,5 +13,8 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [daisyui],
+  daisyui: {
+    themes: ["light", "dark", "luxury"], // Add more themes as needed
+  },
 };

@@ -65,3 +65,12 @@ export default tseslint.config({
 Tailwindcss, daisyUi, reactjs, react-hootk-form, typescript, lucide icons, sweetalert and react-hot-toast and modals where necessary.
 
 my background is bg-gradient-to-br from-slate-100 to-slate-200
+
+
+const links = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "users", label: "Users", icon: Users },
+  { id: "booking-details", label: "Booking Details", icon: ClipboardList },
+  { id: "hotels", label: "Hotels", icon: Hotel },
+  { id: "ticket", label: "Customer Support", icon: MessageSquare },
+];

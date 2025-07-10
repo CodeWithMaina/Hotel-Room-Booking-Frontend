@@ -143,8 +143,7 @@ const handleDelete = (hotelId: number) => {
               className="bg-white rounded-xl shadow hover:shadow-lg transition duration-300 overflow-hidden"
             >
               <img
-                // src={hotel.thumbnail || "https://via.placeholder.com/300x200"}
-                src="https://plus.unsplash.com/premium_photo-1661964071015-d97428970584?q=80&w=1620&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src={hotel.thumbnail}
                 alt={hotel.name}
                 className="w-full h-48 object-cover"
               />

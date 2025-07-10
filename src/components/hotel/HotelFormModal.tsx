@@ -73,7 +73,7 @@ export const HotelFormModal = ({
 
   const { upload } = useImageUploader();
 
-  const fallbackUrl = "https://via.placeholder.com/600x300";
+  const fallbackUrl = "https://plus.unsplash.com/premium_photo-1661964071015-d97428970584?q=80&w=1620&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const [previewUrl, setPreviewUrl] = useState<string>(
     defaultValues?.thumbnail || fallbackUrl
@@ -136,7 +136,6 @@ export const HotelFormModal = ({
 
         setValue("thumbnail", uploaded.secure_url);
         setPreviewUrl(uploaded.secure_url);
-        // The upload.secure_url is what we will send to the backend
         setIsCropping(false);
       } catch (error) {
         console.error("Cropping/upload error:", error);
@@ -151,6 +150,7 @@ export const HotelFormModal = ({
   };
 
   const submitHandler = async (data: HotelFormData) => {
+    console.log(data)
     await onSubmit(data);
   };
 
