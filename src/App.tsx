@@ -10,14 +10,13 @@ import { About } from "./pages/About";
 import { DashboardPage } from "./pages/DashboardPage";
 import { Settings } from "./dashboard/AdminDashboard/Settings";
 import { Dashboard } from "./dashboard/AdminDashboard/Dashboard";
-import { HotelOwners } from "./dashboard/AdminDashboard/HotelOwners";
 import { Booking } from "./dashboard/AdminDashboard/Booking";
 import { Hotels } from "./dashboard/AdminDashboard/Hotels";
 import { Users } from "./dashboard/AdminDashboard/Users";
-import { Ticket } from "./dashboard/AdminDashboard/Ticket";
+import { Ticket } from "./dashboard/AdminDashboard/AdminTicket";
 import { UserDashboard } from "./dashboard/UserDashboard/Dashboard";
 import { Bookings } from "./dashboard/UserDashboard/Bookings";
-import { UserTickets } from "./dashboard/UserDashboard/Tickets";
+import { UserTickets } from "./dashboard/UserDashboard/UserTickets";
 import { HotelDetailsPage } from "./pages/HotelDetailsPage";
 import { RoomDetailsPage } from "./pages/RoomDetailsPage";
 import { Toaster } from "react-hot-toast";
@@ -77,10 +76,6 @@ function App() {
         {
           path: "/admin/dashboard",
           element: <Dashboard />,
-        },
-        {
-          path: "/admin/hotel-owners",
-          element: <HotelOwners />,
         },
         {
           path: "/admin/users",

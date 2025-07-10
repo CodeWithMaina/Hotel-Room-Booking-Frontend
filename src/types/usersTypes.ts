@@ -3,10 +3,20 @@ export type TUser = {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  password?: string;
   contactPhone?: string;
   address?: string;
-  role: 'user' | 'owner' | 'admin';
-  createdAt: string;
-  updatedAt: string;
+  role: "user" | "owner" | "admin";
+  createdAt?: string;
+  updatedAt?: string;
 };
+
+export type TUserForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactPhone?: string;
+  role: TUserTypes;
+};
+
+export type TUserTypes = "user" | "owner" | "admin";

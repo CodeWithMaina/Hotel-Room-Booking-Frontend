@@ -12,23 +12,9 @@ import type { RootState } from "../../app/store";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { HeaderCard } from "../../components/dashboard/HeaderCard";
+import type { TSingleBooking } from "../../types/bookingsTypes";
 
-interface TSingleBooking {
-  bookingId: number | undefined;
-  bookingStatus: string;
-  checkInDate: string;
-  checkOutDate: string;
-  totalAmount: string;
-  room: {
-    roomType: string;
-    capacity: number;
-    pricePerNight: string;
-    hotelId: number;
-    roomId: number;
-    isAvailable: boolean;
-    createdAt: string;
-  };
-}
+
 
 export const Bookings = () => {
   const [showEdit, setShowEdit] = useState(false);
@@ -47,6 +33,7 @@ export const Bookings = () => {
     isLoading,
     isError,
   } = useGetBookingByUserIdQuery(id);
+
 
   // SweetAlert-based delete
   const handleDelete = (bookingId: number) => {

@@ -1,21 +1,7 @@
-// export type THotel = {
-//   hotelId: number;
-//   name: string;
-//   location?: string;
-//   address: string;
-//   contactPhone?: string;
-//   category?: string;
-//   rating?: number;
-//   createdAt: string;
-//   updatedAt: string;
-// };
-
-// types/hotelTypes.ts
-
 export type THotel = {
   hotelId: number;
   name: string;
-  location?: string | null;
+  location?: string | null | undefined;
   contactPhone?: string | null;
   category?: string | null;
   rating?: number | null;

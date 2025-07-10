@@ -8,7 +8,7 @@ import { Error } from "./Error";
 import { Loading } from "./Loading";
 
 export const HotelsPage = () => {
-  const { data: hotelsData, isLoading, error } = useGetHotelsQuery({});
+  const { data: hotelsData, isLoading, error } = useGetHotelsQuery();
   console.log(hotelsData)
   if (isLoading){
     return <Loading/>;

@@ -1,13 +1,18 @@
 export type TBooking = {
-  bookingId: number;
-  userId: number;
-  roomId: number;
+  bookingId: number | undefined;
+  bookingStatus: string;
   checkInDate: string;
   checkOutDate: string;
-  totalAmount: number;
-  bookingStatus: "Pending" | "Confirmed" | "Cancelled";
-  // createdAt: string;
-  // updatedAt: string;
+  totalAmount: string;
+  room: {
+    roomType: string;
+    capacity: number;
+    pricePerNight: string;
+    hotelId: number;
+    roomId: number;
+    isAvailable: boolean;
+    createdAt: string;
+  };
 };
 
 export type TBookingForm = {
@@ -19,3 +24,19 @@ export type TBookingForm = {
   roomId: number;
   userId: number;
 };
+export interface TSingleBooking {
+  bookingId: number | undefined;
+  bookingStatus: string;
+  checkInDate: string;
+  checkOutDate: string;
+  totalAmount: string;
+  room: {
+    roomType: string;
+    capacity: number;
+    pricePerNight: string;
+    hotelId: number;
+    roomId: number;
+    isAvailable: boolean;
+    createdAt: string;
+  };
+}

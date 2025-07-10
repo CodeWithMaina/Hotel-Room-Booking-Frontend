@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TTicket } from "../../types/ticketsTypes";
-
+import type { TCreateTicketSchema, TReplyTicketSchema } from "../../validation/ticketSchema";
 
 export const ticketsApi = createApi({
   reducerPath: "ticketsApi",
@@ -8,35 +8,47 @@ export const ticketsApi = createApi({
   tagTypes: ["Ticket"],
   endpoints: (builder) => ({
     getTickets: builder.query<TTicket[], void>({
-      query: () => 'tickets',
-      providesTags: ['Ticket'],
+      query: () => "tickets",
+      providesTags: ["Ticket"],
     }),
     getTicketById: builder.query<TTicket, number>({
       query: (id) => `ticket/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Ticket', id }],
+      providesTags: (result, error, id) => [{ type: "Ticket", id }],
     }),
-    createTicket: builder.mutation<TTicket, Partial<TTicket>>({
+    createTicket: builder.mutation<TTicket, TCreateTicketSchema>({
       query: (newTicket) => ({
-        url: 'ticket',
-        method: 'POST',
+        url: "ticket",
+        method: "POST",
         body: newTicket,
       }),
-      invalidatesTags: ['Ticket'],
+      invalidatesTags: [{ type: "Ticket", id: "LIST" }],
     }),
-    updateTicket: builder.mutation<TTicket, Partial<TTicket> & { ticketId: number }>({
-      query: ({ ticketId, ...patch }) => ({
+    updateTicket: builder.mutation<
+      TTicket,
+      { ticketId: number; ticketData: TReplyTicketSchema }
+    >({
+      query: ({ ticketId, ticketData }) => ({
         url: `ticket/${ticketId}`,
-        method: 'PUT',
-        body: patch,
+        method: "PUT",
+        body: ticketData,
       }),
-      invalidatesTags: (result, error, { ticketId }) => [{ type: 'Ticket', id: ticketId }],
+      invalidatesTags: (result, error, { ticketId }) => [
+        { type: "Ticket", id: ticketId },
+        { type: "Ticket", id: "LIST" },
+      ],
     }),
     deleteTicket: builder.mutation<void, number>({
       query: (id) => ({
         url: `ticket/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Ticket'],
+      invalidatesTags: ["Ticket"],
+    }),
+    getUserTickets: builder.query<TTicket[], number>({
+      query: (userId) => `/${userId}/tickets`,
+      providesTags: (result, error, userId) => [
+        { type: 'Ticket', id: userId }
+      ],
     }),
   }),
 });
@@ -47,4 +59,5 @@ export const {
   useCreateTicketMutation,
   useUpdateTicketMutation,
   useDeleteTicketMutation,
+  useGetUserTicketsQuery,
 } = ticketsApi;

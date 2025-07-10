@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { THotel, THotelAddress, THotelAmenityDetail, THotelEntityAmenity } from "../../types/hotelsTypes";
-// import type { THotel } from "../../types/hotelsTypes";
 
 
 export const hotelsApi = createApi({
@@ -8,7 +7,7 @@ export const hotelsApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
   tagTypes: ["Hotel", "HotelAddress", "HotelAmenity"],
   endpoints: (builder) => ({
-    getHotels: builder.query({
+    getHotels: builder.query<THotel[], void>({
       query: () => 'hotels',
       providesTags: ['Hotel'],
     }),
