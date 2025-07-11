@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { cn } from "../lib/utils";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCredentials } from "../features/auth/authSlice";
-import type { RootState } from "../app/store";
 import { LayoutDashboard, LogOut, User } from "lucide-react";
+import type { RootState } from "../app/store";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const { isAuthenticated, userType, firstName } = useSelector(
     (state: RootState) => state.auth
@@ -18,20 +17,23 @@ const Navbar: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-  // Close menu on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest(".nav-menu") && !target.closest(".hamburger-menu")) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
+        setIsProfileDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -40,80 +42,87 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Logout functionalities
   const handleLogOut = async () => {
     await dispatch(clearCredentials());
     navigate("/login");
   };
 
-  //   // Navigation
   const navlinks = ["Home", "Hotels", "Rooms", "About", "Contact"];
 
   return (
     <header
-      className={cn(
-        "fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300",
-        scrolled ? "shadow-md bg-white" : "bg-transparent"
-      )}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-[#03071e] shadow-md" : "bg-transparent"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold">
-          <span className="text-blue-600">Lux</span>
-          <span className="text-gray-900">Hotel.</span>
+        <Link to="/" className="text-2xl font-extrabold tracking-tight">
+          <span className="text-[#fca311]">Lux</span>
+          <span className="text-white">Hotel</span>
         </Link>
 
-        {/* Desktop menu */}
-        <nav className="hidden md:flex space-x-6 items-center">
-          {navlinks.map((item) => (
-            <Link
-              key={item}
-              to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="text-gray-800 hover:text-blue-600 transition-all duration-200"
-            >
-              {item}
-            </Link>
-          ))}
+        {/* Desktop Menu */}
+        <nav className="hidden md:flex space-x-6 items-center relative">
+          {navlinks.map((item) => {
+            const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+            const isActive = currentPath === path;
+
+            return (
+              <Link
+                key={item}
+                to={path}
+                className={`group relative text-sm font-medium px-2 py-1 transition-colors duration-200 ${
+                  isActive
+                    ? "text-[#fca311]"
+                    : "text-[#e5e5e5] hover:text-[#fca311]"
+                }`}
+              >
+                {item}
+                {/* Animated underline */}
+                <span
+                  className={`absolute left-0 -bottom-1 h-[2px] w-full bg-[#fca311] transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100 ${
+                    isActive ? "scale-x-100" : ""
+                  }`}
+                ></span>
+              </Link>
+            );
+          })}
+
+          {/* Authenticated user */}
           {isAuthenticated ? (
-            // dropdown button for authenticated users
-            <div className="relative">
+            <div className="relative" ref={menuRef}>
               <button
-                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-400 text-black font-medium rounded-lg hover:from-blue-300 hover:to-blue-400 transition-all duration-200 shadow-lg hover:shadow-blue-400/25"
+                onClick={() =>
+                  setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                }
+                className="flex items-center gap-2 px-4 py-2 bg-[#fca311] text-[#03071e] font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-lg"
               >
                 <User className="w-4 h-4" />
                 <span>{firstName || "Profile"}</span>
               </button>
 
               {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-md rounded-xl border border-yellow-400/20 shadow-2xl">
+                <div className="absolute right-0 mt-2 w-52 bg-[#14213d] text-white rounded-xl shadow-2xl overflow-hidden border border-[#fca311]/30 animate-fadeIn">
                   <div className="py-2">
-                    {userType === "user" ? (
-                      <Link
-                        to="/user/dashboard"
-                        className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4" />
-                        <span>Dashboard</span>
-                      </Link>
-                    ) : (
-                      userType === "admin" && (
-                        <Link
-                          to="/admin/dashboard"
-                          className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
-                        >
-                          <LayoutDashboard className="w-4 h-4" />
-                          <span>Dashboard</span>
-                        </Link>
-                      )
-                    )}
+                    <Link
+                      to={
+                        userType === "admin"
+                          ? "/admin/dashboard"
+                          : "/user/dashboard"
+                      }
+                      className="flex items-center gap-2 px-4 py-2 hover:bg-[#fca311]/10 hover:text-[#fca311] transition"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Dashboard</span>
+                    </Link>
 
                     <button
                       onClick={handleLogOut}
-                      className="flex items-center space-x-2 w-full px-4 py-2 text-gray-300 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-400/10"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>Log Out</span>
+                      <span>Logout</span>
                     </button>
                   </div>
                 </div>
@@ -122,100 +131,96 @@ const Navbar: React.FC = () => {
           ) : (
             <Link
               to="/login"
-              className="btn btn-primary btn-sm rounded-lg px-6 shadow-md hover:scale-105 transition-transform duration-200"
+              className="px-6 py-2 bg-[#fca311] text-black rounded-lg font-medium hover:scale-105 transition-transform shadow-lg"
             >
               Login
             </Link>
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Toggle */}
         <button
-          className="hamburger-menu md:hidden text-blue-600"
+          className="md:hidden text-[#fca311] focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-7 w-7"
+            className="w-7 h-7"
             fill="none"
-            viewBox="0 0 24 24"
             stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
           >
             {isOpen ? (
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M6 18L18 6M6 6l12 12"
               />
             ) : (
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M4 6h16M4 12h16M4 18h16"
               />
             )}
           </svg>
         </button>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown Menu */}
         <div
-          ref={menuRef}
-          className={cn(
-            "nav-menu absolute top-full right-4 mt-2 w-48 rounded-lg bg-white shadow-md p-4 space-y-3 transition-all duration-300 z-50",
+          className={`absolute top-full right-4 mt-3 w-56 bg-[#03071e] text-white rounded-lg shadow-lg p-4 space-y-3 z-50 transform transition-all duration-300 origin-top-right ${
             isOpen
               ? "opacity-100 scale-100"
               : "opacity-0 scale-95 pointer-events-none"
-          )}
+          }`}
         >
-          {navlinks.map((item) => (
-            <Link
-              key={item}
-              to={item == "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="block text-gray-800 hover:text-blue-600 transition-colors duration-200"
-              onClick={() => setIsOpen(false)}
-            >
-              {item}
-            </Link>
-          ))}
+          {navlinks.map((item) => {
+            const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+            const isActive = currentPath === path;
 
-          {/* For authenticated users */}
-          {isAuthenticated ? (
-            <div>
-              {userType === "user" ? (
-                <Link
-                  to="/user/dashboard"
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>Dashboard</span>
-                </Link>
-              ) : (
-                userType === "admin" && (
-                  <Link
-                    to="/admin/dashboard"
-                    className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                )
-              )}
-
+            return (
               <Link
-                to="/login"
-                className="btn btn-error btn-sm w-full mt-2"
-                onClick={() => handleLogOut}
+                key={item}
+                to={path}
+                onClick={() => setIsOpen(false)}
+                className={`block text-sm font-medium px-2 py-1 rounded-md transition-all ${
+                  isActive
+                    ? "text-[#fca311] underline underline-offset-4"
+                    : "text-[#e5e5e5] hover:text-[#fca311]"
+                }`}
               >
-                LogOut
+                {item}
               </Link>
-            </div>
+            );
+          })}
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to={
+                  userType === "admin"
+                    ? "/admin/dashboard"
+                    : "/user/dashboard"
+                }
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#fca311]/10 hover:text-[#fca311]"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+
+              <button
+                onClick={handleLogOut}
+                className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-400/10"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </>
           ) : (
-            // For unauthorised users
             <Link
               to="/login"
-              className="btn btn-primary btn-sm w-full mt-2"
+              className="w-full block text-center py-2 bg-[#fca311] text-[#03071e] rounded-md font-medium hover:scale-105 transition-transform"
               onClick={() => setIsOpen(false)}
             >
               Login

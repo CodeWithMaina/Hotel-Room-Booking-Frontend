@@ -1,58 +1,41 @@
-import { User } from "lucide-react";
-import { FadeIn } from "../animations/FadeIn";
+
+import { motion } from "framer-motion";
 
 export const Testimonials = () => {
-  const reviews = [
-    {
-      firstName: "Jane",
-      lastName: "Doe",
-      testimony: "Loved the hotel. Booking was seamless!",
-    },
-    {
-      firstName: "Brian",
-      lastName: "Bree",
-      testimony: "Customer support was excellent and very responsive.",
-    },
-    {
-      firstName: "Peter",
-      lastName: "Cp",
-      testimony: "The booking process was intuitive and fast!",
-    },
+  const feedback = [
+    { name: "Floyd Miles", comment: "Lorem ipsum dolor sit amet.", image: "/images/user1.jpg", rating: 5 },
+    { name: "Ronald Richards", comment: "Excellent experience!", image: "/images/user2.jpg", rating: 4 },
+    { name: "Savannah Nguyen", comment: "Great location and services!", image: "/images/user3.jpg", rating: 5 }
   ];
 
   return (
-    <section className="bg-gradient-to-br from-slate-100 to-slate-200 py-12 px-4">
-      <div className="max-w-6xl mx-auto text-center">
-        <FadeIn>
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-600 mb-4">
-            What Our Guests Say
-          </h2>
-          <p className="text-gray-700 mb-10 max-w-xl mx-auto">
-            Our platform is trusted by hundreds of travelers. Here's what a few of them had to say.
-          </p>
-        </FadeIn>
-
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {reviews.map((review, idx) => (
-            <FadeIn key={idx} delay={0.1 * idx}>
-              <div className="card bg-white shadow-md p-6 hover:shadow-lg transition duration-300 ease-in-out">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-blue-600 text-white p-3 rounded-full">
-                    <User className="w-5 h-5" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold text-gray-700">
-                      {review.firstName} {review.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">Verified Guest</p>
-                  </div>
+    <section className="bg-gradient-to-br from-slate-100 to-slate-200 py-16 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-blue-600 text-center mb-2">Our Customer Feedback</h2>
+        <p className="text-sm text-gray-500 text-center mb-10">Don't take our word for it. Trust our customers.</p>
+        <div className="grid md:grid-cols-3 gap-8">
+          {feedback.map((f, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.15 }}
+              className="bg-white p-6 rounded-lg shadow hover:shadow-md transition duration-300"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <img src={f.image} alt={f.name} className="w-12 h-12 rounded-full border border-gray-200" />
+                <div>
+                  <h3 className="text-base font-semibold text-gray-700">{f.name}</h3>
+                  <p className="text-sm text-yellow-500">{"★".repeat(f.rating)}</p>
                 </div>
-                <p className="text-gray-700 italic">“{review.testimony}”</p>
               </div>
-            </FadeIn>
+              <p className="text-sm text-gray-600">{f.comment}</p>
+            </motion.div>
           ))}
         </div>
       </div>
     </section>
   );
 };
+

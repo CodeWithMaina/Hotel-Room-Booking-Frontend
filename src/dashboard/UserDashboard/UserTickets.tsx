@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useGetUserTicketsQuery } from "../../features/api";
-import { HeaderCard } from "../../components/dashboard/HeaderCard";
 import { TicketCard } from "../../components/ticket/TicketCard";
 import { TicketFormModal } from "../../components/ticket/TicketFormModal";
 import { TicketReplyModal } from "../../components/ticket/TicketReplyModal";
@@ -17,24 +16,28 @@ export const UserTickets = () => {
   const { data: tickets, isLoading } = useGetUserTicketsQuery(id);
 
   return (
-    <div className="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen p-6 space-y-6">
-      <HeaderCard title="Your Support Tickets" />
+    <div className="bg-gradient-to-br from-[#FEFAE0] to-white min-h-screen p-6 md:p-10 text-[#283618]">
 
-      {/* Create Ticket Button */}
-      <div className="flex justify-end">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#BC6C25]">
+          Support Tickets
+        </h1>
         <button
           onClick={() => setShowModal(true)}
-          className="btn bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all duration-300 flex gap-2 items-center"
+          className="flex items-center gap-2 bg-white/30 backdrop-blur-lg border border-[#DDA15E]/40 text-[#283618] px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:bg-[#DDA15E] hover:text-white"
         >
-          <Plus size={18} /> Create New Ticket
+          <Plus size={18} />
+          Create Ticket
         </button>
       </div>
 
       {/* Ticket Grid */}
-      <section className="grid gap-4">
+      <section className="grid gap-6">
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader className="animate-spin text-blue-600" size={32} />
+          <div className="flex flex-col justify-center items-center py-20 text-center">
+            <Loader className="animate-spin text-[#BC6C25]" size={32} />
+            <p className="mt-4 text-sm text-[#606C38]">Loading your tickets...</p>
           </div>
         ) : tickets?.length ? (
           tickets.map((ticket: TTicket) => (
@@ -45,19 +48,16 @@ export const UserTickets = () => {
             />
           ))
         ) : (
-          <div className="text-center text-gray-500 text-lg py-12">
-            No tickets yet. You can create one above.
+          <div className="text-center text-[#6B7280] text-lg py-20">
+            You haven’t submitted any tickets yet.
+            <br />
+            Click “Create Ticket” to reach our support.
           </div>
         )}
       </section>
 
-      {/* Ticket Creation Modal */}
-      <TicketFormModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-      />
-
-      {/* Admin Ticket Reply Modal */}
+      {/* Modals */}
+      <TicketFormModal show={showModal} onClose={() => setShowModal(false)} />
       {selectedTicket && userType === "admin" && (
         <TicketReplyModal
           ticket={selectedTicket}

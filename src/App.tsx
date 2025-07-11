@@ -8,7 +8,7 @@ import { Login } from "./pages/Login";
 import { Rooms } from "./pages/Rooms";
 import { About } from "./pages/About";
 import { DashboardPage } from "./pages/DashboardPage";
-import { Settings } from "./dashboard/AdminDashboard/Settings";
+import { Profile } from "./dashboard/AdminDashboard/Profile";
 import { Dashboard } from "./dashboard/AdminDashboard/Dashboard";
 import { Booking } from "./dashboard/AdminDashboard/Booking";
 import { Hotels } from "./dashboard/AdminDashboard/Hotels";
@@ -94,8 +94,8 @@ function App() {
           element: <Hotels />,
         },
         {
-          path: "/admin/settings",
-          element: <Settings />,
+          path: "/admin/profile",
+          element: <Profile />,
         },
       ],
     },
@@ -116,8 +116,8 @@ function App() {
           element: <UserTickets />,
         },
         {
-          path: "/user/settings",
-          element: <Settings />,
+          path: "/user/profile",
+          element: <Profile />,
         },
       ],
     },

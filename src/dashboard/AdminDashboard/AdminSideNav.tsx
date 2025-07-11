@@ -152,7 +152,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
               }`}
               onClick={() => {
                 toast.success("Opening Profile...");
-                navigate("/admin/settings");
+                navigate("/admin/profile");
               }}
             >
               <img

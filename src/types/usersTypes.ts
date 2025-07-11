@@ -2,6 +2,7 @@ export type TUser = {
   userId: number;
   firstName: string;
   lastName: string;
+  profileImage: string;
   email: string;
   password?: string;
   contactPhone?: string;
@@ -14,9 +15,10 @@ export type TUser = {
 export type TUserForm = {
   firstName: string;
   lastName: string;
+  profileImage?: string;
   email: string;
   contactPhone?: string;
-  role: TUserTypes;
+  role?: TUserTypes;
 };
 
 export type TUserTypes = "user" | "owner" | "admin";

@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
+import type { RootState } from "../../app/store";
 
 interface SideNavProps {
   isOpen: boolean;
@@ -51,44 +51,42 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full z-40 bg-white shadow-lg transform transition-all duration-300 ease-in-out 
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-          lg:translate-x-0 lg:static lg:flex
-          ${collapsed ? "w-20" : "w-64"}`}
+        className={`fixed top-0 left-0 h-full z-40 bg-[#03071e] text-white shadow-xl transition-all duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+        lg:translate-x-0 lg:static lg:flex
+        ${collapsed ? "w-20" : "w-64"}`}
       >
         <div className="flex flex-col w-full h-full p-4">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          {/* Logo + Collapse */}
+          <div className="flex items-center justify-between mb-8">
             {!collapsed && (
-              <Link to="/" className="text-2xl font-bold">
-                <span className="text-blue-600">Lux</span>
-                <span className="text-gray-900">Hotel.</span>
+              <Link to="/" className="text-2xl font-bold tracking-tight">
+                <span className="text-[#fca311]">Lux</span>
+                <span className="text-white">Hotel</span>
               </Link>
             )}
             <div className="flex gap-2 items-center">
-              {/* Collapse Toggle */}
               <button
                 onClick={() => setCollapsed((prev) => !prev)}
-                className="hidden lg:flex text-gray-500 hover:text-blue-600"
+                className="hidden lg:flex text-white hover:text-[#fca311] transition-colors"
               >
                 {collapsed ? <ChevronRight /> : <ChevronLeft />}
               </button>
-
-              {/* Close Button for Mobile */}
               <button
                 onClick={onClose}
-                className="lg:hidden text-gray-500 hover:text-black"
+                className="lg:hidden text-white hover:text-[#fca311]"
               >
                 <X />
               </button>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+          {/* Navigation Links */}
+          <nav className="flex-1 flex flex-col items-center justify-center space-y-4 overflow-y-auto custom-scrollbar">
             {links.map(({ id, label, icon: Icon }) => {
               const isActive =
                 current === id || (id === "home" && pathname === "/");
+
               return (
                 <button
                   key={id}
@@ -96,33 +94,33 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
                     navigate(id === "home" ? "/" : `/user/${id}`);
                     onClose();
                   }}
-                  className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-200
-                    ${
-                      isActive
-                        ? "bg-blue-600 text-white shadow"
-                        : "hover:bg-blue-50 text-gray-700"
-                    }
-                    ${collapsed ? "justify-center" : "justify-start gap-3"}`}
+                  className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-300
+                  ${
+                    isActive
+                      ? "bg-[#14213d] text-white shadow-inner"
+                      : "hover:bg-[#1a1a1a] text-[#e5e5e5] hover:text-[#fca311]"
+                  }
+                  ${collapsed ? "justify-center" : "justify-start gap-3"}`}
                 >
                   <Icon
-                    className={`w-5 h-5 ${
+                    className={`w-5 h-5 transition-transform duration-200 ${
                       isActive
-                        ? "text-white"
-                        : "text-blue-600 group-hover:scale-110"
-                    } transition-transform`}
+                        ? "text-[#fca311]"
+                        : "text-[#fca311] group-hover:scale-110"
+                    }`}
                   />
                   {!collapsed && (
-                    <span className="text-sm font-semibold">{label}</span>
+                    <span className="text-sm font-medium">{label}</span>
                   )}
                 </button>
               );
             })}
           </nav>
 
-          {/* Footer - Profile & Settings */}
-          <div className="mt-auto pt-6 border-t border-gray-100">
+          {/* Footer - Profile */}
+          <div className="mt-auto pt-6 border-t border-[#1a1a1a]">
             <div
-              className={`flex items-center gap-3 cursor-pointer hover:bg-blue-50 p-2 rounded-lg ${
+              className={`flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a] p-2 rounded-lg transition-colors ${
                 collapsed ? "justify-center" : "justify-start"
               }`}
               onClick={() => navigate("/user/settings")}
@@ -130,18 +128,14 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
               <img
                 src="https://i.pravatar.cc/100"
                 alt="avatar"
-                className="w-12 h-12 rounded-full object-cover border-2 border-blue-600"
+                className="w-12 h-12 rounded-full object-cover border-2 border-[#fca311]"
               />
               {!collapsed && (
-                <div>
-                  <div className="text-left">
-                    <h2 className="text-base font-semibold text-gray-900">
-                      {firstName}
-                    </h2>
-                    <p className="text-sm text-blue-600 capitalize">
-                      View Profile
-                    </p>
-                  </div>
+                <div className="text-left">
+                  <h2 className="text-base font-semibold text-white">
+                    {firstName}
+                  </h2>
+                  <p className="text-sm text-[#fca311]">View Profile</p>
                 </div>
               )}
             </div>
@@ -151,14 +145,14 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
         {/* Custom Scrollbar */}
         <style>
           {`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-          }
-        `}
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #fca311;
+              border-radius: 9999px;
+            }
+          `}
         </style>
       </aside>
     </>
