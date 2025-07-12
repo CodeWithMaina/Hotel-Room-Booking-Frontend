@@ -14,7 +14,7 @@ export const TicketFilters = ({ filters, setFilters }: Props) => {
   const userNames = Array.from(
     new Set(
       tickets?.map(
-        (ticket) => `${ticket.user?.firstName} ${ticket.user?.lastName}`
+        (ticket) => `${ticket.user?.firstName ?? ""} ${ticket.user?.lastName ?? ""}`
       ) || []
     )
   );
@@ -26,64 +26,62 @@ export const TicketFilters = ({ filters, setFilters }: Props) => {
     });
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-100 to-slate-200 px-4 py-3 rounded-lg shadow mb-4">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 flex-wrap">
-        {/* Title */}
-        <div className="flex items-center gap-2 text-gray-700">
-          <Filter className="text-blue-600" size={20} />
-          <h2 className="text-base font-semibold">Filters</h2>
+    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 w-full">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Filter size={20} className="text-[#fca311]" />
+        <h2 className="text-xl font-semibold text-[#14213d] tracking-tight">Manage Tickets</h2>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+        {/* User Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+          <label className="text-sm text-[#14213d] font-medium flex items-center gap-1">
+            <UserRound size={16} className="text-[#fca311]" />
+            User
+          </label>
+          <input
+            type="text"
+            placeholder="John Doe"
+            list="userNames"
+            value={filters.user}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, user: e.target.value }))
+            }
+            className="px-3 py-2 border border-[#e5e5e5] rounded-lg text-sm bg-white text-[#03071e] focus:outline-none focus:ring-2 focus:ring-[#fca311] w-48"
+          />
+          <datalist id="userNames">
+            {userNames.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
         </div>
 
-        {/* Filters Section */}
-        <div className="flex flex-wrap gap-3 items-center w-full md:w-auto">
-          {/* User Input */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
-            <label className="text-sm text-gray-700 flex items-center gap-1">
-              <UserRound className="text-blue-600" size={16} />
-              <span>User</span>
-            </label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              className="input input-sm input-bordered bg-white text-gray-700 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-600 w-48"
-              value={filters.user}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, user: e.target.value }))
-              }
-              list="userNames"
-            />
-            <datalist id="userNames">
-              {userNames.map((name) => (
-                <option key={name} value={name} />
-              ))}
-            </datalist>
-          </div>
-
-          {/* Status Dropdown */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
-            <label className="text-sm text-gray-700">Status</label>
-            <select
-              className="select select-sm select-bordered bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-600 w-40"
-              value={filters.status}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, status: e.target.value }))
-              }
-            >
-              <option value="">All</option>
-              <option value="Open">Open</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-          </div>
-
-          {/* Reset Button */}
-          <button
-            onClick={resetFilters}
-            className="btn btn-sm text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white transition"
+        {/* Status Dropdown */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+          <label className="text-sm text-[#14213d] font-medium">Status</label>
+          <select
+            value={filters.status}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, status: e.target.value }))
+            }
+            className="px-3 py-2 border border-[#e5e5e5] rounded-lg text-sm bg-white text-[#03071e] focus:outline-none focus:ring-2 focus:ring-[#fca311] w-40"
           >
-            <RotateCcw size={16} className="mr-1" />
-            Reset
-          </button>
+            <option value="">All</option>
+            <option value="Open">Open</option>
+            <option value="Resolved">Resolved</option>
+          </select>
         </div>
+
+        {/* Reset Button */}
+        <button
+          onClick={resetFilters}
+          className="flex items-center gap-2 border border-[#fca311] text-[#fca311] hover:bg-[#fca311] hover:text-white transition px-4 py-2 text-sm rounded-lg font-medium"
+        >
+          <RotateCcw size={16} />
+          Reset
+        </button>
       </div>
     </div>
   );

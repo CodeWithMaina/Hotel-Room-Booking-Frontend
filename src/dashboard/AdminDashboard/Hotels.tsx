@@ -5,7 +5,6 @@ import {
   useUpdateHotelMutation,
   useDeleteHotelMutation,
 } from "../../features/api/hotelsApi";
-import { HeaderCard } from "../../components/dashboard/HeaderCard";
 import type { THotel } from "../../types/hotelsTypes";
 import { Building2, Search, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -43,57 +42,57 @@ export const Hotels = () => {
   const closeModal = () => setIsModalOpen(false);
 
   // In Hotels.tsx
-const handleDelete = (hotelId: number) => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This will permanently delete the hotel.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#DC2626",
-    cancelButtonColor: "#6B7280",
-    confirmButtonText: "Yes, delete it!",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await deleteHotel(hotelId).unwrap();
-        toast.success("Hotel deleted successfully");
-        refetch();
-      } catch (error) {
-        console.error("Delete error:", error);
-        toast.error("Failed to delete hotel");
+  const handleDelete = (hotelId: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This will permanently delete the hotel.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DC2626",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteHotel(hotelId).unwrap();
+          toast.success("Hotel deleted successfully");
+          refetch();
+        } catch (error) {
+          console.error("Delete error:", error);
+          toast.error("Failed to delete hotel");
+        }
       }
+    });
+  };
+
+  const handleSubmit = async (formData: HotelFormData): Promise<void> => {
+    try {
+      const payload = {
+        name: formData.name,
+        location: formData.location,
+        ...(formData.thumbnail && { thumbnail: formData.thumbnail }),
+      };
+
+      if (modalMode === "add") {
+        await createHotel(payload).unwrap();
+        toast.success("Hotel created successfully");
+      } else {
+        if (!selectedHotel) return;
+
+        await updateHotel({
+          hotelId: selectedHotel.hotelId,
+          ...payload,
+        }).unwrap();
+        toast.success("Hotel updated successfully");
+      }
+
+      refetch();
+      closeModal();
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error("Operation failed. Please try again.");
     }
-  });
-};
-
- const handleSubmit = async (formData: HotelFormData): Promise<void> => {
-  try {
-    const payload = {
-      name: formData.name,
-      location: formData.location,
-      ...(formData.thumbnail && { thumbnail: formData.thumbnail }),
-    };
-
-    if (modalMode === "add") {
-      await createHotel(payload).unwrap();
-      toast.success("Hotel created successfully");
-    } else {
-      if (!selectedHotel) return;
-      
-      await updateHotel({
-        hotelId: selectedHotel.hotelId,
-        ...payload
-      }).unwrap();
-      toast.success("Hotel updated successfully");
-    }
-
-    refetch();
-    closeModal();
-  } catch (err) {
-    console.error("Submission error:", err);
-    toast.error("Operation failed. Please try again.");
-  }
-};
+  };
 
   if (isLoading) return <Loading />;
   if (error)
@@ -105,7 +104,6 @@ const handleDelete = (hotelId: number) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
-      <HeaderCard />
       <main className="max-w-7xl mx-auto p-6">
         <section className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <div>
@@ -140,31 +138,53 @@ const handleDelete = (hotelId: number) => {
           {filteredHotels.map((hotel) => (
             <div
               key={hotel.hotelId}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition duration-300 overflow-hidden"
+              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 border border-[#e5e5e5]"
             >
+              {/* Thumbnail */}
               <img
                 src={hotel.thumbnail}
                 alt={hotel.name}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {hotel.name}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {hotel.location || "Unknown location"}
-                </p>
-                <div className="flex justify-between items-center mt-4">
+
+              {/* Info Section */}
+              <div className="p-4 space-y-2">
+                {/* Name & Category */}
+                <div className="flex justify-between items-start">
+                  <h3 className="text-lg font-bold text-[#000000]">
+                    {hotel.name}
+                  </h3>
+                  <span className="bg-[#fca311] text-white text-xs px-2 py-1 rounded-md">
+                    {hotel.category}
+                  </span>
+                </div>
+
+                {/* Location & Contact */}
+                <div className="text-sm text-[#14213d] space-y-1">
+                  <p>📍 {hotel.location || "Unknown location"}</p>
+                  <p>📞 {hotel.contactPhone || "No contact"}</p>
+                </div>
+
+                {/* Rating & Actions */}
+                <div className="flex justify-between items-center pt-3">
+                  {/* Rating */}
+                  {/* <div className="text-sm text-[#03071e] font-medium flex items-center gap-1">
+          <span className="bg-[#fca311] text-white px-2 py-1 rounded-full text-xs">
+            ⭐ {hotel.rating || "N/A"}
+          </span>
+        </div> */}
+
+                  {/* Action Buttons */}
                   <div className="flex gap-2">
                     <button
                       onClick={() => openModal("edit", hotel)}
-                      className="btn btn-sm btn-outline btn-info"
+                      className="p-2 rounded-md border border-[#3b82f6] text-[#3b82f6] hover:bg-blue-50 transition"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(hotel.hotelId)}
-                      className="btn btn-sm btn-outline btn-error"
+                      className="p-2 rounded-md border border-[#dc2626] text-[#dc2626] hover:bg-red-50 transition"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

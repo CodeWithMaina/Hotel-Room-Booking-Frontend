@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetTicketsQuery } from "../../features/api";
-import { HeaderCard } from "../../components/dashboard/HeaderCard";
 import { TicketCard } from "../../components/ticket/TicketCard";
 import { TicketReplyModal } from "../../components/ticket/TicketReplyModal";
 import { TicketFilters } from "../../components/ticket/TicketFilters";
@@ -9,10 +8,12 @@ import type { RootState } from "../../app/store";
 import { Loader } from "lucide-react";
 
 export const Ticket = () => {
-  const { data: tickets, isLoading } = useGetTicketsQuery();
+  const { data: tickets, isLoading, refetch } = useGetTicketsQuery();
   const [selectedTicket, setSelectedTicket] = useState(null);
   const { userType } = useSelector((state: RootState) => state.auth);
   const [filters, setFilters] = useState({ status: "", user: "" });
+
+  useEffect(()=>{refetch()},[tickets])
 
   const filteredTickets = tickets?.filter((ticket: any) => {
     const matchesStatus = filters.status
@@ -29,20 +30,17 @@ export const Ticket = () => {
   });
 
   return (
-    <div className="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen p-6 space-y-6">
-      {/* Page Header */}
-      <HeaderCard title="Manage Customer Tickets" />
-
-      {/* Filters */}
-      <div className="rounded-xl bg-white shadow p-4 border border-slate-200">
+    <div className="min-h-screen bg-gradient-to-br from-[#ffffff] to-[#e5e5e5] px-6 md:px-10 py-10 text-[#14213d]">
+      {/* Header & Filters inline */}
+      <div className="bg-white px-6 py-4 rounded-xl border border-[#e5e5e5] shadow-sm">
         <TicketFilters filters={filters} setFilters={setFilters} />
       </div>
 
       {/* Ticket List */}
-      <div className="grid gap-4 mt-4">
+      <section className="mt-8 grid gap-6">
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader className="animate-spin text-blue-600" size={32} />
+          <div className="flex justify-center items-center py-20">
+            <Loader className="animate-spin text-[#fca311]" size={32} />
           </div>
         ) : filteredTickets?.length ? (
           filteredTickets.map((ticket: any) => (
@@ -53,13 +51,13 @@ export const Ticket = () => {
             />
           ))
         ) : (
-          <div className="text-center py-12 text-gray-500 text-lg">
+          <div className="text-center py-20 text-[#6b7280] text-lg">
             No tickets match the current filters.
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Reply Modal for Admins */}
+      {/* Reply Modal (Admin only) */}
       {selectedTicket && userType === "admin" && (
         <TicketReplyModal
           ticket={selectedTicket}

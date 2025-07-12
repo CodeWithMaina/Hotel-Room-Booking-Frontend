@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
+// Main Tabs controller
 export const Tabs = ({
   defaultValue,
   children,
@@ -14,6 +15,7 @@ export const Tabs = ({
   );
 };
 
+// Tab List container
 export const TabsList = ({
   children,
   activeTab,
@@ -25,13 +27,19 @@ export const TabsList = ({
   setActiveTab?: (val: string) => void;
   className?: string;
 }) => (
-  <div className={cn("flex gap-2 mb-4", className)}>
+  <div
+    className={cn(
+      "flex gap-3 border-b border-[#14213D]/50 pb-1 mb-6",
+      className
+    )}
+  >
     {React.Children.map(children, (child: any) =>
       React.cloneElement(child, { activeTab, setActiveTab })
     )}
   </div>
 );
 
+// Tab button
 export const TabsTrigger = ({
   value,
   children,
@@ -44,21 +52,25 @@ export const TabsTrigger = ({
   activeTab?: string;
   setActiveTab?: (val: string) => void;
   className?: string;
-}) => (
-  <button
-    onClick={() => setActiveTab?.(value)}
-    className={cn(
-      "px-4 py-2 rounded font-medium transition",
-      activeTab === value
-        ? "bg-[#DDA15E] text-white"
-        : "bg-white text-[#283618] hover:bg-[#FEFAE0]",
-      className
-    )}
-  >
-    {children}
-  </button>
-);
+}) => {
+  const isActive = activeTab === value;
+  return (
+    <button
+      onClick={() => setActiveTab?.(value)}
+      className={cn(
+        "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+        isActive
+          ? "bg-[#FCA311] text-black"
+          : "text-[#E5E5E5] hover:text-[#FCA311]",
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+};
 
+// Tab content
 export const TabsContent = ({
   value,
   activeTab,
@@ -69,4 +81,7 @@ export const TabsContent = ({
   activeTab?: string;
   children: React.ReactNode;
   className?: string;
-}) => (activeTab === value ? <div className={className}>{children}</div> : null);
+}) =>
+  activeTab === value ? (
+    <div className={cn("text-[#E5E5E5]", className)}>{children}</div>
+  ) : null;

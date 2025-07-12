@@ -17,6 +17,7 @@ export const Bookings = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedRoomType, setSelectedRoomType] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showMobileFilter, setShowMobileFilter] = useState(true);
   const lastScrollY = useRef(0);
   const [deleteBooking] = useDeleteBookingMutation();
@@ -59,13 +60,21 @@ export const Bookings = () => {
   }, [userBookings]);
 
   const filteredBookings = userBookings.filter(
-    (booking: { bookingStatus: string; room: { roomType: string } }) => {
+    (booking: TSingleBooking) => {
       const matchStatus =
         filterStatus === "All" || booking.bookingStatus === filterStatus;
       const matchRoom =
         selectedRoomType === "All" ||
         booking.room?.roomType === selectedRoomType;
-      return matchStatus && matchRoom;
+
+      const matchSearch =
+        searchQuery.trim() === "" ||
+        booking.room?.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchStatus && matchRoom && matchSearch;
     }
   );
 
@@ -81,13 +90,28 @@ export const Bookings = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-100 to-slate-200 pb-20">
-      {/* Page Header */}
+    <div className="min-h-screen w-full bg-[#e5e5e5] pb-20">
+      {/* Header with Search */}
       <div className="max-w-6xl mx-auto px-4 pt-10 pb-6">
-        <h1 className="text-3xl font-bold text-slate-800 mb-1">Your Bookings</h1>
-        <p className="text-slate-500 text-sm">
-          View, edit or manage your hotel bookings
-        </p>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-[#000000] mb-1">
+              Your Bookings
+            </h1>
+            <p className="text-[#14213d] text-sm">
+              View, edit or manage your hotel bookings
+            </p>
+          </div>
+          <div className="w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Search by room type, status, or date..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-[#ffffff] text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row gap-6">
@@ -108,6 +132,7 @@ export const Bookings = () => {
             onClear={() => {
               setFilterStatus("All");
               setSelectedRoomType("All");
+              setSearchQuery("");
             }}
           />
         </div>
@@ -142,7 +167,9 @@ export const Bookings = () => {
             </div>
           ) : (
             <div className="text-center text-slate-500 py-20">
-              <p className="text-lg">You have no bookings matching these filters.</p>
+              <p className="text-lg">
+                You have no bookings matching these filters.
+              </p>
             </div>
           )}
         </section>
@@ -158,6 +185,7 @@ export const Bookings = () => {
             onClear={() => {
               setFilterStatus("All");
               setSelectedRoomType("All");
+              setSearchQuery("");
             }}
           />
         </aside>

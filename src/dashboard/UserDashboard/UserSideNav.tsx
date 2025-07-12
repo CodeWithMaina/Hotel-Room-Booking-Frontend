@@ -123,7 +123,7 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
               className={`flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a] p-2 rounded-lg transition-colors ${
                 collapsed ? "justify-center" : "justify-start"
               }`}
-              onClick={() => navigate("/user/settings")}
+              onClick={() => navigate("/user/profile")}
             >
               <img
                 src="https://i.pravatar.cc/100"

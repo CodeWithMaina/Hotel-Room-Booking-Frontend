@@ -54,7 +54,6 @@ export const TicketReplyModal = ({ ticket, onClose }: Props) => {
     }
   };
 
-  // Close on outside click
   const modalRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -75,49 +74,46 @@ export const TicketReplyModal = ({ ticket, onClose }: Props) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="modal-box max-w-2xl rounded-xl p-6 shadow-lg bg-white border border-blue-100"
+          className="modal-box max-w-2xl rounded-xl p-6 shadow-lg bg-white border border-[#e5e5e5]"
         >
-          {/* Header */}
           <div className="flex justify-between items-center border-b pb-3 mb-4">
-            <h2 className="text-lg font-semibold text-blue-600 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-[#14213d] flex items-center gap-2">
               <MessageSquareReply size={20} />
               Reply to Ticket #{ticket.ticketId}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-blue-600 transition"
+              className="text-[#6b7280] hover:text-[#fca311] transition"
             >
               <X size={20} />
             </button>
           </div>
 
-          {/* Ticket Info */}
           <div className="space-y-2 mb-6">
-            <p className="text-gray-700 font-medium">{ticket.subject}</p>
-            <p className="text-sm text-gray-500">{ticket.description}</p>
+            <p className="text-[#000000] font-medium">{ticket.subject}</p>
+            <p className="text-sm text-[#14213d]">{ticket.description}</p>
 
             {ticket.reply && (
-              <div className="mt-3 bg-slate-100 border border-blue-100 p-4 rounded-md">
-                <div className="flex items-center gap-1 text-sm font-semibold text-blue-700">
+              <div className="mt-3 bg-[#fca311]/10 border border-[#fca311]/20 p-4 rounded-md">
+                <div className="flex items-center gap-1 text-sm font-semibold text-[#fca311]">
                   <Info size={16} />
                   Previous Reply
                 </div>
-                <p className="text-sm text-blue-600 mt-1 whitespace-pre-line">
+                <p className="text-sm text-[#03071e] mt-1 whitespace-pre-line">
                   {ticket.reply}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Reply Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
-              <label className="label text-gray-700 font-medium">Reply</label>
+              <label className="label text-[#14213d] font-medium">Reply</label>
               <textarea
                 {...register("reply")}
                 placeholder="Type your response..."
                 rows={4}
-                className="textarea textarea-bordered w-full bg-slate-50 text-gray-700 border-blue-300 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="textarea textarea-bordered w-full bg-[#e5e5e5] text-[#000000] border-[#fca311] placeholder:text-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311]"
               />
               {errors.reply && (
                 <p className="text-red-500 text-sm mt-1">{errors.reply.message}</p>
@@ -125,32 +121,31 @@ export const TicketReplyModal = ({ ticket, onClose }: Props) => {
             </div>
 
             <div>
-              <label className="label text-gray-700 font-medium">Status</label>
+              <label className="label text-[#14213d] font-medium">Status</label>
               <select
                 {...register("status")}
-                className="select select-bordered w-full bg-slate-50 text-gray-700 border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="select select-bordered w-full bg-[#e5e5e5] text-[#000000] border-[#fca311] focus:outline-none focus:ring-2 focus:ring-[#fca311]"
               >
                 <option value="Open">Open</option>
                 <option value="Resolved">Resolved</option>
               </select>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-4 border-t">
               <button
                 type="button"
                 onClick={onClose}
-                className="btn btn-sm bg-slate-100 text-gray-700 hover:bg-slate-200 transition"
+                className="btn btn-sm bg-[#e5e5e5] text-[#03071e] hover:bg-[#dcdcdc] transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn btn-sm bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-1"
+                className="btn btn-sm bg-[#fca311] text-white hover:bg-[#e29500] transition flex items-center gap-1"
               >
                 <SendHorizonal size={16} />
-                {isSubmitting ? <LoadingSpinner/> : "Save"}
+                {isSubmitting ? <LoadingSpinner /> : "Save"}
               </button>
             </div>
           </form>

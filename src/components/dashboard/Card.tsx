@@ -1,18 +1,66 @@
 import type { ReactNode } from "react";
 import { cn } from "../../lib/utils";
 
-export const Card = ({ className, children }: { className?: string; children: ReactNode }) => (
-  <div className={cn("bg-white rounded-xl shadow p-4", className)}>{children}</div>
+// Main Card container
+export const Card = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <div
+    className={cn(
+      "bg-[#03071E] rounded-xl border border-[#14213D]/60 px-6 py-5 text-white",
+      className
+    )}
+  >
+    {children}
+  </div>
 );
 
-export const CardHeader = ({ className, children }: { className?: string; children: ReactNode }) => (
-  <div className={cn("mb-2 flex items-center justify-between", className)}>{children}</div>
+// Optional header row with spacing
+export const CardHeader = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <div className={cn("mb-4 flex items-center justify-between", className)}>
+    {children}
+  </div>
 );
 
-export const CardTitle = ({ className, children }: { className?: string; children: ReactNode }) => (
-  <h4 className={cn("text-base font-semibold", className)}>{children}</h4>
+// Elegant title
+export const CardTitle = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <h4
+    className={cn(
+      "text-sm font-semibold tracking-wide uppercase text-[#FCA311]",
+      className
+    )}
+  >
+    {children}
+  </h4>
 );
 
-export const CardContent = ({ className, children }: { className?: string; children: ReactNode }) => (
-  <div className={cn("text-gray-700", className)}>{children}</div>
+// Content block with light text
+export const CardContent = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <div
+    className={cn("text-sm text-[#E5E5E5] leading-relaxed space-y-1", className)}
+  >
+    {children}
+  </div>
 );

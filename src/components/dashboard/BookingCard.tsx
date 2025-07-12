@@ -16,7 +16,7 @@ export const BookingCard = () => {
       text: "You won’t be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#2563EB",
+      confirmButtonColor: "#FCA311",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
@@ -27,25 +27,43 @@ export const BookingCard = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm flex flex-col gap-2">
+    <div className="bg-[#03071E] border border-[#14213D] text-white rounded-2xl px-6 py-5 space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold text-gray-700">{booking.service}</h4>
+        <h4 className="text-base font-semibold text-white tracking-wide">
+          {booking.service}
+        </h4>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline">
-            <Pencil className="w-4 h-4 mr-1" /> Modify
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-[#FCA311] hover:bg-[#14213D]"
+          >
+            <Pencil className="w-4 h-4 mr-1" />
+            Modify
           </Button>
-          <Button size="sm" variant="primary" onClick={handleCancel}>
-            <Trash2 className="w-4 h-4 mr-1" /> Cancel
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={handleCancel}
+            className="bg-[#FCA311] text-black hover:bg-[#e6940d]"
+          >
+            <Trash2 className="w-4 h-4 mr-1" />
+            Cancel
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-4 text-sm text-gray-500">
-        <span className="flex items-center gap-1">
-          <Calendar className="w-4 h-4" /> {booking.date}
-        </span>
-        <span className="flex items-center gap-1">
-          <MapPin className="w-4 h-4" /> {booking.location}
-        </span>
+
+      {/* Info Row */}
+      <div className="flex flex-wrap gap-4 text-sm text-[#E5E5E5]/80">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-[#FCA311]" />
+          <span>{booking.date}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-[#FCA311]" />
+          <span>{booking.location}</span>
+        </div>
       </div>
     </div>
   );

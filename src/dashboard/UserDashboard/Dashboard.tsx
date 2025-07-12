@@ -4,6 +4,7 @@ import {
   CreditCard,
   LifeBuoy,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { BookingCard } from "../../components/dashboard/BookingCard";
 import { ResponsiveBarChart } from "../../components/dashboard/ResponsiveBarChart";
 import { BookingTable } from "../../components/dashboard/BookingTable";
@@ -13,55 +14,54 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../components/dashboard/tabs";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/dashboard/Card";
 import { ResponsiveLineChart } from "../../components/dashboard/ResponsiveLineChart";
+import { MetricCard, type Metric } from "../../components/dashboard/skeleton/MetricCard";
+import { MetricCardSkeleton } from "../../components/dashboard/skeleton/MetricCardSkeleton";
 
 export const UserDashboard = () => {
-  const metrics = [
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const metrics: Metric[] = [
     {
       title: "Total Spent",
       value: "$2,500",
       icon: (
-        <div className="p-2 rounded-full bg-[#DDA15E]/20 text-[#BC6C25]">
+        <div className="p-2 rounded-full bg-[#FCA311]/20 text-[#FCA311]">
           <CreditCard className="w-5 h-5" />
         </div>
       ),
-      border: "border-[#DDA15E]",
     },
     {
       title: "Total Bookings",
       value: "18",
       icon: (
-        <div className="p-2 rounded-full bg-[#606C38]/20 text-[#606C38]">
+        <div className="p-2 rounded-full bg-[#E5E5E5]/10 text-[#E5E5E5]">
           <CalendarDays className="w-5 h-5" />
         </div>
       ),
-      border: "border-[#606C38]",
     },
     {
       title: "Open Tickets",
       value: "2",
       icon: (
-        <div className="p-2 rounded-full bg-[#BC6C25]/20 text-[#BC6C25]">
+        <div className="p-2 rounded-full bg-[#FCA311]/10 text-[#FCA311]">
           <LifeBuoy className="w-5 h-5" />
         </div>
       ),
-      border: "border-[#BC6C25]",
     },
     {
       title: "Loyalty Points",
       value: "320",
       icon: (
-        <div className="p-2 rounded-full bg-[#283618]/20 text-[#283618]">
+        <div className="p-2 rounded-full bg-[#14213D]/20 text-[#FFFFFF]">
           <UserCircle className="w-5 h-5" />
         </div>
       ),
-      border: "border-[#283618]",
     },
   ];
 
@@ -80,75 +80,72 @@ export const UserDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-6 text-[#283618]">
-      {/* Metrics Section */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 mb-10">
-        {metrics.map((metric, idx) => (
-          <Card
-            key={idx}
-            className={`bg-white border-l-4 ${metric.border} shadow-lg hover:shadow-xl transition duration-300 rounded-2xl`}
-          >
-            <CardHeader className="flex items-center gap-4">
-              {metric.icon}
-              <CardTitle className="text-md text-[#283618] font-semibold tracking-wide">
-                {metric.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-[#283618]">{metric.value}</p>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="min-h-screen bg-[#03071E] p-4 sm:p-6 text-white space-y-12">
+      {/* Metrics */}
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+        {(loading ? new Array(4).fill(null) : metrics).map((metric, idx) =>
+          loading || !metric ? (
+            <MetricCardSkeleton key={idx} />
+          ) : (
+            <MetricCard key={idx} metric={metric} />
+          )
+        )}
       </div>
 
-      {/* Booking Summary */}
-      <div className="mb-10">
-        <h3 className="text-xl font-semibold text-[#606C38] mb-4 tracking-wide">
+      {/* Booking Highlight */}
+      <div>
+        <h3 className="text-lg font-medium text-[#FCA311] mb-3 tracking-wide">
           Upcoming Booking
         </h3>
-        <BookingCard />
+        {loading ? (
+          <div className="bg-[#14213D] h-28 rounded-2xl animate-pulse" />
+        ) : (
+          <BookingCard />
+        )}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-6 lg:grid-cols-2 mb-10">
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-[#EDEDED]">
-          <h3 className="text-lg font-semibold text-[#606C38] mb-3">
+      {/* Charts */}
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <div className="bg-[#14213D] border border-[#1F2A3D] rounded-2xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4 tracking-wide">
             Spending Over Time
           </h3>
-          <ResponsiveLineChart data={lineData} color="#BC6C25" />
+          {loading ? (
+            <div className="h-40 bg-[#1F2A3D] rounded-lg animate-pulse" />
+          ) : (
+            <ResponsiveLineChart data={lineData} color="#FCA311" />
+          )}
         </div>
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-[#EDEDED]">
-          <h3 className="text-lg font-semibold text-[#606C38] mb-3">
+        <div className="bg-[#14213D] border border-[#1F2A3D] rounded-2xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4 tracking-wide">
             Booking Frequency
           </h3>
-          <ResponsiveBarChart data={barData} color="#606C38" />
+          {loading ? (
+            <div className="h-40 bg-[#1F2A3D] rounded-lg animate-pulse" />
+          ) : (
+            <ResponsiveBarChart data={barData} color="#E5E5E5" />
+          )}
         </div>
       </div>
 
       {/* Tabs Section */}
-      <div className="bg-white p-6 rounded-2xl shadow border border-[#EDEDED]">
+      <div className="bg-[#14213D] p-6 rounded-2xl border border-[#1F2A3D]">
         <Tabs defaultValue="bookings">
-          <TabsList className="flex gap-3 mb-6 bg-[#FEFAE0] p-1 rounded-xl border border-[#DDA15E] w-fit">
-            <TabsTrigger
-              value="bookings"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-[#283618] data-[state=active]:bg-[#DDA15E] data-[state=active]:text-white transition"
-            >
-              Latest Bookings
-            </TabsTrigger>
-            <TabsTrigger
-              value="tickets"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-[#283618] data-[state=active]:bg-[#DDA15E] data-[state=active]:text-white transition"
-            >
-              Customer Tickets
-            </TabsTrigger>
+          <TabsList className="flex gap-3 mb-6 bg-[#03071E] p-1 rounded-xl border border-[#FCA311]/30 w-full overflow-x-auto">
+            <TabsTrigger value="bookings">Latest Bookings</TabsTrigger>
+            <TabsTrigger value="tickets">Customer Tickets</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings">
-            <BookingTable />
+            {loading ? (
+              <div className="h-24 bg-[#1F2A3D] rounded-lg animate-pulse" />
+            ) : (
+              <BookingTable />
+            )}
           </TabsContent>
 
           <TabsContent value="tickets">
-            <div className="text-center text-gray-400 italic py-4">
+            <div className="text-center text-[#E5E5E5]/70 italic py-6">
               Coming soon: Support ticket view
             </div>
           </TabsContent>

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { HeaderCard } from "../../components/dashboard/HeaderCard";
 import { BookingCard } from "../../components/booking/BookingCard";
 import { BookingCardSkeleton } from "../../components/booking/BookingCardSkeleton";
 import { BookingEditModal } from "../../components/booking/BookingEditModal";
@@ -19,6 +18,8 @@ export const Booking = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedRoomType, setSelectedRoomType] = useState("All");
   const [showMobileFilter, setShowMobileFilter] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+  
   const lastScrollY = useRef(0);
 
   const { userType } = useSelector((state: RootState) => state.auth);
@@ -45,16 +46,25 @@ export const Booking = () => {
     return Array.from(types);
   }, [bookings]);
 
-  const filteredBookings = useMemo(() => {
-    return bookings.filter((booking) => {
-      const matchesStatus =
+  const filteredBookings = bookings.filter(
+    (booking: TSingleBooking) => {
+      const matchStatus =
         filterStatus === "All" || booking.bookingStatus === filterStatus;
-      const matchesRoom =
+      const matchRoom =
         selectedRoomType === "All" ||
         booking.room?.roomType === selectedRoomType;
-      return matchesStatus && matchesRoom;
-    });
-  }, [bookings, filterStatus, selectedRoomType]);
+
+      const matchSearch =
+        searchQuery.trim() === "" ||
+        booking.room?.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchStatus && matchRoom && matchSearch;
+    }
+  );
+
 
   const handleDelete = (bookingId: number) => {
     Swal.fire({
@@ -97,9 +107,29 @@ export const Booking = () => {
 
   return (
     <div>
-      <HeaderCard />
-
       <main className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-4 sm:p-6">
+        {/* Header with Search */}
+      <div className="max-w-6xl mx-auto px-4 pb-6">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-[#000000] mb-1">
+              Your Bookings
+            </h1>
+            <p className="text-[#14213d] text-sm">
+              View, edit or manage your hotel bookings
+            </p>
+          </div>
+          <div className="w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Search by room type, status, or date..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-[#ffffff] text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
+            />
+          </div>
+        </div>
+      </div>
         <div className="flex flex-col lg:flex-row gap-6 relative">
           {/* Mobile Filter */}
           <div

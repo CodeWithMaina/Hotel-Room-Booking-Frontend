@@ -3,6 +3,7 @@ export type TUser = {
   firstName: string;
   lastName: string;
   profileImage: string;
+  bio:string;
   email: string;
   password?: string;
   contactPhone?: string;
@@ -16,6 +17,7 @@ export type TUserForm = {
   firstName: string;
   lastName: string;
   profileImage?: string;
+  bio:string;
   email: string;
   contactPhone?: string;
   role?: TUserTypes;

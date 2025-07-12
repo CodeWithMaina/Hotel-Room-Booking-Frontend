@@ -13,15 +13,20 @@ export const UsersActionBar: React.FC<UsersActionBarProps> = ({
   className,
 }) => {
   return (
-    <div className={cn("w-full bg-white rounded-xl shadow-sm p-3", className)}>
+    <div
+      className={cn(
+        "w-full bg-[#14213d] rounded-2xl shadow-lg p-4",
+        className
+      )}
+    >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Live Search */}
-        <div className="flex-1 flex items-center bg-slate-100 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-          <Search className="w-4 h-4 text-gray-500 mr-2" />
+        <div className="flex-1 flex items-center bg-[#000000] rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-[#fca311] transition">
+          <Search className="w-4 h-4 text-[#e5e5e5] mr-2" />
           <input
             type="text"
             placeholder="Search users..."
-            className="w-full bg-transparent outline-none text-sm"
+            className="w-full bg-transparent outline-none text-sm text-white placeholder:text-gray-400"
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
@@ -29,7 +34,7 @@ export const UsersActionBar: React.FC<UsersActionBarProps> = ({
         {/* Add User Button */}
         <button
           onClick={onAddUser}
-          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center justify-center gap-2 bg-[#fca311] hover:brightness-105 text-black px-5 py-2 rounded-lg text-sm font-semibold transition shadow-md"
         >
           <Plus className="w-4 h-4" />
           Add User

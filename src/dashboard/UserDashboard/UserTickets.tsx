@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useGetUserTicketsQuery } from "../../features/api";
 import { TicketCard } from "../../components/ticket/TicketCard";
 import { TicketFormModal } from "../../components/ticket/TicketFormModal";
 import { TicketReplyModal } from "../../components/ticket/TicketReplyModal";
-import { Plus, Loader } from "lucide-react";
+import { Plus} from "lucide-react";
 import type { RootState } from "../../app/store";
 import type { TTicket } from "../../types/ticketsTypes";
+import { TicketCardSkeleton } from "../../components/ticket/skeleton/TicketCardSkeleton";
 
 export const UserTickets = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<TTicket | null>(null);
   const { userId, userType } = useSelector((state: RootState) => state.auth);
   const id = Number(userId);
-  const { data: tickets, isLoading } = useGetUserTicketsQuery(id);
+  const { data: tickets, isLoading, refetch: refetchTickets} = useGetUserTicketsQuery(id);
+
+  useEffect(()=>{refetchTickets()},[showModal])
 
   return (
     <div className="bg-gradient-to-br from-[#FEFAE0] to-white min-h-screen p-6 md:p-10 text-[#283618]">
@@ -35,25 +38,27 @@ export const UserTickets = () => {
       {/* Ticket Grid */}
       <section className="grid gap-6">
         {isLoading ? (
-          <div className="flex flex-col justify-center items-center py-20 text-center">
-            <Loader className="animate-spin text-[#BC6C25]" size={32} />
-            <p className="mt-4 text-sm text-[#606C38]">Loading your tickets...</p>
-          </div>
-        ) : tickets?.length ? (
-          tickets.map((ticket: TTicket) => (
-            <TicketCard
-              key={ticket.ticketId}
-              ticket={ticket}
-              onClick={() => setSelectedTicket(ticket)}
-            />
-          ))
-        ) : (
-          <div className="text-center text-[#6B7280] text-lg py-20">
-            You haven’t submitted any tickets yet.
-            <br />
-            Click “Create Ticket” to reach our support.
-          </div>
-        )}
+  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <TicketCardSkeleton key={i} />
+    ))}
+  </div>
+) : tickets?.length ? (
+  tickets.map((ticket: TTicket) => (
+    <TicketCard
+      key={ticket.ticketId}
+      ticket={ticket}
+      onClick={() => setSelectedTicket(ticket)}
+    />
+  ))
+) : (
+  <div className="text-center text-[#6B7280] text-lg py-20">
+    You haven’t submitted any tickets yet.
+    <br />
+    Click “Create Ticket” to reach our support.
+  </div>
+)}
+
       </section>
 
       {/* Modals */}
