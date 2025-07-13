@@ -7,13 +7,13 @@ interface HotelCardProps {
   hotel: THotel;
 }
 
-const HotelCard: FC<HotelCardProps> = ({ hotel }) => {
+export const DashboardHotelCard: FC<HotelCardProps> = ({ hotel }) => {
   const navigate = useNavigate();
 
   return (
     <div
       className="cursor-pointer rounded-2xl overflow-hidden shadow-md bg-white hover:shadow-lg transition-all duration-300"
-      onClick={() => navigate(`/hotel/${hotel.hotelId}`)}
+      onClick={() => navigate(`/admin/hotels/${hotel.name}/${hotel.hotelId}`)}
     >
       <img
         src={hotel.thumbnail}
@@ -38,5 +38,3 @@ const HotelCard: FC<HotelCardProps> = ({ hotel }) => {
     </div>
   );
 };
-
-export default HotelCard;

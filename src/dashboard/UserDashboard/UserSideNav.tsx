@@ -6,22 +6,26 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
+import { UserProfileButton } from "../../components/profile/UserProfileButton";
+import { useGetUserByIdQuery } from "../../features/api";
+import toast from "react-hot-toast";
+import { clearCredentials } from "../../features/auth/authSlice";
 
 interface SideNavProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const links = [
+const navLinks = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "booking-details", label: "Booking Details", icon: ClipboardList },
   { id: "tickets", label: "Customer Support", icon: MessageSquare },
-  { id: "home", label: "Home", icon: Home },
 ];
 
 const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
@@ -29,7 +33,19 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
   const { pathname } = useLocation();
   const current = pathname.split("/")[2];
   const [collapsed, setCollapsed] = useState(false);
-  const { firstName } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+
+  const { userId } = useSelector((state: RootState) => state.auth);
+  const id = Number(userId);
+
+  const { data: userData, isLoading, isError, error } = useGetUserByIdQuery(id);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("Failed to fetch user data. Please try again.");
+      console.error("User data error:", error);
+    }
+  }, [isError, error]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -38,6 +54,40 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [onClose]);
+
+  const handleLogOut = () => {
+  toast.custom((t) => (
+    <div
+      className={`bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 flex flex-col space-y-3 w-[300px] transition-all ${
+        t.visible ? "animate-enter" : "animate-leave"
+      }`}
+    >
+      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        Are you sure you want to logout?
+      </div>
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="px-3 py-1 text-sm rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            dispatch(clearCredentials());
+            toast.dismiss(t.id);
+            toast.success("Logged out successfully.");
+            navigate("/login");
+          }}
+          className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  ));
+};
+
 
   return (
     <>
@@ -57,7 +107,7 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
         ${collapsed ? "w-20" : "w-64"}`}
       >
         <div className="flex flex-col w-full h-full p-4">
-          {/* Logo + Collapse */}
+          {/* Logo + Collapse Controls */}
           <div className="flex items-center justify-between mb-8">
             {!collapsed && (
               <Link to="/" className="text-2xl font-bold tracking-tight">
@@ -81,64 +131,101 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation */}
           <nav className="flex-1 flex flex-col items-center justify-center space-y-4 overflow-y-auto custom-scrollbar">
-            {links.map(({ id, label, icon: Icon }) => {
-              const isActive =
-                current === id || (id === "home" && pathname === "/");
+            {navLinks.map(({ id, label, icon: Icon }) => {
+              const isActive = current === id;
 
               return (
                 <button
                   key={id}
                   onClick={() => {
-                    navigate(id === "home" ? "/" : `/user/${id}`);
+                    navigate(`/user/${id}`);
                     onClose();
                   }}
                   className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-300
-                  ${
-                    isActive
-                      ? "bg-[#14213d] text-white shadow-inner"
-                      : "hover:bg-[#1a1a1a] text-[#e5e5e5] hover:text-[#fca311]"
-                  }
-                  ${collapsed ? "justify-center" : "justify-start gap-3"}`}
+                    ${
+                      isActive
+                        ? "bg-[#14213d] shadow-inner"
+                        : "hover:bg-[#1a1a1a]"
+                    }
+                    ${collapsed ? "justify-center" : "justify-start gap-3"}`}
                 >
                   <Icon
-                    className={`w-5 h-5 transition-transform duration-200 ${
+                    className={`w-5 h-5 ${
                       isActive
                         ? "text-[#fca311]"
                         : "text-[#fca311] group-hover:scale-110"
                     }`}
                   />
                   {!collapsed && (
-                    <span className="text-sm font-medium">{label}</span>
+                    <span className="text-sm font-medium text-white">
+                      {label}
+                    </span>
                   )}
                 </button>
               );
             })}
           </nav>
 
-          {/* Footer - Profile */}
-          <div className="mt-auto pt-6 border-t border-[#1a1a1a]">
-            <div
-              className={`flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a] p-2 rounded-lg transition-colors ${
-                collapsed ? "justify-center" : "justify-start"
-              }`}
-              onClick={() => navigate("/user/profile")}
+          {/* Footer: Home + Profile */}
+          <div className="mt-auto pt-6 border-t border-[#1a1a1a] space-y-2">
+            <button
+              onClick={() => {
+                navigate("/");
+                onClose();
+              }}
+              className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-300
+                ${
+                  pathname === "/"
+                    ? "bg-[#14213d] shadow-inner"
+                    : "hover:bg-[#1a1a1a]"
+                }
+                ${collapsed ? "justify-center" : "justify-start gap-3"}`}
             >
-              <img
-                src="https://i.pravatar.cc/100"
-                alt="avatar"
-                className="w-12 h-12 rounded-full object-cover border-2 border-[#fca311]"
+              <Home
+                className={`w-5 h-5 transition-transform duration-200 ${
+                  pathname === "/"
+                    ? "text-[#fca311]"
+                    : "text-[#fca311] group-hover:scale-110"
+                }`}
               />
               {!collapsed && (
-                <div className="text-left">
-                  <h2 className="text-base font-semibold text-white">
-                    {firstName}
-                  </h2>
-                  <p className="text-sm text-[#fca311]">View Profile</p>
-                </div>
+                <span className="text-sm font-medium text-white">Home</span>
               )}
-            </div>
+            </button>
+
+            {isLoading ? (
+              <div className="flex items-center justify-center py-2 text-sm text-gray-400">
+                Loading profile...
+              </div>
+            ) : !isError && userData ? (
+              <UserProfileButton
+                firstName={userData.firstName}
+                lastName={userData.lastName}
+                avatarUrl={userData.profileImage}
+                collapsed={collapsed}
+              />
+            ) : (
+              <div className="flex items-center justify-center py-2 text-sm text-red-400">
+                Failed to load profile
+              </div>
+            )}
+            {/* Logout */}
+            <button
+              onClick={handleLogOut}
+              className={`group flex items-center w-full px-3 py-2 rounded-lg text-red-400 hover:bg-red-800/20 hover:text-red-200 transition ${
+                collapsed ? "justify-center" : "justify-start gap-3"
+              }`}
+            >
+              <LogOut className="w-5 h-5 group-hover:scale-110 transition" />
+              {!collapsed && <span className="font-semibold">Logout</span>}
+              {collapsed && (
+                <span className="absolute left-full top-2 ml-2 w-max whitespace-nowrap bg-red-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                  Logout
+                </span>
+              )}
+            </button>
           </div>
         </div>
 

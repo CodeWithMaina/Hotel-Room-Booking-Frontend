@@ -1,15 +1,13 @@
-import { Search, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 interface UsersActionBarProps {
   onSearch: (query: string) => void;
-  onAddUser: () => void;
   className?: string;
 }
 
 export const UsersActionBar: React.FC<UsersActionBarProps> = ({
   onSearch,
-  onAddUser,
   className,
 }) => {
   return (
@@ -30,15 +28,7 @@ export const UsersActionBar: React.FC<UsersActionBarProps> = ({
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
-
-        {/* Add User Button */}
-        <button
-          onClick={onAddUser}
-          className="flex items-center justify-center gap-2 bg-[#fca311] hover:brightness-105 text-black px-5 py-2 rounded-lg text-sm font-semibold transition shadow-md"
-        >
-          <Plus className="w-4 h-4" />
-          Add User
-        </button>
+        
       </div>
     </div>
   );

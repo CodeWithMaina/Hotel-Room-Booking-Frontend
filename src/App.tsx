@@ -22,6 +22,7 @@ import { RoomDetailsPage } from "./pages/RoomDetailsPage";
 import { Toaster } from "react-hot-toast";
 import BookingPage from "./pages/BookingPage";
 import { PaymentPage } from "./pages/PaymentPage";
+import { SingleHotelPage } from "./dashboard/AdminDashboard/SingleHotelPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -84,6 +85,10 @@ function App() {
         {
           path: "/admin/booking-details",
           element: <Booking />,
+        },
+        {
+          path: "/admin/hotels/:hotel/:id",
+          element: <SingleHotelPage />,
         },
         {
           path: "/admin/ticket",

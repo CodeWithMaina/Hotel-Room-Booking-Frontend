@@ -1,1 +1,1 @@
-export type TAddressEntity = 'user'|  'hotel';
+export type TAddressEntity = 'user'|  'hotel' | 'owner' | 'admin';

@@ -3,21 +3,19 @@ import {
   useGetHotelsQuery,
   useCreateHotelMutation,
   useUpdateHotelMutation,
-  useDeleteHotelMutation,
 } from "../../features/api/hotelsApi";
 import type { THotel } from "../../types/hotelsTypes";
-import { Building2, Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, Search, Plus} from "lucide-react";
 import { toast } from "sonner";
-import Swal from "sweetalert2";
 import { HotelFormModal } from "../../components/hotel/HotelFormModal";
 import { Loading } from "../../pages/Loading";
 import type { HotelFormData } from "../../validation/hotelFormSchema";
+import { DashboardHotelCard } from "../../components/hotel/DashboardHotelCard";
 
 export const Hotels = () => {
   const { data: hotelsData, isLoading, error, refetch } = useGetHotelsQuery();
   const [createHotel] = useCreateHotelMutation();
   const [updateHotel] = useUpdateHotelMutation();
-  const [deleteHotel] = useDeleteHotelMutation();
   const [search, setSearch] = useState("");
   const [selectedHotel, setSelectedHotel] = useState<THotel | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,29 +39,6 @@ export const Hotels = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // In Hotels.tsx
-  const handleDelete = (hotelId: number) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will permanently delete the hotel.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#DC2626",
-      cancelButtonColor: "#6B7280",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteHotel(hotelId).unwrap();
-          toast.success("Hotel deleted successfully");
-          refetch();
-        } catch (error) {
-          console.error("Delete error:", error);
-          toast.error("Failed to delete hotel");
-        }
-      }
-    });
-  };
 
   const handleSubmit = async (formData: HotelFormData): Promise<void> => {
     try {
@@ -136,61 +111,8 @@ export const Hotels = () => {
 
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredHotels.map((hotel) => (
-            <div
-              key={hotel.hotelId}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 border border-[#e5e5e5]"
-            >
-              {/* Thumbnail */}
-              <img
-                src={hotel.thumbnail}
-                alt={hotel.name}
-                className="w-full h-48 object-cover"
-              />
-
-              {/* Info Section */}
-              <div className="p-4 space-y-2">
-                {/* Name & Category */}
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-bold text-[#000000]">
-                    {hotel.name}
-                  </h3>
-                  <span className="bg-[#fca311] text-white text-xs px-2 py-1 rounded-md">
-                    {hotel.category}
-                  </span>
-                </div>
-
-                {/* Location & Contact */}
-                <div className="text-sm text-[#14213d] space-y-1">
-                  <p>📍 {hotel.location || "Unknown location"}</p>
-                  <p>📞 {hotel.contactPhone || "No contact"}</p>
-                </div>
-
-                {/* Rating & Actions */}
-                <div className="flex justify-between items-center pt-3">
-                  {/* Rating */}
-                  {/* <div className="text-sm text-[#03071e] font-medium flex items-center gap-1">
-          <span className="bg-[#fca311] text-white px-2 py-1 rounded-full text-xs">
-            ⭐ {hotel.rating || "N/A"}
-          </span>
-        </div> */}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openModal("edit", hotel)}
-                      className="p-2 rounded-md border border-[#3b82f6] text-[#3b82f6] hover:bg-blue-50 transition"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(hotel.hotelId)}
-                      className="p-2 rounded-md border border-[#dc2626] text-[#dc2626] hover:bg-red-50 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div key={hotel.hotelId} className="relative">
+              <DashboardHotelCard hotel={hotel} />
             </div>
           ))}
         </section>
