@@ -18,6 +18,9 @@ import { amenitiesApi } from "../features/api/amenitiesApi";
 import { addressesApi } from "../features/api/addressesApi";
 import { entityAmenitiesApi } from "../features/api/entityAmenitiesApi";
 import { uploadApi } from "../features/api/imageUploadApi";
+import { stripeApi } from "../features/api/stripeApi";
+import { analyticsApi } from "../features/api/analyticsApi";
+import { wishlistApi } from "../features/api/wishlistApi";
 
 // Auth persist config
 const authPersistConfig = {
@@ -35,10 +38,13 @@ export const store = configureStore({
     [usersApi.reducerPath]: usersApi.reducer,
     [hotelsApi.reducerPath]: hotelsApi.reducer,
     [roomsApi.reducerPath]: roomsApi.reducer,
+    [stripeApi.reducerPath]: stripeApi.reducer,
     [bookingsApi.reducerPath]: bookingsApi.reducer,
     [paymentsApi.reducerPath]: paymentsApi.reducer,
     [ticketsApi.reducerPath]: ticketsApi.reducer,
     [amenitiesApi.reducerPath]: amenitiesApi.reducer,
+    [wishlistApi.reducerPath]: wishlistApi.reducer,
+    [analyticsApi.reducerPath]: analyticsApi.reducer,
     [addressesApi.reducerPath]: addressesApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
     [entityAmenitiesApi.reducerPath]: entityAmenitiesApi.reducer,
@@ -58,11 +64,14 @@ export const store = configureStore({
       usersApi.middleware,
       hotelsApi.middleware,
       roomsApi.middleware,
+      wishlistApi.middleware,
       bookingsApi.middleware,
       paymentsApi.middleware,
       amenitiesApi.middleware,
       addressesApi.middleware,
+      analyticsApi.middleware,
       uploadApi.middleware,
+      stripeApi.middleware,
       entityAmenitiesApi.middleware,
       ticketsApi.middleware
     ),

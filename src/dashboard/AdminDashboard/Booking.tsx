@@ -12,24 +12,31 @@ import type { RootState } from "../../app/store";
 import type { TSingleBooking } from "../../types/bookingsTypes";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 export const Booking = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedRoomType, setSelectedRoomType] = useState("All");
   const [showMobileFilter, setShowMobileFilter] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
+
   const lastScrollY = useRef(0);
 
   const { userType } = useSelector((state: RootState) => state.auth);
 
   const {
-    data: allBookings,
+    data: bookingsData,
     isLoading,
     isError,
-  } = useGetBookingsQuery(undefined, { skip: userType !== "admin" });
+  } = useGetBookingsQuery(
+    { page: 1, limit: 10 },
+    { skip: userType !== "admin" }
+  );
 
+  const allBookings = bookingsData?.data
   console.log(allBookings)
 
   const [deleteBooking] = useDeleteBookingMutation();
@@ -46,25 +53,23 @@ export const Booking = () => {
     return Array.from(types);
   }, [bookings]);
 
-  const filteredBookings = bookings.filter(
-    (booking: TSingleBooking) => {
-      const matchStatus =
-        filterStatus === "All" || booking.bookingStatus === filterStatus;
-      const matchRoom =
-        selectedRoomType === "All" ||
-        booking.room?.roomType === selectedRoomType;
+  const filteredBookings = bookings.filter((booking: TSingleBooking) => {
+    const matchStatus =
+      filterStatus === "All" || booking.bookingStatus === filterStatus;
+    const matchRoom =
+      selectedRoomType === "All" || booking.room?.roomType === selectedRoomType;
 
-      const matchSearch =
-        searchQuery.trim() === "" ||
-        booking.room?.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch =
+      searchQuery.trim() === "" ||
+      booking.room?.roomType
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchStatus && matchRoom && matchSearch;
-    }
-  );
-
+    return matchStatus && matchRoom && matchSearch;
+  });
 
   const handleDelete = (bookingId: number) => {
     Swal.fire({
@@ -109,27 +114,27 @@ export const Booking = () => {
     <div>
       <main className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-4 sm:p-6">
         {/* Header with Search */}
-      <div className="max-w-6xl mx-auto px-4 pb-6">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-[#000000] mb-1">
-              Your Bookings
-            </h1>
-            <p className="text-[#14213d] text-sm">
-              View, edit or manage your hotel bookings
-            </p>
-          </div>
-          <div className="w-full max-w-md">
-            <input
-              type="text"
-              placeholder="Search by room type, status, or date..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-[#ffffff] text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
-            />
+        <div className="max-w-6xl mx-auto px-4 pb-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-[#000000] mb-1">
+                Your Bookings
+              </h1>
+              <p className="text-[#14213d] text-sm">
+                View, edit or manage hotel bookings
+              </p>
+            </div>
+            <div className="w-full max-w-md">
+              <input
+                type="text"
+                placeholder="Search by room type, status, or date..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-[#ffffff] text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
+              />
+            </div>
           </div>
         </div>
-      </div>
         <div className="flex flex-col lg:flex-row gap-6 relative">
           {/* Mobile Filter */}
           <div
@@ -154,13 +159,6 @@ export const Booking = () => {
 
           {/* Main Booking Section */}
           <section className="flex-1">
-            <div className="mb-6 mt-2 lg:mt-0">
-              <h2 className="text-2xl font-bold text-gray-800">All Bookings</h2>
-              <p className="text-sm text-gray-500">
-                Overview of all reservations
-              </p>
-            </div>
-
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -182,6 +180,11 @@ export const Booking = () => {
                     room={booking.room}
                     onEdit={() => setShowEdit(true)}
                     onDelete={() => handleDelete(booking.bookingId!)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/admin/booking-details/${booking.bookingId}`);
+                    }}
+                    userType={userType || ""}
                   />
                 ))}
               </div>

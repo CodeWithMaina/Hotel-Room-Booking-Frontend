@@ -1,109 +1,154 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+// File: components/Navbar.tsx
+
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { LayoutDashboard, LogOut, Bell, Menu, X } from "lucide-react";
 import { clearCredentials } from "../features/auth/authSlice";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
 import type { RootState } from "../app/store";
+import { cn } from "../lib/utils";
+import { useGetUserByIdQuery } from "../features/api";
+import { Avatar } from "./ui/Avatar";
+import type { AppDispatch } from "../app/store";
+
+const NAV_LINKS = ["Home", "Hotels", "Rooms", "About", "Contact"];
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [notifOpen, setNotifOpen] = useState<boolean>(false);
 
-  const { isAuthenticated, userType, firstName } = useSelector(
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const { pathname } = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const { isAuthenticated, userId, userType, firstName } = useSelector(
     (state: RootState) => state.auth
   );
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const id = Number(userId);
+  const { data: user } = useGetUserByIdQuery(id, {
+    skip: !userId,
+  });
+
+  const unreadNotifications: number = 3;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-        setIsProfileDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogOut = async () => {
+  useEffect(() => {
+    const handleClickOutside = (e: globalThis.MouseEvent) => {
+      if (!profileRef.current?.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+      if (!notifRef.current?.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
     await dispatch(clearCredentials());
     navigate("/login");
   };
 
-  const navlinks = ["Home", "Hotels", "Rooms", "About", "Contact"];
-
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-[#03071e] shadow-md" : "bg-transparent"
-      }`}
+      className={cn(
+        "fixed top-0 left-0 w-full z-50 transition-all duration-300 animate-fade-down",
+        scrolled
+          ? "bg-base-100 shadow-sm border-b border-border text-base-content"
+          : "bg-transparent text-white"
+      )}
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-extrabold tracking-tight">
-          <span className="text-[#fca311]">Lux</span>
-          <span className="text-white">Hotel</span>
+        <Link to="/" className="text-xl md:text-2xl font-bold tracking-tight">
+          <span className="text-primary">Lux</span>Stay
         </Link>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex space-x-6 items-center relative">
-          {navlinks.map((item) => {
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map((item) => {
             const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
-            const isActive = currentPath === path;
-
+            const isActive = pathname === path;
             return (
               <Link
                 key={item}
                 to={path}
-                className={`group relative text-sm font-medium px-2 py-1 transition-colors duration-200 ${
-                  isActive
-                    ? "text-[#fca311]"
-                    : "text-[#e5e5e5] hover:text-[#fca311]"
-                }`}
+                className={cn(
+                  "group relative text-sm font-medium px-2 py-1",
+                  isActive ? "text-primary" : "text-muted hover:text-primary"
+                )}
               >
                 {item}
-                {/* Animated underline */}
                 <span
-                  className={`absolute left-0 -bottom-1 h-[2px] w-full bg-[#fca311] transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100 ${
-                    isActive ? "scale-x-100" : ""
-                  }`}
-                ></span>
+                  className={cn(
+                    "absolute left-0 -bottom-1 h-[2px] w-full bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform",
+                    isActive && "scale-x-100"
+                  )}
+                />
               </Link>
             );
           })}
 
-          {/* Authenticated user */}
-          {isAuthenticated ? (
-            <div className="relative" ref={menuRef}>
+          {isAuthenticated && (
+            <div ref={notifRef} className="relative">
               <button
-                onClick={() =>
-                  setIsProfileDropdownOpen(!isProfileDropdownOpen)
-                }
-                className="flex items-center gap-2 px-4 py-2 bg-[#fca311] text-[#03071e] font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-lg"
+                onClick={() => setNotifOpen((prev) => !prev)}
+                className="relative p-2 rounded-full hover:bg-base-200 transition"
               >
-                <User className="w-4 h-4" />
-                <span>{firstName || "Profile"}</span>
+                <Bell className="w-5 h-5" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                )}
               </button>
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-base-100 text-base-content rounded-xl shadow-xl border animate-fade-in">
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-semibold text-primary">
+                      Notifications
+                    </h4>
+                    <ul className="text-sm text-muted space-y-1">
+                      <li>🔔 You have 3 new alerts</li>
+                      <li>📅 Booking reminder for 20th Aug</li>
+                      <li>🎁 Loyalty bonus unlocked</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-              {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-[#14213d] text-white rounded-xl shadow-2xl overflow-hidden border border-[#fca311]/30 animate-fadeIn">
+          {isAuthenticated ? (
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md font-medium hover:opacity-90"
+              >
+                <Avatar
+                  src={user?.profileImage ?? undefined}
+                  fallback={
+                    user?.firstName && user?.lastName
+                      ? user.firstName[0] + user.lastName[0]
+                      : "U"
+                  }
+                  size="sm"
+                />
+                <span>{firstName}</span>
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-base-100 text-base-content rounded-xl shadow-xl border border-border animate-fade-in overflow-hidden">
+                  {/* Actions */}
                   <div className="py-2">
                     <Link
                       to={
@@ -111,18 +156,18 @@ const Navbar: React.FC = () => {
                           ? "/admin/dashboard"
                           : "/user/dashboard"
                       }
-                      className="flex items-center gap-2 px-4 py-2 hover:bg-[#fca311]/10 hover:text-[#fca311] transition"
+                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-base-200 hover:text-primary transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Dashboard</span>
+                      Dashboard
                     </Link>
 
                     <button
-                      onClick={handleLogOut}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-400/10"
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>Logout</span>
+                      Logout
                     </button>
                   </div>
                 </div>
@@ -131,63 +176,45 @@ const Navbar: React.FC = () => {
           ) : (
             <Link
               to="/login"
-              className="px-6 py-2 bg-[#fca311] text-black rounded-lg font-medium hover:scale-105 transition-transform shadow-lg"
+              className="px-6 py-2 bg-primary text-white rounded-md font-medium hover:opacity-90"
             >
               Login
             </Link>
           )}
         </nav>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Button */}
         <button
-          className="md:hidden text-[#fca311] focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden text-primary focus:outline-none"
+          onClick={() => setDrawerOpen(true)}
         >
-          <svg
-            className="w-7 h-7"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            {isOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
+          <Menu className="w-6 h-6" />
         </button>
+      </div>
 
-        {/* Mobile Dropdown Menu */}
-        <div
-          className={`absolute top-full right-4 mt-3 w-56 bg-[#03071e] text-white rounded-lg shadow-lg p-4 space-y-3 z-50 transform transition-all duration-300 origin-top-right ${
-            isOpen
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
-          {navlinks.map((item) => {
+      {/* Mobile Drawer */}
+      <div
+        className={cn(
+          "fixed top-0 right-0 h-full w-72 bg-base-100 shadow-xl z-50 transition-transform duration-300 transform",
+          drawerOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <span className="text-lg font-semibold text-primary">Menu</span>
+          <button onClick={() => setDrawerOpen(false)}>
+            <X className="w-5 h-5 text-muted" />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-3">
+          {NAV_LINKS.map((item) => {
             const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
-            const isActive = currentPath === path;
-
             return (
               <Link
                 key={item}
                 to={path}
-                onClick={() => setIsOpen(false)}
-                className={`block text-sm font-medium px-2 py-1 rounded-md transition-all ${
-                  isActive
-                    ? "text-[#fca311] underline underline-offset-4"
-                    : "text-[#e5e5e5] hover:text-[#fca311]"
-                }`}
+                onClick={() => setDrawerOpen(false)}
+                className="block text-sm font-medium px-2 py-2 rounded hover:bg-base-200"
               >
                 {item}
               </Link>
@@ -198,30 +225,28 @@ const Navbar: React.FC = () => {
             <>
               <Link
                 to={
-                  userType === "admin"
-                    ? "/admin/dashboard"
-                    : "/user/dashboard"
+                  userType === "admin" ? "/admin/dashboard" : "/user/dashboard"
                 }
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#fca311]/10 hover:text-[#fca311]"
+                onClick={() => setDrawerOpen(false)}
+                className="block px-2 py-2 hover:bg-base-200"
               >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Dashboard</span>
+                Dashboard
               </Link>
-
               <button
-                onClick={handleLogOut}
-                className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-400/10"
+                onClick={() => {
+                  handleLogout();
+                  setDrawerOpen(false);
+                }}
+                className="block text-red-500 px-2 py-2 hover:bg-red-500/10 w-full text-left"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+                Logout
               </button>
             </>
           ) : (
             <Link
               to="/login"
-              className="w-full block text-center py-2 bg-[#fca311] text-[#03071e] rounded-md font-medium hover:scale-105 transition-transform"
-              onClick={() => setIsOpen(false)}
+              className="block text-center py-2 bg-primary text-white rounded-md font-medium hover:opacity-90"
+              onClick={() => setDrawerOpen(false)}
             >
               Login
             </Link>

@@ -1,17 +1,16 @@
-import type { ReactNode } from "react";
+// components/ui/Card.tsx
+import type { ReactNode, FC } from "react";
 import { cn } from "../../lib/utils";
 
-// Main Card container
-export const Card = ({
-  className,
-  children,
-}: {
+interface CardProps {
   className?: string;
   children: ReactNode;
-}) => (
+}
+
+export const Card: FC<CardProps> = ({ className, children }) => (
   <div
     className={cn(
-      "bg-[#03071E] rounded-xl border border-[#14213D]/60 px-6 py-5 text-white",
+      "bg-base-100 text-base-content border border-base-content/10 rounded-2xl px-6 py-5 shadow-sm transition hover:shadow-md",
       className
     )}
   >
@@ -19,30 +18,26 @@ export const Card = ({
   </div>
 );
 
-// Optional header row with spacing
-export const CardHeader = ({
-  className,
-  children,
-}: {
+interface CardHeaderProps {
   className?: string;
   children: ReactNode;
-}) => (
+}
+
+export const CardHeader: FC<CardHeaderProps> = ({ className, children }) => (
   <div className={cn("mb-4 flex items-center justify-between", className)}>
     {children}
   </div>
 );
 
-// Elegant title
-export const CardTitle = ({
-  className,
-  children,
-}: {
+interface CardTitleProps {
   className?: string;
   children: ReactNode;
-}) => (
+}
+
+export const CardTitle: FC<CardTitleProps> = ({ className, children }) => (
   <h4
     className={cn(
-      "text-sm font-semibold tracking-wide uppercase text-[#FCA311]",
+      "text-sm font-semibold tracking-wider uppercase text-primary",
       className
     )}
   >
@@ -50,16 +45,14 @@ export const CardTitle = ({
   </h4>
 );
 
-// Content block with light text
-export const CardContent = ({
-  className,
-  children,
-}: {
+interface CardContentProps {
   className?: string;
   children: ReactNode;
-}) => (
+}
+
+export const CardContent: FC<CardContentProps> = ({ className, children }) => (
   <div
-    className={cn("text-sm text-[#E5E5E5] leading-relaxed space-y-1", className)}
+    className={cn("text-sm text-muted leading-relaxed space-y-1", className)}
   >
     {children}
   </div>

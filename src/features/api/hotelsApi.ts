@@ -23,14 +23,17 @@ export const hotelsApi = createApi({
       }),
       invalidatesTags: ['Hotel'],
     }),
-    updateHotel: builder.mutation({
-      query: ({ hotelId, ...patch }) => ({
-        url: `hotel/${hotelId}`,
-        method: 'PUT',
-        body: patch,
-      }),
-      invalidatesTags: (result, error, { hotelId }) => [{ type: 'Hotel', id: hotelId }],
-    }),
+    updateHotel: builder.mutation<THotel, { hotelId: number } & Partial<THotel>>({
+  query: ({ hotelId, ...patch }) => ({
+    url: `hotel/${hotelId}`,
+    method: 'PUT',
+    body: patch,
+  }),
+  invalidatesTags: (result, error, { hotelId }) => [
+    { type: 'Hotel', id: hotelId },
+  ],
+}),
+
     deleteHotel: builder.mutation<void, number>({
       query: (id) => ({
         url: `hotel/${id}`,

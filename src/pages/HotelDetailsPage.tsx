@@ -17,6 +17,7 @@ import { Loading } from "./Loading";
 import type { TRoom } from "../types/roomsTypes";
 import { RoomCard } from "../components/room/RoomCard";
 import Navbar from "../components/NavBar";
+import { SimilarHotelsSidebar } from "../components/hotel/SimilarHotelsSidebar";
 
 const amenityIcons: Record<string, JSX.Element> = {
   wifi: <Wifi className="w-5 h-5 text-blue-600" />,
@@ -43,7 +44,7 @@ export const HotelDetailsPage = () => {
     isError: isErrorHotelRoomsData,
   } = useGetRoomByHotelIdQuery(hotelId);
 
-  console.log(hotelRoomsData);
+
   if (isLoadingHotelDetails || isLoadingHotelRoomsData) return <Loading />;
 
   if (
@@ -63,13 +64,13 @@ export const HotelDetailsPage = () => {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen mt-10 bg-gradient-to-b from-slate-100 to-slate-200 text-gray-700 p-4 md:p-8">
+      <div className="min-h-screen pt-10 bg-gradient-to-b from-slate-100 to-slate-200 text-gray-700 p-4 md:p-10 md:mt-15">
         <div className="grid md:grid-cols-4 gap-6">
           {/* Main Hotel Details */}
           <div className="md:col-span-3 bg-white p-6 rounded-2xl shadow">
             {/* Hotel Image */}
             <img
-              src={`https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
+              src={hotel.thumbnail}
               alt={hotel.name}
               className="w-full h-64 object-cover rounded-xl mb-6"
             />
@@ -121,7 +122,7 @@ export const HotelDetailsPage = () => {
                     key={room.roomId}
                     room={{
                       ...room,
-                      pricePerNight: String(room.pricePerNight),
+                      pricePerNight: Number(room.pricePerNight),
                     }}
                   />
                 ))}
@@ -129,28 +130,7 @@ export const HotelDetailsPage = () => {
           </div>
 
           {/* Sidebar: Similar Hotels */}
-          <div className="bg-white p-4 rounded-2xl shadow h-fit">
-            <h2 className="text-xl font-semibold text-blue-600 mb-4">
-              Similar Hotels
-            </h2>
-            <ul className="space-y-4">
-              {["Hotel Luxe Haven", "The Royal Inn", "Platinum Suites"].map(
-                (name) => (
-                  <li
-                    key={name}
-                    className="flex gap-3 items-center hover:text-blue-700 cursor-pointer transition"
-                  >
-                    <img
-                      src={`https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
-                      alt={name}
-                      className="w-12 h-12 rounded object-cover"
-                    />
-                    <span>{name}</span>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
+          <SimilarHotelsSidebar currentHotelId={hotelId} />
         </div>
       </div>
     </div>

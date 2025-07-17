@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Mail, Lock, LogIn, Eye, EyeOff } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import { loginSchema, type LoginData } from "../validation/login.validation";
 import { authApi } from "../features/api/authApi";
@@ -36,6 +35,7 @@ export const Login = () => {
       } else {
         navigate("/user/dashboard");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error?.status;
       if (status === 401) toast.error("Invalid email or password");
@@ -120,9 +120,7 @@ export const Login = () => {
               <div className="text-right mt-1">
                 <button
                   type="button"
-                  onClick={() =>
-                    Swal.fire("Reset link sent!", "Check your inbox.", "info")
-                  }
+                  onClick={()=> navigate('/forgot-password')}
                   className="text-sm text-[#fca311] hover:underline"
                 >
                   Forgot Password?

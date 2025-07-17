@@ -20,9 +20,16 @@ import { UserTickets } from "./dashboard/UserDashboard/UserTickets";
 import { HotelDetailsPage } from "./pages/HotelDetailsPage";
 import { RoomDetailsPage } from "./pages/RoomDetailsPage";
 import { Toaster } from "react-hot-toast";
-import BookingPage from "./pages/BookingPage";
-import { PaymentPage } from "./pages/PaymentPage";
-import { SingleHotelPage } from "./dashboard/AdminDashboard/SingleHotelPage";
+import { HotelDetails } from "./dashboard/AdminDashboard/HotelDetails";
+import { RoomDetails } from "./dashboard/AdminDashboard/RoomDetails";
+import { BookingDetails } from "./dashboard/AdminDashboard/BookingDetails";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import { Wishlist } from "./dashboard/UserDashboard/Wishlist";
+import { UserPayment } from "./dashboard/UserDashboard/UserPayment";
+import { Checkout } from "./dashboard/UserDashboard/Checkout";
+import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
+import { PaymentCancelledPage } from "./pages/PaymentCancelledPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -46,6 +53,7 @@ function App() {
       path: "/about",
       element: <About />,
     },
+
     {
       path: "/hotel/:id",
       element: <HotelDetailsPage />,
@@ -59,16 +67,16 @@ function App() {
       element: <Register />,
     },
     {
-      path: "/booking/:id",
-      element: <BookingPage />,
-    },
-    {
-      path: "/payment/:id",
-      element: <PaymentPage />,
-    },
-    {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/forgot-password",
+      element: <ForgotPasswordPage />,
+    },
+    {
+      path: "/reset-password/:token",
+      element: <ResetPasswordPage />,
     },
     {
       path: "/admin",
@@ -87,8 +95,16 @@ function App() {
           element: <Booking />,
         },
         {
+          path: "/admin/booking-details/:id",
+          element: <BookingDetails />,
+        },
+        {
           path: "/admin/hotels/:hotel/:id",
-          element: <SingleHotelPage />,
+          element: <HotelDetails />,
+        },
+        {
+          path: "/admin/room/:room/:id",
+          element: <RoomDetails />,
         },
         {
           path: "/admin/ticket",
@@ -116,6 +132,27 @@ function App() {
           path: "/user/booking-details",
           element: <Bookings />,
         },
+        {
+          path: "/user/wishlist",
+          element: <Wishlist />,
+        },
+        {
+          path: "/user/payment",
+          element: <UserPayment />,
+        },
+        {
+          path: "/user/checkout/:id",
+          element: <Checkout />,
+        },
+        {
+          path: "/user/payment/payment-success",
+          element: <PaymentSuccessPage />,
+        },
+        {
+          path: "/user/payment/payment-cancelled",
+          element: <PaymentCancelledPage />,
+        },
+
         {
           path: "/user/tickets",
           element: <UserTickets />,

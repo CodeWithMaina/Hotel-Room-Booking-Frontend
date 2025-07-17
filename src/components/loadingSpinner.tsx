@@ -1,9 +1,30 @@
+// components/ui/LoadingSpinner.tsx
 import { Loader2 } from "lucide-react";
 
-export const LoadingSpinner = ({ size = 18, color = "text-white" }: { size?: number; color?: string }) => {
+interface LoadingSpinnerProps {
+  size?: number;
+  color?: string;
+  className?: string;
+  ariaLabel?: string;
+}
+
+export const LoadingSpinner = ({
+  size = 18,
+  color = "text-white",
+  className = "",
+  ariaLabel = "Loading...",
+}: LoadingSpinnerProps) => {
   return (
-    <div className="animate-spin">
-      <Loader2 className={`${color}`} size={size} />
+    <div
+      role="status"
+      aria-label={ariaLabel}
+      className={`flex items-center justify-center ${className}`}
+    >
+      <Loader2
+        className={`animate-spin ${color}`}
+        size={size}
+        strokeWidth={2}
+      />
     </div>
   );
 };

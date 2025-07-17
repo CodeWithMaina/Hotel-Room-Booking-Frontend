@@ -1,67 +1,72 @@
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
-// Main Tabs controller
-export const Tabs = ({
-  defaultValue,
-  children,
-}: {
-  defaultValue: string;
+interface TabsProps {
+  value: string;
+  onValueChange: (val: string) => void;
   children: React.ReactNode;
-}) => {
-  const [activeTab, setActiveTab] = React.useState(defaultValue);
-  return React.Children.map(children, (child: any) =>
-    React.cloneElement(child, { activeTab, setActiveTab })
+  className?: string;
+}
+
+interface TabsContextValue {
+  activeTab: string;
+  setActiveTab: (val: string) => void;
+}
+
+const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
+
+export const Tabs: React.FC<TabsProps> = ({ value, onValueChange, children, className }) => {
+  const contextValue: TabsContextValue = {
+    activeTab: value,
+    setActiveTab: onValueChange,
+  };
+
+  return (
+    <TabsContext.Provider value={contextValue}>
+      <div className={cn("w-full", className)}>{children}</div>
+    </TabsContext.Provider>
   );
 };
 
-// Tab List container
-export const TabsList = ({
-  children,
-  activeTab,
-  setActiveTab,
-  className,
-}: {
-  children: React.ReactNode;
-  activeTab?: string;
-  setActiveTab?: (val: string) => void;
-  className?: string;
-}) => (
-  <div
-    className={cn(
-      "flex gap-3 border-b border-[#14213D]/50 pb-1 mb-6",
-      className
-    )}
-  >
-    {React.Children.map(children, (child: any) =>
-      React.cloneElement(child, { activeTab, setActiveTab })
-    )}
-  </div>
-);
+function useTabsContext() {
+  const context = React.useContext(TabsContext);
+  if (!context) {
+    throw new Error("Tabs components must be used inside a <Tabs /> provider");
+  }
+  return context;
+}
 
-// Tab button
-export const TabsTrigger = ({
-  value,
-  children,
-  activeTab,
-  setActiveTab,
-  className,
-}: {
+interface TabsListProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
+  return (
+    <div className={cn("flex gap-3 pb-1 mb-6 border-b", className)}>
+      {children}
+    </div>
+  );
+};
+
+interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
-  activeTab?: string;
-  setActiveTab?: (val: string) => void;
   className?: string;
-}) => {
+}
+
+export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, className }) => {
+  const { activeTab, setActiveTab } = useTabsContext();
   const isActive = activeTab === value;
+
   return (
     <button
-      onClick={() => setActiveTab?.(value)}
+      onClick={() => setActiveTab(value)}
       className={cn(
-        "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+        "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-full text-left",
         isActive
-          ? "bg-[#FCA311] text-black"
-          : "text-[#E5E5E5] hover:text-[#FCA311]",
+          ? "bg-primary text-white shadow-sm"
+          : "text-muted hover:text-primary",
         className
       )}
     >
@@ -70,18 +75,15 @@ export const TabsTrigger = ({
   );
 };
 
-// Tab content
-export const TabsContent = ({
-  value,
-  activeTab,
-  children,
-  className,
-}: {
+interface TabsContentProps {
   value: string;
-  activeTab?: string;
   children: React.ReactNode;
   className?: string;
-}) =>
-  activeTab === value ? (
-    <div className={cn("text-[#E5E5E5]", className)}>{children}</div>
+}
+
+export const TabsContent: React.FC<TabsContentProps> = ({ value, children, className }) => {
+  const { activeTab } = useTabsContext();
+  return activeTab === value ? (
+    <div className={cn("text-base-content", className)}>{children}</div>
   ) : null;
+};

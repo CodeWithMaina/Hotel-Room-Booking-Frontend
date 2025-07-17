@@ -4,7 +4,7 @@ import {
   CreditCard,
   LifeBuoy,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { BookingCard } from "../../components/dashboard/BookingCard";
 import { ResponsiveBarChart } from "../../components/dashboard/ResponsiveBarChart";
 import { BookingTable } from "../../components/dashboard/BookingTable";
@@ -15,142 +15,201 @@ import {
   TabsTrigger,
 } from "../../components/dashboard/tabs";
 import { ResponsiveLineChart } from "../../components/dashboard/ResponsiveLineChart";
-import { MetricCard, type Metric } from "../../components/dashboard/skeleton/MetricCard";
+import {
+  MetricCard,
+  type Metric,
+} from "../../components/dashboard/skeleton/MetricCard";
 import { MetricCardSkeleton } from "../../components/dashboard/skeleton/MetricCardSkeleton";
+import { useGetUserAnalyticsSummaryQuery } from "../../features/api/analyticsApi";
 
 export const UserDashboard = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+  const {
+    data: analytics,
+    error,
+    isLoading,
+  } = useGetUserAnalyticsSummaryQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
 
   const metrics: Metric[] = [
     {
       title: "Total Spent",
-      value: "$2,500",
+      value: analytics ? `Ksh ${analytics.totalRevenue.toLocaleString()}` : "-",
       icon: (
-        <div className="p-2 rounded-full bg-[#FCA311]/20 text-[#FCA311]">
+        <div className="p-2 rounded-full bg-primary/10 text-primary">
           <CreditCard className="w-5 h-5" />
         </div>
       ),
     },
     {
       title: "Total Bookings",
-      value: "18",
+      value: analytics ? analytics.totalBookings.toString() : "-",
       icon: (
-        <div className="p-2 rounded-full bg-[#E5E5E5]/10 text-[#E5E5E5]">
+        <div className="p-2 rounded-full bg-muted/10 text-muted">
           <CalendarDays className="w-5 h-5" />
         </div>
       ),
     },
     {
       title: "Open Tickets",
-      value: "2",
+      value: analytics ? analytics.openTickets.toString() : "-",
       icon: (
-        <div className="p-2 rounded-full bg-[#FCA311]/10 text-[#FCA311]">
+        <div className="p-2 rounded-full bg-primary/10 text-primary">
           <LifeBuoy className="w-5 h-5" />
         </div>
       ),
     },
     {
-      title: "Loyalty Points",
-      value: "320",
+      title: "Total Users",
+      value: analytics ? analytics.totalUsers.toString() : "-",
       icon: (
-        <div className="p-2 rounded-full bg-[#14213D]/20 text-[#FFFFFF]">
+        <div className="p-2 rounded-full bg-base-content/10 text-base-content">
           <UserCircle className="w-5 h-5" />
         </div>
       ),
     },
   ];
 
-  const lineData = [
-    { month: "Jan", value: 200 },
-    { month: "Feb", value: 400 },
-    { month: "Mar", value: 300 },
-    { month: "Apr", value: 500 },
-  ];
+  const lineData =
+    analytics?.monthlySpending?.slice().reverse().map((item) => ({
+      month: item.month,
+      value: item.total || 0,
+    })) || [];
 
-  const barData = [
-    { service: "Spa", count: 5 },
-    { service: "Hotel", count: 10 },
-    { service: "Resort", count: 3 },
-    { service: "Tour", count: 7 },
-  ];
+  const barData =
+    analytics?.monthlyBookingFrequency?.slice().reverse().map((item) => ({
+      service: item.month,
+      count: item.count || 0,
+    })) || [];
 
   return (
-    <div className="min-h-screen bg-[#03071E] p-4 sm:p-6 text-white space-y-12">
-      {/* Metrics */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
-        {(loading ? new Array(4).fill(null) : metrics).map((metric, idx) =>
-          loading || !metric ? (
-            <MetricCardSkeleton key={idx} />
-          ) : (
-            <MetricCard key={idx} metric={metric} />
-          )
-        )}
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen bg-base-200 p-4 sm:p-6 md:p-10 text-base-content space-y-12"
+    >
+      {/* Header */}
+      <motion.h1
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+        className="text-3xl font-bold tracking-wide text-primary"
+      >
+        Welcome Back
+      </motion.h1>
 
-      {/* Booking Highlight */}
-      <div>
-        <h3 className="text-lg font-medium text-[#FCA311] mb-3 tracking-wide">
+      {/* Metrics */}
+      <section className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+        {(isLoading || error ? new Array(4).fill(null) : metrics).map(
+          (metric, idx) =>
+            isLoading || !metric ? (
+              <MetricCardSkeleton key={idx} />
+            ) : (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <MetricCard metric={metric} />
+              </motion.div>
+            )
+        )}
+      </section>
+
+      {/* Upcoming Booking */}
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <h3 className="text-lg font-semibold text-primary mb-3 tracking-wide">
           Upcoming Booking
         </h3>
-        {loading ? (
-          <div className="bg-[#14213D] h-28 rounded-2xl animate-pulse" />
+        {isLoading ? (
+          <div className="bg-base-100 h-28 rounded-xl shadow animate-pulse" />
         ) : (
           <BookingCard />
         )}
-      </div>
+      </motion.section>
 
       {/* Charts */}
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <div className="bg-[#14213D] border border-[#1F2A3D] rounded-2xl p-6">
-          <h3 className="text-base font-semibold text-white mb-4 tracking-wide">
+      <section className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        {/* Spending Line Chart */}
+        <motion.div
+          className="bg-base-100 border border-base-300 rounded-2xl p-6 shadow-sm"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h4 className="text-base font-semibold mb-4 tracking-wide text-primary">
             Spending Over Time
-          </h3>
-          {loading ? (
-            <div className="h-40 bg-[#1F2A3D] rounded-lg animate-pulse" />
+          </h4>
+          {isLoading ? (
+            <div className="h-40 bg-base-200 rounded-lg animate-pulse" />
           ) : (
-            <ResponsiveLineChart data={lineData} color="#FCA311" />
+            <ResponsiveLineChart data={lineData} color="#007bff" />
           )}
-        </div>
-        <div className="bg-[#14213D] border border-[#1F2A3D] rounded-2xl p-6">
-          <h3 className="text-base font-semibold text-white mb-4 tracking-wide">
-            Booking Frequency
-          </h3>
-          {loading ? (
-            <div className="h-40 bg-[#1F2A3D] rounded-lg animate-pulse" />
-          ) : (
-            <ResponsiveBarChart data={barData} color="#E5E5E5" />
-          )}
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Tabs Section */}
-      <div className="bg-[#14213D] p-6 rounded-2xl border border-[#1F2A3D]">
+        {/* Booking Frequency Bar Chart */}
+        <motion.div
+          className="bg-base-100 border border-base-300 rounded-2xl p-6 shadow-sm"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <h4 className="text-base font-semibold mb-4 tracking-wide text-primary">
+            Booking Frequency
+          </h4>
+          {isLoading ? (
+            <div className="h-40 bg-base-200 rounded-lg animate-pulse" />
+          ) : (
+            <ResponsiveBarChart data={barData} color="#6c757d" />
+          )}
+        </motion.div>
+      </section>
+
+      {/* Tabbed Section */}
+      <motion.section
+        className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
         <Tabs defaultValue="bookings">
-          <TabsList className="flex gap-3 mb-6 bg-[#03071E] p-1 rounded-xl border border-[#FCA311]/30 w-full overflow-x-auto">
-            <TabsTrigger value="bookings">Latest Bookings</TabsTrigger>
-            <TabsTrigger value="tickets">Customer Tickets</TabsTrigger>
+          <TabsList className="bg-base-200 border border-primary/30 p-1 rounded-xl flex gap-2 w-full mb-4">
+            <TabsTrigger
+              value="bookings"
+              className="flex-1 text-sm font-medium px-4 py-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition"
+            >
+              Latest Bookings
+            </TabsTrigger>
+            <TabsTrigger
+              value="tickets"
+              className="flex-1 text-sm font-medium px-4 py-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition"
+            >
+              Customer Tickets
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings">
-            {loading ? (
-              <div className="h-24 bg-[#1F2A3D] rounded-lg animate-pulse" />
+            {isLoading ? (
+              <div className="h-24 bg-base-200 rounded-lg animate-pulse" />
             ) : (
               <BookingTable />
             )}
           </TabsContent>
 
           <TabsContent value="tickets">
-            <div className="text-center text-[#E5E5E5]/70 italic py-6">
+            <div className="text-center text-muted italic py-6">
               Coming soon: Support ticket view
             </div>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };

@@ -1,83 +1,110 @@
 import NavBar from "../components/NavBar";
-import { RoomCard } from "../components/room/RoomCard";
 import { useGetRoomsQuery } from "../features/api";
 import type { TRoom } from "../types/roomsTypes";
 import { useState, useMemo } from "react";
 import { Search, SortAsc, SortDesc } from "lucide-react";
+import { RoomCard } from "../components/room/RoomCard";
 
 export const Rooms = () => {
   const { data: rooms = [], isLoading, isError } = useGetRoomsQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
-  const [sortOrder, setSortOrder] = useState<'asc'|'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const filteredRooms = useMemo(() => {
     return rooms
-      .filter(room => !showAvailableOnly || room.isAvailable)
-      .filter(room =>
+      .filter((room) => !showAvailableOnly || room.isAvailable)
+      .filter((room) =>
         room.roomType.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) =>
-        sortOrder === 'asc'
+        sortOrder === "asc"
           ? a.pricePerNight - b.pricePerNight
           : b.pricePerNight - a.pricePerNight
       );
   }, [rooms, searchTerm, showAvailableOnly, sortOrder]);
 
-  if (isLoading) return <p className="p-4 text-center">Loading rooms...</p>;
-  if (isError) return <p className="p-4 text-center text-red-600">Failed to load rooms.</p>;
+  if (isLoading)
+    return (
+      <p className="p-6 text-center text-[#14213d] text-lg font-medium">
+        Loading rooms...
+      </p>
+    );
+  if (isError)
+    return (
+      <p className="p-6 text-center text-red-600 text-lg font-semibold">
+        Failed to load rooms.
+      </p>
+    );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#ffffff]">
       <NavBar />
 
-      <header className="container mt-15 mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-6 gap-4">
-        <div className="flex items-center w-full md:w-1/3 bg-gray-100 rounded-lg px-3 py-2">
-          <Search className="w-5 h-5 text-gray-500" />
+      <header className="container mx-auto mt-15 pt-5 px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Search Bar */}
+        <div className="flex mb-5 items-center w-full md:w-1/3 bg-[#e5e5e5] rounded-lg px-3 py-2 shadow-sm">
+          <Search className="w-5 h-5 text-[#03071e]" />
           <input
             type="text"
             placeholder="Search rooms..."
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="flex-1 bg-transparent outline-none ml-2 text-gray-700"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 bg-transparent outline-none ml-2 text-[#14213d] placeholder:text-[#6b7280]"
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="flex items-center space-x-2">
+        {/* Filters */}
+        <div className="flex items-center gap-4 flex-wrap justify-center md:justify-end">
+          <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
               checked={showAvailableOnly}
-              onChange={e => setShowAvailableOnly(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              onChange={(e) => setShowAvailableOnly(e.target.checked)}
+              className="h-4 w-4 text-[#fca311] border-[#14213d] rounded focus:ring-[#fca311]"
             />
-            <span className="text-gray-700 text-sm">Available Only</span>
+            <span className="text-[#14213d] text-sm font-medium">
+              Available Only
+            </span>
           </label>
 
           <button
             onClick={() =>
-              setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
             }
-            className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="flex items-center gap-1 bg-[#fca311] text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-[#e59500] transition"
           >
-            {sortOrder === 'asc' ? (
-              <><SortAsc className="w-4 h-4 mr-1" /> Price Low</>
+            {sortOrder === "asc" ? (
+              <>
+                <SortAsc className="w-4 h-4" />
+                <span>Price Low</span>
+              </>
             ) : (
-              <><SortDesc className="w-4 h-4 mr-1" /> Price High</>
+              <>
+                <SortDesc className="w-4 h-4" />
+                <span>Price High</span>
+              </>
             )}
           </button>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 pb-8">
+      {/* Room Cards */}
+      <main className="container mx-auto px-4 pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredRooms.map((room: TRoom) => (
-            <RoomCard key={room.roomId} room={{ ...room, pricePerNight: Number(room.pricePerNight) }} />
+            <RoomCard
+              key={room.roomId}
+              room={{
+                ...room,
+                pricePerNight: Number(room.pricePerNight),
+              }}
+            />
           ))}
         </div>
 
         {filteredRooms.length === 0 && (
-          <p className="text-center text-gray-500 mt-10">
+          <p className="text-center text-[#6b7280] mt-10 text-base">
             No rooms match your criteria.
           </p>
         )}

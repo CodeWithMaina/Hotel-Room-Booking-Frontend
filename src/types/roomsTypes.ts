@@ -2,11 +2,21 @@ export type TRoom = {
   roomId: number;
   hotelId: number;
   roomType: string;
+  thumbnail: string;
   pricePerNight: number;
   capacity: number;
   amenities?: string[];
   isAvailable: boolean;
   createdAt: string;
+  gallery: string[];
+};
+
+export type TEditRoomForm = {
+  roomType: string;
+  capacity: number;
+  thumbnail: string;
+  pricePerNight: number;
+  isAvailable: boolean;
 };
 
 export type TRoomWithAmenities = {

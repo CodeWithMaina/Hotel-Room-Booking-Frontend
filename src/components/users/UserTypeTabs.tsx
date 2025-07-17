@@ -14,10 +14,7 @@ interface Props {
   onSelect: (type: string) => void;
 }
 
-export const UserTypeTabs: React.FC<Props> = ({
-  selectedType,
-  onSelect,
-}) => {
+export const UserTypeTabs: React.FC<Props> = ({ selectedType, onSelect }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -30,12 +27,12 @@ export const UserTypeTabs: React.FC<Props> = ({
     <div className="w-full max-w-3xl mx-auto">
       <div
         ref={containerRef}
-        className="relative bg-[#000000] rounded-full flex justify-between items-center px-2 py-2 shadow-lg"
+        className="relative bg-base-100 border border-base-300 rounded-full flex justify-between items-center px-2 py-2 shadow-md"
       >
         <motion.div
           layout
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="absolute top-1 bottom-1 rounded-full bg-[#fca311] z-0"
+          className="absolute top-1 bottom-1 rounded-full bg-primary z-0"
           style={{
             left: `${(100 / userTypes.length) * activeIndex}%`,
             width: `${100 / userTypes.length}%`,
@@ -50,7 +47,7 @@ export const UserTypeTabs: React.FC<Props> = ({
               onClick={() => onSelect(type)}
               className={cn(
                 "relative z-10 w-full flex justify-center items-center gap-2 py-2 text-sm font-semibold rounded-full transition-all duration-300",
-                isActive ? "text-black" : "text-[#e5e5e5]"
+                isActive ? "text-white" : "text-muted"
               )}
               style={{
                 width: `${100 / userTypes.length}%`,

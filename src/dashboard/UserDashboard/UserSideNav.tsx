@@ -7,15 +7,17 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Heart,
+  CardSim,
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
 import { UserProfileButton } from "../../components/profile/UserProfileButton";
 import { useGetUserByIdQuery } from "../../features/api";
 import toast from "react-hot-toast";
 import { clearCredentials } from "../../features/auth/authSlice";
+import type { RootState } from "../../app/store";
 
 interface SideNavProps {
   isOpen: boolean;
@@ -26,6 +28,8 @@ const navLinks = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "booking-details", label: "Booking Details", icon: ClipboardList },
   { id: "tickets", label: "Customer Support", icon: MessageSquare },
+  { id: "wishlist", label: "Wishlist", icon: Heart },
+  { id: "payment", label: "Payment", icon: CardSim },
 ];
 
 const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {

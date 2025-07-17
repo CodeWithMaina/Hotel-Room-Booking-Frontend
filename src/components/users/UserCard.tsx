@@ -3,6 +3,7 @@ import { Mail, Phone, Pencil } from "lucide-react";
 import type { TUser } from "../../types/usersTypes";
 import { UserDetailsModal } from "./UserDetailsModal";
 import { UserEditModal } from "./UserEditModal";
+import { motion } from "framer-motion";
 
 interface Props {
   user: TUser;
@@ -15,55 +16,54 @@ export const UserCard: React.FC<Props> = ({ user }) => {
   const handleCardClick = () => setShowDetails(true);
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // prevent opening modal when clicking edit
+    e.stopPropagation();
     setShowEdit(true);
   };
 
   return (
     <>
-      <div
+      <motion.div
+        layout
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={handleCardClick}
-        className="bg-white hover:shadow-lg transition-shadow border border-[#E5E5E5] rounded-xl p-4 flex flex-col items-center text-[#03071E] cursor-pointer"
+        className="bg-white border border-base-300 rounded-2xl p-5 flex flex-col items-center text-base-content cursor-pointer transition-shadow hover:shadow-xl"
       >
         <img
           src={user.profileImage || "/placeholder.jpg"}
           alt={`${user.firstName} ${user.lastName}`}
-          className="w-20 h-20 rounded-full object-cover border-4 border-[#14213D] mb-4"
+          className="w-20 h-20 rounded-full object-cover border-4 border-primary mb-4"
         />
 
-        <h3 className="text-lg font-semibold text-[#14213D] text-center">
+        <h3 className="text-lg font-bold text-center">
           {user.firstName} {user.lastName}
         </h3>
 
-        <p className="text-sm text-[#000000] italic text-center mb-2">
+        <p className="text-sm text-muted italic text-center mb-3">
           {user.bio || "No bio available."}
         </p>
 
-        <div className="mt-2 space-y-1 text-sm w-full text-left">
+        <div className="w-full space-y-2 text-sm text-left">
           <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-[#FCA311]" />
+            <Mail className="w-4 h-4 text-primary" />
             <span>{user.email}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-[#FCA311]" />
+            <Phone className="w-4 h-4 text-primary" />
             <span>{user.contactPhone}</span>
           </div>
         </div>
 
-        {/* Spacer pushes button to bottom */}
         <div className="flex-grow" />
 
-        <div className="w-full mt-auto pt-4">
-          <button
-            onClick={handleEditClick}
-            className="w-full bg-[#14213D] text-white rounded-full py-2 flex items-center justify-center gap-2 hover:opacity-90 transition"
-            title="Edit User"
-          >
-            <Pencil className="w-4 h-4" />
-            <span className="text-sm font-medium">Edit</span>
-          </button>
-        </div>
-      </div>
+        <button
+          onClick={handleEditClick}
+          className="mt-4 w-full bg-primary text-white py-2 rounded-full flex items-center justify-center gap-2 hover:bg-primary/90 transition"
+        >
+          <Pencil className="w-4 h-4" />
+          <span className="text-sm font-medium">Edit</span>
+        </button>
+      </motion.div>
 
       {showDetails && (
         <UserDetailsModal user={user} onClose={() => setShowDetails(false)} />

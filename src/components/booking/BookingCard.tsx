@@ -5,7 +5,6 @@ import {
   DollarSign,
   BedDouble,
   Clock,
-  CardSim,
 } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
 
@@ -18,7 +17,8 @@ type Booking = {
   room: {
     roomType: string;
     capacity: number;
-    pricePerNight: string;
+    pricePerNight: number;
+    thumbnail: string;
     hotelId: number;
     roomId: number;
     isAvailable: boolean;
@@ -26,6 +26,8 @@ type Booking = {
   };
   onEdit: () => void;
   onDelete: () => void;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  userType: string;
 };
 
 export const BookingCard = ({
@@ -36,6 +38,8 @@ export const BookingCard = ({
   room,
   onEdit,
   onDelete,
+  onClick,
+  userType,
 }: Booking) => {
   const nights = differenceInCalendarDays(
     new Date(checkOutDate),
@@ -44,12 +48,25 @@ export const BookingCard = ({
   const formattedCheckIn = format(new Date(checkInDate), "dd MMM yyyy");
   const formattedCheckOut = format(new Date(checkOutDate), "dd MMM yyyy");
 
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((userType === 'admin' || userType === 'owner') && onClick) {
+      onClick(e);
+    }
+  };
+
   return (
-    <div className="group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm w-full max-w-sm md:max-w-[340px] font-sans">
+    <div 
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      className={`group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm w-full max-w-sm md:max-w-[340px] font-sans ${
+        (userType === 'admin' || userType === 'owner') ? 'cursor-pointer' : 'cursor-default'
+      }`}
+    >
       {/* Image */}
       <div className="relative">
         <img
-          src="https://images.unsplash.com/photo-1549294413-26f195200c16?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0"
+          src={room.thumbnail}
           alt={room.roomType}
           className="w-full h-48 object-cover"
         />
@@ -95,30 +112,23 @@ export const BookingCard = ({
         >
           {bookingStatus}
         </span>
-
-        {/* Actions */}
-        <div className="pt-4 flex flex-wrap gap-2 justify-between">
-          {bookingStatus === "Pending" && (
+        
+        {(userType === "user" || userType === "owner") && (
+          <div className="pt-4 flex flex-wrap gap-2 justify-between">
             <button
               onClick={onEdit}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
             >
-              <CardSim size={16} /> Pay
+              <Pencil size={16} /> Edit
             </button>
-          )}
-          <button
-            onClick={onEdit}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
-          >
-            <Pencil size={16} /> Edit
-          </button>
-          <button
-            onClick={onDelete}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
-          >
-            <Trash2 size={16} /> Delete
-          </button>
-        </div>
+            <button
+              onClick={onDelete}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
+            >
+              <Trash2 size={16} /> Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

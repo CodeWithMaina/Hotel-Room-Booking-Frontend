@@ -1,54 +1,145 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TBooking, TBookingForm } from "../../types/bookingsTypes";
+import type {
+  TBooking,
+  TBookingForm,
+  PaginatedResponse,
+  TBookingStatus,
+} from "../../types/bookingsTypes";
 
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
   tagTypes: ["Booking"],
   endpoints: (builder) => ({
-    // Get all bookings
-    getBookings: builder.query<TBooking[], void>({
-      query: () => "bookings",
-      providesTags: ["Booking"],
+    // Get all bookings with pagination and status filter
+    getBookings: builder.query<
+      PaginatedResponse<TBooking[]>,
+      {
+        page?: number;
+        limit?: number;
+        status?: TBookingStatus | TBookingStatus[];
+      }
+    >({
+      query: (params) => {
+        const { page = 1, limit = 10, status } = params;
+        const queryParams = new URLSearchParams();
+
+        queryParams.set("page", page.toString());
+        queryParams.set("limit", limit.toString());
+
+        if (status) {
+          if (Array.isArray(status)) {
+            status.forEach((s) => queryParams.append("status", s));
+          } else {
+            queryParams.set("status", status);
+          }
+        }
+
+        return `bookings?${queryParams.toString()}`;
+      },
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map(({ bookingId }) => ({
+                type: "Booking" as const,
+                id: bookingId,
+              })),
+              { type: "Booking", id: "LIST" },
+            ]
+          : [{ type: "Booking", id: "LIST" }],
     }),
-    // Get booking for a single user
-    getBookingByUserId: builder.query({
-      query: (userId:number) => `bookings/user/${userId}`,
-      providesTags: (result, error, userId) => [{ type: "Booking", userId }],
-    }),
-    // Get a single booking with ID
+
+    // Get booking by ID
     getBookingById: builder.query<TBooking, number>({
-      query: (userId) => `booking/${userId}`,
-      providesTags: (result, error, userId) => [{ type: "Booking", userId }],
+      query: (bookingId) => `booking/${bookingId}`,
+      providesTags: (result, error, bookingId) => [
+        { type: "Booking", id: bookingId },
+      ],
     }),
+
+    // Get bookings by user ID with pagination
+    getBookingsByUserId: builder.query<
+      PaginatedResponse<TBooking[]>,
+      {
+        userId: number;
+        page?: number;
+        limit?: number;
+        status?: TBookingStatus | TBookingStatus[];
+      }
+    >({
+      query: ({ userId, page = 1, limit = 10, status }) => {
+        const queryParams = new URLSearchParams();
+
+        queryParams.set("page", page.toString());
+        queryParams.set("limit", limit.toString());
+
+        if (status) {
+          if (Array.isArray(status)) {
+            status.forEach((s) => queryParams.append("status", s));
+          } else {
+            queryParams.set("status", status);
+          }
+        }
+
+        return `bookings/user/${userId}?${queryParams.toString()}`;
+      },
+      providesTags: (result, error, { userId }) =>
+        result?.data
+          ? [
+              ...result.data.map(({ bookingId }) => ({
+                type: "Booking" as const,
+                id: bookingId,
+              })),
+              { type: "Booking", id: `USER-${userId}` },
+            ]
+          : [{ type: "Booking", id: `USER-${userId}` }],
+    }),
+
     // Create booking
-    createBooking: builder.mutation<TBookingForm, Partial<TBookingForm>>({
+    createBooking: builder.mutation<TBooking, TBookingForm>({
       query: (newBooking) => ({
         url: "booking",
         method: "POST",
         body: newBooking,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
-      invalidatesTags: ["Booking"],
+      invalidatesTags: [{ type: "Booking", id: "LIST" }],
     }),
+
+    // Update booking
     updateBooking: builder.mutation<
-      TBookingForm,
-      Partial<TBookingForm> & { bookingId: number }
+      TBooking,
+      {
+        bookingId: number;
+        data: Partial<TBookingForm>;
+      }
     >({
-      query: ({ bookingId, ...patch }) => ({
+      query: ({ bookingId, data }) => ({
         url: `booking/${bookingId}`,
         method: "PUT",
-        body: patch,
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
       invalidatesTags: (result, error, { bookingId }) => [
         { type: "Booking", id: bookingId },
+        { type: "Booking", id: "LIST" },
       ],
     }),
+
+    // Delete booking
     deleteBooking: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `booking/${id}`,
+      query: (bookingId) => ({
+        url: `booking/${bookingId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Booking"],
+      invalidatesTags: (result, error, bookingId) => [
+        { type: "Booking", id: bookingId },
+        { type: "Booking", id: "LIST" },
+      ],
     }),
   }),
 });
@@ -56,8 +147,11 @@ export const bookingsApi = createApi({
 export const {
   useGetBookingsQuery,
   useGetBookingByIdQuery,
+  useGetBookingsByUserIdQuery,
   useCreateBookingMutation,
   useUpdateBookingMutation,
   useDeleteBookingMutation,
-  useGetBookingByUserIdQuery,
+  useLazyGetBookingsQuery,
+  useLazyGetBookingByIdQuery,
+  useLazyGetBookingsByUserIdQuery,
 } = bookingsApi;

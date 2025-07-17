@@ -6,6 +6,7 @@ import { AlertCircle } from "lucide-react";
 import { UsersActionBar } from "./UsersActionBar";
 import { useGetUsersQuery } from "../../features/api/usersApi";
 import { UserCardSkeleton } from "./skeleton/UserCardSkeleton";
+import { motion } from "framer-motion";
 
 export const UserList = () => {
   const [selectedType, setSelectedType] = useState<"user" | "owner">("user");
@@ -33,32 +34,66 @@ export const UserList = () => {
   }, [selectedType, usersData, searchQuery]);
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-slate-100 to-slate-200 text-[#03071e]">
-      <h1 className="text-3xl font-bold text-[#14213d] mb-6 tracking-tight">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen px-6 py-10 bg-gradient-to-br from-slate-100 to-slate-200 text-[#03071e] space-y-10"
+    >
+      <motion.h1
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+        className="text-3xl font-bold text-[#14213d] tracking-tight"
+      >
         <span className="text-[#fca311]">Manage</span>{" "}
         {selectedType === "user" ? "Users" : "Owners"}
-      </h1>
+      </motion.h1>
 
-      <UserTypeTabs
-        selectedType={selectedType}
-        onSelect={(type) => setSelectedType(type as "user" | "owner")}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <UserTypeTabs
+          selectedType={selectedType}
+          onSelect={(type) => setSelectedType(type as "user" | "owner")}
+        />
+      </motion.div>
 
-      <UsersActionBar
-        onSearch={(query) => setSearchQuery(query)}
-        className="mt-6"
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <UsersActionBar
+          onSearch={(query) => setSearchQuery(query)}
+          className="mt-6"
+        />
+      </motion.div>
 
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-10">
           {Array.from({ length: 6 }).map((_, index) => (
-            <UserCardSkeleton key={index} />
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <UserCardSkeleton />
+            </motion.div>
           ))}
         </div>
       )}
 
       {isError && (
-        <div className="flex flex-col items-center mt-10 text-red-600 gap-2">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center mt-10 text-red-600 gap-2"
+        >
           <div className="flex items-center gap-2">
             <AlertCircle className="w-6 h-6" />
             <span className="font-medium">Failed to load users.</span>
@@ -69,22 +104,39 @@ export const UserList = () => {
           >
             Try Again
           </button>
-        </div>
+        </motion.div>
       )}
 
       {!isLoading && !isError && filteredUsers.length === 0 && (
-        <div className="text-center text-gray-500 mt-10 italic">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-center text-gray-500 mt-10 italic"
+        >
           No {selectedType}s found.
-        </div>
+        </motion.div>
       )}
 
       {!isLoading && !isError && filteredUsers.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-10">
-          {filteredUsers.map((user) => (
-            <UserCard key={user.userId} user={user} />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-10"
+        >
+          {filteredUsers.map((user, index) => (
+            <motion.div
+              key={user.userId}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <UserCard user={user} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };

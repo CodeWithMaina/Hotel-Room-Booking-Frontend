@@ -14,7 +14,7 @@ export const roomsApi = createApi({
       query: (id) => `room/${id}`,
       providesTags: (result, error, id) => [{ type: "Room", id }],
     }),
-    getRoomByHotelId: builder.query<TRoom, number>({
+    getRoomByHotelId: builder.query<TRoom[], number>({
       query: (id) => `hotel/${id}/rooms`,
       providesTags: (result, error, id) => [{ type: "Room", id }],
     }),
