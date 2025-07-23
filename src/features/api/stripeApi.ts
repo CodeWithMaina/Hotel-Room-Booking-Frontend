@@ -5,16 +5,8 @@ import type { CreateCheckoutSessionRequest, CreateCheckoutSessionResponse, Webho
 
 export const stripeApi = createApi({
   reducerPath: 'stripeApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: "http://localhost:5000/api",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+    baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL}),
+  
   tagTypes: ['Payment'],
   endpoints: (builder) => ({
     createCheckoutSession: builder.mutation<
@@ -22,7 +14,7 @@ export const stripeApi = createApi({
       CreateCheckoutSessionRequest
     >({
       query: (body) => ({
-        url: '/create-checkout-session',
+        url: 'create-checkout-session',
         method: 'POST',
         body,
       }),
@@ -34,7 +26,7 @@ export const stripeApi = createApi({
       WebhookEvent
     >({
       query: (event) => ({
-        url: '/webhook',
+        url: 'webhook',
         method: 'POST',
         body: event,
         headers: {

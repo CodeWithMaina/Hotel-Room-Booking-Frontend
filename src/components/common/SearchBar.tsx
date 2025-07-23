@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useDebouncedValue } from "../../hook/useDebouncedValue";
-import { LoadingSpinner } from "../loadingSpinner";
+import { LoadingSpinner } from "../ui/loadingSpinner";
 
 interface SearchBarProps {
   placeholder?: string;

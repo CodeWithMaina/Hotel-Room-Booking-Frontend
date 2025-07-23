@@ -1,14 +1,49 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, ChevronDown } from "lucide-react";
-import Navbar from "../components/NavBar";
-import { Footer } from "../components/Footer";
+import Navbar from "../components/common/NavBar";
+import { Footer } from "../components/common/Footer";
+import toast from "react-hot-toast"; // Optional: For feedback messages
 
 export const Contact: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
   const handleScroll = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const { name, email, message } = form;
+
+    if (!name || !email || !message) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error("Invalid email address.");
+      return;
+    }
+
+    // Simulate sending
+    toast.success("Message sent successfully!");
+    // Reset form
+    setForm({ name: "", email: "", message: "" });
+
+    // You can integrate actual email sending via EmailJS, an API, or backend call here.
   };
 
   return (
@@ -20,13 +55,11 @@ export const Contact: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1579154204601-01588f351e80?q=80&w=1200&auto=format&fit=crop')",
+              "url('https://images.unsplash.com/photo-1587560699334-bea93391dcef?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           }}
         />
-        {/* Glass overlay */}
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
-        {/* Content */}
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center justify-between gap-10 text-white">
           {/* Heading */}
           <motion.div
@@ -52,12 +85,19 @@ export const Contact: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2 }}
           >
-            <form className="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-2xl space-y-5 text-slate-900">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-2xl space-y-5 text-slate-900"
+            >
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Your Name"
                   className="w-full px-4 py-3 rounded-lg bg-white/60 border border-white/50 text-slate-900 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -67,6 +107,10 @@ export const Contact: React.FC = () => {
                   type="email"
                   placeholder="Your Email"
                   className="w-full px-4 py-3 rounded-lg bg-white/60 border border-white/50 text-slate-900 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -76,6 +120,10 @@ export const Contact: React.FC = () => {
                   placeholder="Your Message"
                   rows={4}
                   className="w-full px-4 py-3 rounded-lg bg-white/60 border border-white/50 text-slate-900 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                  value={form.message}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, message: e.target.value }))
+                  }
                   required
                 ></textarea>
               </div>
@@ -102,7 +150,7 @@ export const Contact: React.FC = () => {
         </motion.button>
       </div>
 
-      {/* Contact Info Section */}
+      {/* Contact Info */}
       <div
         ref={scrollRef}
         className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center px-6 py-20 text-slate-900 text-center"
@@ -123,7 +171,8 @@ export const Contact: React.FC = () => {
           </p>
         </div>
       </div>
-      <Footer/>
+
+      <Footer />
     </>
   );
 };

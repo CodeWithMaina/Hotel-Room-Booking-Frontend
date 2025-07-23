@@ -4,9 +4,14 @@ export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        heading: ['"Playfair Display"', "serif"],
+        body: ['"Inter"', "sans-serif"],
+      },
       colors: {
         primary: "#007bff",
         accent: "#f4b400",
+        gold: "#fca311",
         base: {
           100: "#ffffff",
           200: "#f2f2f2",
@@ -35,7 +40,7 @@ export default {
         cleanwhite: {
           primary: "#007BFF",
           secondary: "#6C757D",
-          accent: "#007BFF", // optional same as primary for minimal palette
+          accent: "#007BFF",
           success: "#198754",
           warning: "#FFC107",
           error: "#DC3545",

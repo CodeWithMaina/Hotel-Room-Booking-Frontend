@@ -5,10 +5,10 @@ import {
 } from "../../features/api/wishlistApi";
 import type { RootState } from "../../app/store";
 import { WishlistCard } from "../../components/wishlist/WishlistCard";
-import { LoadingSpinner } from "../../components/loadingSpinner";
+import { LoadingSpinner } from "../../components/ui/loadingSpinner";
 import { SearchBar } from "../../components/common/SearchBar";
 import { useState } from "react";
-import { Error } from "../../pages/Error";
+import { Error } from "../../components/common/Error";
 import toast from "react-hot-toast";
 import type { TWishlistItem } from "../../types/wishlistTypes";
 

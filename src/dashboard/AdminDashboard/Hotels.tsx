@@ -8,7 +8,7 @@ import type { THotel } from "../../types/hotelsTypes";
 import { Building2, Search, Plus} from "lucide-react";
 import { toast } from "sonner";
 import { HotelFormModal } from "../../components/hotel/HotelFormModal";
-import { Loading } from "../../pages/Loading";
+import { Loading } from "../../components/common/Loading";
 import type { HotelFormData } from "../../validation/hotelFormSchema";
 import { DashboardHotelCard } from "../../components/hotel/DashboardHotelCard";
 

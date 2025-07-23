@@ -8,7 +8,7 @@ export const createTicketSchema = z.object({
 
 export const replyTicketSchema = z.object({
   reply: z.string().min(5, "Reply must be at least 5 characters"),
-  status: z.enum(["Open", "Resolved"]).default("Resolved"),
+  status: z.enum(["Open", "Resolved"]).default("Open"),
 });
 
 export type TCreateTicketSchema = z.infer<typeof createTicketSchema>;

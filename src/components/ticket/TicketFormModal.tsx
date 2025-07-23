@@ -7,7 +7,7 @@ import type { RootState } from "../../app/store";
 import toast from "react-hot-toast";
 import { X, Send, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LoadingSpinner } from "../loadingSpinner";
+import { LoadingSpinner } from "../ui/loadingSpinner";
 
 interface Props {
   onClose: () => void;

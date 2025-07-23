@@ -11,7 +11,7 @@ import {
 } from "../../validation/ticketSchema";
 import type { TTicket } from "../../types/ticketsTypes";
 import { useUpdateTicketMutation } from "../../features/api";
-import { LoadingSpinner } from "../loadingSpinner";
+import { LoadingSpinner } from "../ui/loadingSpinner";
 
 interface Props {
   ticket: TTicket;

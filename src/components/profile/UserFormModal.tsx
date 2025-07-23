@@ -1,17 +1,10 @@
-// UserFormModal.tsx
 import React, { useEffect, useState } from "react";
-import { User, FileText, X, SendHorizontal, Image as ImageIcon } from "lucide-react";
+import { User, FileText, X, Save, Camera, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { useImageUploader } from "../../hook/useImageUploader";
 import toast from "react-hot-toast";
-
-export type TUserFormValues = {
-  firstName: string;
-  lastName: string;
-  bio: string;
-  profileImage?: string;
-};
+import type { TUserFormValues } from "../../types/usersTypes";
 
 interface FormModalProps {
   isOpen: boolean;
@@ -30,7 +23,7 @@ export const UserFormModal: React.FC<FormModalProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setValue,
     watch,
   } = useForm<TUserFormValues>();
@@ -50,6 +43,18 @@ export const UserFormModal: React.FC<FormModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select a valid image file");
+      return;
+    }
+
     // Create preview
     const reader = new FileReader();
     reader.onload = () => {
@@ -60,18 +65,28 @@ export const UserFormModal: React.FC<FormModalProps> = ({
     // Upload to Cloudinary
     try {
       const result = await upload(file, "userProfile");
-      if(!result) {
-        toast.error("Uploading failed")
+      if (!result) {
+        toast.error("Upload failed. Please try again.");
+        setPreviewImage(null);
+        return;
       }
       setValue("profileImage", result?.secure_url);
+      toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
+      setPreviewImage(null);
     }
   };
 
   const handleFormSubmit = (data: TUserFormValues) => {
     onSubmit(data);
-    reset(defaultValues);
+  };
+
+  const handleClose = () => {
+    reset();
+    setPreviewImage(null);
+    onClose();
   };
 
   return (
@@ -81,122 +96,202 @@ export const UserFormModal: React.FC<FormModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="bg-[#e5e5e5] text-black w-full max-w-lg rounded-2xl shadow-2xl p-8 relative border border-[#FCA311]"
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="absolute top-4 right-4 text-gray-600 hover:text-black"
-              onClick={onClose}
-            >
-              <X size={20} />
-            </button>
+            {/* Header */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-white">Edit Profile</h2>
+                    <p className="text-indigo-100 text-sm">Update your personal information</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleClose}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  disabled={isSubmitting || isUploading}
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            </div>
 
-            <h2 className="text-2xl font-semibold mb-6 text-[#03071E] tracking-wide">
-              Edit Profile
-            </h2>
-
-            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
-              {/* Profile Image Upload */}
-              <div className="form-control">
-                <label className="label text-[#14213D] font-medium">
-                  <span className="flex items-center gap-2">
-                    <ImageIcon size={18} /> Profile Image
-                  </span>
-                </label>
-                <div className="flex items-center gap-4">
-                  <div className="avatar">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#FCA311]">
-                      {previewImage ? (
-                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                      ) : profileImage ? (
-                        <img src={profileImage} alt="Current profile" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                          <ImageIcon size={24} className="text-gray-500" />
+            {/* Form Content */}
+            <div className="p-6">
+              <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+                {/* Profile Image Section */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Profile Image
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200 border-2 border-gray-300">
+                        {previewImage || profileImage ? (
+                          <img
+                            src={previewImage || profileImage}
+                            alt="Profile preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User className="w-8 h-8 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                          <Loader2 className="w-6 h-6 text-white animate-spin" />
                         </div>
                       )}
                     </div>
+                    <div className="flex-1">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                          disabled={isUploading || isSubmitting}
+                        />
+                        <div className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-200">
+                          <Camera className="w-4 h-4 mr-2" />
+                          {isUploading ? "Uploading..." : "Change Photo"}
+                        </div>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        JPG, PNG up to 5MB
+                      </p>
+                    </div>
                   </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="file-input file-input-bordered w-full max-w-xs bg-white text-black border border-[#FCA311] focus:outline-none focus:ring-2 focus:ring-[#FCA311]"
-                    disabled={isUploading}
-                  />
                 </div>
-                {isUploading && <p className="text-sm mt-2 text-[#FCA311]">Uploading image...</p>}
-              </div>
 
-              {/* Rest of the form fields remain the same */}
-              {/* First Name */}
-              <div className="form-control">
-                <label className="label text-[#14213D] font-medium">
-                  <span className="flex items-center gap-2">
-                    <User size={18} /> First Name
-                  </span>
-                </label>
-                <input
-                  {...register("firstName", { required: "First name is required" })}
-                  className="input input-bordered w-full bg-white text-black border border-[#FCA311] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FCA311]"
-                  placeholder="Enter your first name"
-                />
-                {errors.firstName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
-                )}
-              </div>
+                {/* Form Fields */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* First Name */}
+                  <div className="space-y-2">
+                    <label className="flex items-center text-sm font-medium text-gray-700">
+                      <User className="w-4 h-4 mr-2 text-gray-400" />
+                      First Name
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                    <input
+                      {...register("firstName", { 
+                        required: "First name is required",
+                        minLength: { value: 2, message: "First name must be at least 2 characters" }
+                      })}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                        errors.firstName ? "border-red-300 bg-red-50" : "border-gray-300 bg-white"
+                      }`}
+                      placeholder="Enter your first name"
+                      disabled={isSubmitting || isUploading}
+                    />
+                    {errors.firstName && (
+                      <p className="text-red-600 text-sm flex items-center">
+                        <span className="w-4 h-4 mr-1">⚠</span>
+                        {errors.firstName.message}
+                      </p>
+                    )}
+                  </div>
 
-              {/* Last Name */}
-              <div className="form-control">
-                <label className="label text-[#14213D] font-medium">
-                  <span className="flex items-center gap-2">
-                    <User size={18} /> Last Name
-                  </span>
-                </label>
-                <input
-                  {...register("lastName", { required: "Last name is required" })}
-                  className="input input-bordered w-full bg-white text-black border border-[#FCA311] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FCA311]"
-                  placeholder="Enter your last name"
-                />
-                {errors.lastName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
-                )}
-              </div>
+                  {/* Last Name */}
+                  <div className="space-y-2">
+                    <label className="flex items-center text-sm font-medium text-gray-700">
+                      <User className="w-4 h-4 mr-2 text-gray-400" />
+                      Last Name
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                    <input
+                      {...register("lastName", { 
+                        required: "Last name is required",
+                        minLength: { value: 2, message: "Last name must be at least 2 characters" }
+                      })}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                        errors.lastName ? "border-red-300 bg-red-50" : "border-gray-300 bg-white"
+                      }`}
+                      placeholder="Enter your last name"
+                      disabled={isSubmitting || isUploading}
+                    />
+                    {errors.lastName && (
+                      <p className="text-red-600 text-sm flex items-center">
+                        <span className="w-4 h-4 mr-1">⚠</span>
+                        {errors.lastName.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-              {/* Bio */}
-              <div className="form-control">
-                <label className="label text-[#14213D] font-medium">
-                  <span className="flex items-center gap-2">
-                    <FileText size={18} /> Bio
-                  </span>
-                </label>
-                <textarea
-                  {...register("bio", { required: "Bio is required" })}
-                  className="textarea textarea-bordered w-full bg-white text-black border border-[#FCA311] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FCA311]"
-                  rows={4}
-                  placeholder="Tell us about yourself"
-                />
-                {errors.bio && (
-                  <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>
-                )}
-              </div>
+                {/* Bio */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-sm font-medium text-gray-700">
+                    <FileText className="w-4 h-4 mr-2 text-gray-400" />
+                    Bio
+                  </label>
+                  <textarea
+                    {...register("bio", {
+                      maxLength: { value: 500, message: "Bio must be less than 500 characters" }
+                    })}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none ${
+                      errors.bio ? "border-red-300 bg-red-50" : "border-gray-300 bg-white"
+                    }`}
+                    rows={4}
+                    placeholder="Tell us about yourself (optional)"
+                    disabled={isSubmitting || isUploading}
+                  />
+                  {errors.bio && (
+                    <p className="text-red-600 text-sm flex items-center">
+                      <span className="w-4 h-4 mr-1">⚠</span>
+                      {errors.bio.message}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500">
+                    {watch("bio")?.length || 0}/500 characters
+                  </p>
+                </div>
 
-              <div className="flex justify-end pt-4">
-                <button
-                  type="submit"
-                  className="btn bg-[#FCA311] text-black hover:bg-[#e59400] border-none shadow-md flex items-center gap-2 px-6"
-                  disabled={isUploading}
-                >
-                  <SendHorizontal size={18} /> Save Changes
-                </button>
-              </div>
-            </form>
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="px-6 py-2.5 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    disabled={isSubmitting || isUploading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || isUploading}
+                    className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium flex items-center space-x-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        <span>Save Changes</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </motion.div>
         </motion.div>
       )}

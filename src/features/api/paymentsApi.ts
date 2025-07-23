@@ -1,42 +1,51 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TPayment } from "../../types/paymentsTypes";
-
+import type { TPayment, TPaymentResponse } from "../../types/paymentsTypes";
 
 export const paymentsApi = createApi({
   reducerPath: "paymentsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Payment"],
   endpoints: (builder) => ({
-    getPayments: builder.query<TPayment[], void>({
-      query: () => 'payments',
-      providesTags: ['Payment'],
+    getPayments: builder.query<TPaymentResponse[], void>({
+      query: () => "payments",
+      providesTags: ["Payment"],
     }),
     getPaymentById: builder.query<TPayment, number>({
       query: (id) => `payment/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Payment', id }],
+      providesTags: (result, error, id) => [{ type: "Payment", id }],
+    }),
+    getPaymentsByUserId: builder.query<TPaymentResponse, number>({
+      query: (userId) => `/payment/user/${userId}`,
     }),
     createPayment: builder.mutation<TPayment, Partial<TPayment>>({
       query: (newPayment) => ({
-        url: 'payment',
-        method: 'POST',
+        url: "payment",
+        method: "POST",
         body: newPayment,
       }),
-      invalidatesTags: ['Payment'],
+      invalidatesTags: ["Payment"],
     }),
-    updatePayment: builder.mutation<TPayment, Partial<TPayment> & { paymentId: number }>({
+    updatePayment: builder.mutation<
+      TPayment,
+      Partial<TPayment> & { paymentId: number }
+    >({
       query: ({ paymentId, ...patch }) => ({
         url: `payment/${paymentId}`,
-        method: 'PUT',
+        method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { paymentId }) => [{ type: 'Payment', id: paymentId }],
+      invalidatesTags: (result, error, { paymentId }) => [
+        { type: "Payment", id: paymentId },
+      ],
     }),
     deletePayment: builder.mutation<void, number>({
       query: (id) => ({
         url: `payment/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Payment'],
+      invalidatesTags: ["Payment"],
     }),
   }),
 });
@@ -47,4 +56,5 @@ export const {
   useCreatePaymentMutation,
   useUpdatePaymentMutation,
   useDeletePaymentMutation,
+  useGetPaymentsByUserIdQuery,
 } = paymentsApi;

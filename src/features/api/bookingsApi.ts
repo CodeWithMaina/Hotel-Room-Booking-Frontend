@@ -8,7 +8,8 @@ import type {
 
 export const bookingsApi = createApi({
   reducerPath: "bookingsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Booking"],
   endpoints: (builder) => ({
     // Get all bookings with pagination and status filter

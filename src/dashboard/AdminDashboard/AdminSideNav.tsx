@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
+  CardSim,
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -29,6 +30,7 @@ const navLinks = [
   { id: "users", label: "Users", icon: Users },
   { id: "booking-details", label: "Booking Details", icon: ClipboardList },
   { id: "hotels", label: "Hotels", icon: Hotel },
+  { id: "payments", label: "Payments", icon: CardSim },
   { id: "ticket", label: "Customer Support", icon: MessageSquare },
 ];
 

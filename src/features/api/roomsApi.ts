@@ -3,7 +3,9 @@ import type { TRoom, TRoomWithAmenities } from "../../types/roomsTypes";
 
 export const roomsApi = createApi({
   reducerPath: "roomsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/",credentials: 'include', }),
+
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Room", "RoomAmenity"],
   endpoints: (builder) => ({
     getRooms: builder.query<TRoom[], void>({
@@ -45,10 +47,9 @@ export const roomsApi = createApi({
     }),
     getRoomWithAmenities: builder.query<TRoomWithAmenities, number>({
       query: (id) => ({
-        url:`room/${id}/room-details`}),
-      providesTags: (result, error, id) => [
-        { type: 'RoomAmenity', id }
-      ],
+        url: `room/${id}/room-details`,
+      }),
+      providesTags: (result, error, id) => [{ type: "RoomAmenity", id }],
     }),
   }),
 });

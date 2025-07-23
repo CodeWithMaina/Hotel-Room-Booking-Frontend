@@ -1,114 +1,223 @@
-import NavBar from "../components/NavBar";
+import { useState, useMemo } from "react";
+import NavBar from "../components/common/NavBar";
 import { useGetRoomsQuery } from "../features/api";
 import type { TRoom } from "../types/roomsTypes";
-import { useState, useMemo } from "react";
-import { Search, SortAsc, SortDesc } from "lucide-react";
 import { RoomCard } from "../components/room/RoomCard";
+import { SortAsc, SortDesc, X, Filter } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  RoomFilterSidebar,
+  type RoomFilterValues,
+} from "../components/room/RoomFilterSidebar";
 
 export const Rooms = () => {
   const { data: rooms = [], isLoading, isError } = useGetRoomsQuery();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+
+  const [filters, setFilters] = useState<RoomFilterValues>({
+    search: "",
+    availableOnly: false,
+    maxPrice: 1000,
+    minGuests: 1,
+  });
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [showFilterSidebar, setShowFilterSidebar] = useState(false);
 
   const filteredRooms = useMemo(() => {
     return rooms
-      .filter((room) => !showAvailableOnly || room.isAvailable)
+      .filter((room) => !filters.availableOnly || room.isAvailable)
       .filter((room) =>
-        room.roomType.toLowerCase().includes(searchTerm.toLowerCase())
+        room.roomType.toLowerCase().includes(filters.search.toLowerCase())
       )
+      .filter((room) => Number(room.pricePerNight) <= filters.maxPrice)
+      .filter((room) => room.capacity >= filters.minGuests)
       .sort((a, b) =>
         sortOrder === "asc"
           ? a.pricePerNight - b.pricePerNight
           : b.pricePerNight - a.pricePerNight
       );
-  }, [rooms, searchTerm, showAvailableOnly, sortOrder]);
+  }, [rooms, filters, sortOrder]);
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <p className="p-6 text-center text-[#14213d] text-lg font-medium">
-        Loading rooms...
-      </p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+        <motion.p
+          className="text-xl text-[#14213d] font-medium"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          Loading rooms...
+        </motion.p>
+      </div>
     );
-  if (isError)
+  }
+
+  if (isError) {
     return (
-      <p className="p-6 text-center text-red-600 text-lg font-semibold">
-        Failed to load rooms.
-      </p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <motion.p
+          className="text-lg text-red-600 font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          Failed to load rooms. Please try again.
+        </motion.p>
+      </div>
     );
+  }
 
   return (
-    <div className="min-h-screen bg-[#ffffff]">
+    <div className="min-h-screen bg-gradient-to-br from-white to-slate-50 text-[#14213d] relative">
       <NavBar />
 
-      <header className="container mx-auto mt-15 pt-5 px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-        {/* Search Bar */}
-        <div className="flex mb-5 items-center w-full md:w-1/3 bg-[#e5e5e5] rounded-lg px-3 py-2 shadow-sm">
-          <Search className="w-5 h-5 text-[#03071e]" />
-          <input
-            type="text"
-            placeholder="Search rooms..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 bg-transparent outline-none ml-2 text-[#14213d] placeholder:text-[#6b7280]"
-          />
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-4 flex-wrap justify-center md:justify-end">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showAvailableOnly}
-              onChange={(e) => setShowAvailableOnly(e.target.checked)}
-              className="h-4 w-4 text-[#fca311] border-[#14213d] rounded focus:ring-[#fca311]"
-            />
-            <span className="text-[#14213d] text-sm font-medium">
-              Available Only
-            </span>
-          </label>
-
-          <button
-            onClick={() =>
-              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
-            }
-            className="flex items-center gap-1 bg-[#fca311] text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-[#e59500] transition"
+      {/* Hero */}
+      <div
+        className="h-64 w-full bg-cover bg-center relative mb-12"
+        style={{
+          backgroundImage:
+            "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1k6CkZKyp9Teg64P4Fs-w4Cy2NaCzJ1ppjw&s')",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center px-4">
+          <motion.h1
+            className="text-white text-4xl font-bold mb-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            {sortOrder === "asc" ? (
-              <>
-                <SortAsc className="w-4 h-4" />
-                <span>Price Low</span>
-              </>
-            ) : (
-              <>
-                <SortDesc className="w-4 h-4" />
-                <span>Price High</span>
-              </>
-            )}
-          </button>
+            Explore Our Rooms
+          </motion.h1>
+          <motion.p
+            className="text-white text-base max-w-2xl"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            Find the perfect room that suits your style, comfort, and budget.
+          </motion.p>
         </div>
-      </header>
+      </div>
 
-      {/* Room Cards */}
-      <main className="container mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredRooms.map((room: TRoom) => (
-            <RoomCard
-              key={room.roomId}
-              room={{
-                ...room,
-                pricePerNight: Number(room.pricePerNight),
-              }}
-            />
-          ))}
-        </div>
-
-        {filteredRooms.length === 0 && (
-          <p className="text-center text-[#6b7280] mt-10 text-base">
-            No rooms match your criteria.
-          </p>
+      {/* Responsive Filter Sidebar */}
+      <AnimatePresence>
+        {showFilterSidebar && (
+          <motion.div
+            className="fixed inset-0 z-40 bg-slate-800/70 flex justify-center items-start pt-20 px-4 lg:hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <motion.div
+              className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative"
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              <button
+                className="absolute top-4 right-4 text-slate-600 hover:text-red-500 z-50"
+                onClick={() => setShowFilterSidebar(false)}
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <RoomFilterSidebar onFilter={(data) => {
+                setFilters(data);
+                setShowFilterSidebar(false);
+              }} />
+            </motion.div>
+          </motion.div>
         )}
-      </main>
+      </AnimatePresence>
+
+      {/* Filter Button - Only Mobile */}
+      <motion.button
+        onClick={() => setShowFilterSidebar(true)}
+        className="lg:hidden fixed bottom-5 right-5 z-30 btn btn-primary rounded-full shadow-lg w-14 h-14 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Filter className="w-6 h-6" />
+      </motion.button>
+
+      {/* Page Layout */}
+      <div className="flex flex-col lg:flex-row gap-8 max-w-[1400px] mx-auto px-4 pb-20">
+        {/* Sidebar Filters - Only Desktop */}
+        <div className="lg:w-[300px] hidden lg:block sticky top-24 self-start">
+          <RoomFilterSidebar onFilter={setFilters} />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 w-full">
+          {/* Sort Toggle */}
+          <div className="flex justify-end mb-6">
+            <motion.button
+              onClick={() =>
+                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+              }
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition-all"
+            >
+              {sortOrder === "asc" ? (
+                <>
+                  <SortAsc className="w-4 h-4" />
+                  <span>Price Low</span>
+                </>
+              ) : (
+                <>
+                  <SortDesc className="w-4 h-4" />
+                  <span>Price High</span>
+                </>
+              )}
+            </motion.button>
+          </div>
+
+          {/* Room Grid */}
+          <AnimatePresence>
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.07 },
+                },
+              }}
+            >
+              {filteredRooms.map((room: TRoom) => (
+                <motion.div
+                  key={room.roomId}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 200 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                >
+                  <RoomCard
+                    room={{
+                      ...room,
+                      pricePerNight: Number(room.pricePerNight),
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+
+          {filteredRooms.length === 0 && (
+            <motion.p
+              className="text-center text-slate-500 mt-12 text-base"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              No rooms match your criteria.
+            </motion.p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

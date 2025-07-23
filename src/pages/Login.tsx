@@ -7,7 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import "sweetalert2/src/sweetalert2.scss";
 import { loginSchema, type LoginData } from "../validation/login.validation";
 import { authApi } from "../features/api/authApi";
-import { Loading } from "./Loading";
+import { Loading } from "../components/common/Loading";
 import { useDispatch } from "react-redux";
 import { persistCredentials } from "../features/auth/authSlice";
 

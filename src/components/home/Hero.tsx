@@ -1,159 +1,290 @@
-import React, { useState, useRef } from "react";
-import { Calendar, MapPin, Users, Search, ChevronDown } from "lucide-react";
-import { motion } from "framer-motion";
-import { TopDestinations } from "./TopDestination";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { CalendarIcon, Users, CheckCircle } from "lucide-react";
+import { Button } from "../ui/Button";
+import toast from "react-hot-toast"; // Or your preferred toast library
+import { useNavigate } from "react-router";
 
-export const Hero: React.FC = () => {
-  const [location, setLocation] = useState("Pakistan");
-  const [checkIn, setCheckIn] = useState("10 May");
-  const [checkOut, setCheckOut] = useState("10 May");
-  const [guests, setGuests] = useState("");
-  const [payOnCheckin, setPayOnCheckin] = useState(true);
+const stepAnimations = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  exit: { opacity: 0, y: -30, transition: { duration: 0.3 } },
+};
 
-  const scrollTargetRef = useRef<HTMLDivElement>(null);
+export const Hero = () => {
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
+  const [step, setStep] = useState(1);
+  const [dateError, setDateError] = useState(false);
+  const [guests, setGuests] = useState({ total: 1 });
+  const navigate = useNavigate();
+  const image =
+    "https://images.pexels.com/photos/1743231/pexels-photo-1743231.jpeg";
 
-  const handleScroll = () => {
-    if (scrollTargetRef.current) {
-      scrollTargetRef.current.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    if (fromDate && toDate) setDateError(false);
+  }, [fromDate, toDate]);
+
+  const validateStepOne = () => {
+    if (!fromDate || !toDate) {
+      setDateError(true);
+      return false;
     }
+    if (toDate <= fromDate) {
+      toast.error("Check-out date must be after check-in date");
+      return false;
+    }
+    return true;
   };
 
+  const handleNext = () => {
+    if (step === 1 && !validateStepOne()) return;
+    setStep((prev) => Math.min(prev + 1, 3));
+  };
+
+  const handlePrev = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  const handleFindRooms = () => {
+  if (!fromDate || !toDate) {
+    toast.error("Both check-in and check-out dates are required.");
+    return;
+  }
+
+  const checkInDate = fromDate.toISOString().split("T")[0]; // format as YYYY-MM-DD
+  const checkOutDate = toDate.toISOString().split("T")[0];
+  const guestsCount = guests.total;
+
+  const query = new URLSearchParams({
+    checkInDate,
+    checkOutDate,
+    ...(guestsCount ? { capacity: guestsCount.toString() } : {}),
+  });
+
+  navigate(`/availability?${query.toString()}`);
+};
+
   return (
-    <>
-      <div className="relative min-h-screen overflow-hidden">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-          }}
-        />
-        {/* Subtle white tint */}
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-xs" />
+    <div className="relative min-h-screen flex items-center justify-center px-6 py-16 bg-black/70 overflow-hidden">
+      {/* Background Image */}
+      <motion.img
+        src={image}
+        alt="Luxury Hotel"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2 }}
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
 
-        {/* Main Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center justify-between gap-10">
-          {/* Animated Heading */}
-          <motion.div
-            className="flex-1 text-slate-900"
-            initial={{ opacity: 0, y: -40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-md">
-              Find the Most <br />
-              <span className="text-yellow-600">Luxurious Rooms</span> <br />
-              Across the Globe
-            </h1>
-          </motion.div>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/70 z-10" />
 
-          {/* Animated Booking Card */}
-          <motion.div
-            className="flex-1 w-full max-w-md"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2 }}
-          >
-            <div className="bg-white/30 backdrop-blur-xl border border-white/40 rounded-2xl p-8 shadow-2xl text-slate-900">
-              <h2 className="text-2xl font-semibold mb-6">Where you go?</h2>
-
-              <div className="space-y-4">
-                {/* Location */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Enter destination"
-                    className="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/60 backdrop-blur text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-                  <MapPin className="absolute right-3 top-3 w-5 h-5 text-slate-700/70" />
-                </div>
-
-                {/* Dates */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
-                    <label className="text-sm mb-1 block">Check in</label>
-                    <input
-                      type="text"
-                      value={checkIn}
-                      onChange={(e) => setCheckIn(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/60 backdrop-blur text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                    <Calendar className="absolute right-3 top-9 w-5 h-5 text-slate-700/70" />
-                  </div>
-                  <div className="relative">
-                    <label className="text-sm mb-1 block">Check out</label>
-                    <input
-                      type="text"
-                      value={checkOut}
-                      onChange={(e) => setCheckOut(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/60 backdrop-blur text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                    <Calendar className="absolute right-3 top-9 w-5 h-5 text-slate-700/70" />
-                  </div>
-                </div>
-
-                {/* Guests */}
-                <div className="relative">
-                  <label className="text-sm mb-1 block">Guests</label>
-                  <input
-                    type="text"
-                    value={guests}
-                    onChange={(e) => setGuests(e.target.value)}
-                    placeholder="How many guests?"
-                    className="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/60 backdrop-blur text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-                  <Users className="absolute right-3 top-11 w-5 h-5 text-slate-700/70" />
-                </div>
-
-                {/* Pay on check-in */}
-                <div className="flex items-center gap-3">
-                  <input
-                    id="payOnCheckin"
-                    type="checkbox"
-                    checked={payOnCheckin}
-                    onChange={(e) => setPayOnCheckin(e.target.checked)}
-                    className="w-5 h-5 text-yellow-500 bg-white/50 border-white/60 rounded focus:ring-yellow-400 focus:ring-2"
-                  />
-                  <label htmlFor="payOnCheckin" className="text-sm">
-                    Pay when checking in?
-                  </label>
-                </div>
-
-                {/* Search Button */}
-                <button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-md">
-                  <Search className="w-5 h-5" />
-                  Search Rooms
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Bouncing Arrow at Bottom */}
-        <motion.button
-          onClick={handleScroll}
-          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 text-yellow-600 hover:text-yellow-700 transition"
-          animate={{ y: [0, -10, 0] }}
-          transition={{
-            repeat: Infinity,
-            duration: 1.5,
-            ease: "easeInOut",
-          }}
+      {/* Content */}
+      <div className="relative z-20 max-w-3xl text-center text-white space-y-6">
+        <motion.h1
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl md:text-6xl font-extrabold drop-shadow-xl"
         >
-          <ChevronDown className="w-8 h-8" />
-        </motion.button>
-      </div>
+          Find Your Perfect Stay
+        </motion.h1>
 
-      {/* Scroll Target */}
-      <div
-        ref={scrollTargetRef}
-        className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-6"
-      >
-        <TopDestinations/>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="text-lg md:text-xl text-gray-200"
+        >
+          Seamless booking, luxurious comfort, and unforgettable memories await.
+        </motion.p>
+
+        <motion.div
+          className="text-sm tracking-wide text-gold-400 uppercase font-medium"
+          initial="initial"
+          animate="animate"
+          variants={stepAnimations}
+        >
+          Step {step} of 3
+        </motion.div>
+
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              className="flex flex-col md:flex-row items-center gap-4 justify-center"
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={stepAnimations}
+            >
+              {/* Check-in */}
+              <div className="relative">
+                <DatePicker
+                  selected={fromDate}
+                  onChange={(date) => setFromDate(date)}
+                  selectsStart
+                  startDate={fromDate}
+                  endDate={toDate}
+                  placeholderText="Check-in"
+                  className="w-48 px-4 py-2 rounded-lg bg-white/90 text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  minDate={new Date()}
+                />
+                <CalendarIcon
+                  className="absolute right-3 top-2.5 text-gray-500"
+                  size={18}
+                />
+              </div>
+
+              {/* Check-out */}
+              <div className="relative">
+                <DatePicker
+                  selected={toDate}
+                  onChange={(date) => setToDate(date)}
+                  selectsEnd
+                  startDate={fromDate}
+                  endDate={toDate}
+                  placeholderText="Check-out"
+                  className="w-48 px-4 py-2 rounded-lg bg-white/90 text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  minDate={fromDate ?? new Date()}
+                />
+                <CalendarIcon
+                  className="absolute right-3 top-2.5 text-gray-500"
+                  size={18}
+                />
+              </div>
+
+              <Button
+                onClick={handleNext}
+                className="bg-gold-500 text-white hover:bg-gold-600"
+              >
+                Next
+              </Button>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              className="flex flex-col items-center gap-4"
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={stepAnimations}
+            >
+              <div className="bg-white/90 text-gray-800 rounded-xl p-6 shadow-lg w-full max-w-sm">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Users size={20} /> Number of Guests
+                </h3>
+
+                <div className="flex justify-between items-center">
+                  <span>Total People</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() =>
+                        setGuests((g) => ({
+                          ...g,
+                          total: Math.max(1, g.total - 1),
+                        }))
+                      }
+                    >
+                      -
+                    </button>
+                    <span>{guests.total}</span>
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() =>
+                        setGuests((g) => ({ ...g, total: g.total + 1 }))
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  onClick={handlePrev}
+                  variant="outline"
+                  className="text-white border-white"
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="bg-gold-500 text-white hover:bg-gold-600"
+                >
+                  Next
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              className="flex flex-col items-center gap-6"
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={stepAnimations}
+            >
+              <CheckCircle size={40} className="text-gold-400" />
+              <h3 className="text-xl font-semibold text-white">
+                Confirm Your Booking
+              </h3>
+              <div className="bg-white/90 text-gray-800 p-6 rounded-xl shadow-xl max-w-sm w-full text-left space-y-2">
+                <div>
+                  <strong>Check-in:</strong>{" "}
+                  {fromDate?.toLocaleDateString() ?? "Not selected"}
+                </div>
+                <div>
+                  <strong>Check-out:</strong>{" "}
+                  {toDate?.toLocaleDateString() ?? "Not selected"}
+                </div>
+                <div>
+                  <strong>Guests:</strong>
+                  {guests.total} Guest(s)
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  onClick={handlePrev}
+                  variant="outline"
+                  className="text-white border-white"
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleFindRooms}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Find Rooms
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Error Message */}
+        <AnimatePresence>
+          {dateError && (
+            <motion.p
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-red-400 mt-3 text-sm"
+            >
+              Please select both check-in and check-out dates.
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
-    </>
+    </div>
   );
 };

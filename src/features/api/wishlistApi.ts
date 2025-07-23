@@ -3,7 +3,8 @@ import type { TWishlistItem } from "../../types/wishlistTypes";
 
 export const wishlistApi = createApi({
   reducerPath: "wishlistApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Wishlist"],
   endpoints: (builder) => ({
     getWishlistByUserId: builder.query<TWishlistItem[], number>({

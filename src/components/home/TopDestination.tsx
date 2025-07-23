@@ -1,28 +1,29 @@
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export const TopDestinations = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-  const interval = setInterval(() => {
-    const container = scrollContainerRef.current;
-    if (!container || isHovered) return;
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current;
+      if (!container || isHovered) return;
 
-    const scrollAmount = 200;
-    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const scrollAmount = 240;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
 
-    if (container.scrollLeft + scrollAmount >= maxScrollLeft) {
-      container.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  }, 3000);
+      if (container.scrollLeft + scrollAmount >= maxScrollLeft) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    }, 3500);
 
-  return () => clearInterval(interval);
-}, [isHovered]);
-
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   const cities = [
     {
@@ -57,51 +58,72 @@ export const TopDestinations = () => {
     },
   ];
 
+  const handleNavigate = (cityName: string) => {
+    const formatted = cityName.toLowerCase().replace(/\s+/g, "-");
+    navigate(`/destinations/${formatted}`);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-6 py-20">
+    <section className="w-full min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-20 px-4 md:px-8 flex items-center justify-center">
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-center w-full max-w-7xl"
+        transition={{ duration: 0.7 }}
+        className="w-full max-w-7xl text-center"
       >
-        {/* Header */}
-        <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-          Explore <span className="text-yellow-600">Top Destinations</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900">
+          Discover <span className="text-yellow-600">Top Destinations</span>
         </h2>
-        <p className="text-lg text-slate-700 mb-12 max-w-2xl mx-auto">
-          Discover stunning cities where elegance, comfort, and world-class rooms await.
+        <p className="text-base sm:text-lg text-slate-700 mb-12 max-w-2xl mx-auto">
+          Find elegance, culture, and world-class experiences in these iconic getaways.
         </p>
 
-        {/* Scrollable Destination Cards */}
-        <motion.div
+        <div
           ref={scrollContainerRef}
-          className="flex lg:grid overflow-x-auto scroll-smooth snap-x snap-mandatory gap-4 lg:grid-cols-6"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          className="flex lg:grid overflow-x-auto lg:overflow-x-visible scroll-smooth snap-x snap-mandatory gap-6 px-2 lg:px-0 lg:grid-cols-6"
         >
           {cities.map((city, index) => (
             <motion.div
               key={index}
-              className="min-w-[180px] sm:min-w-[200px] lg:min-w-0 rounded-xl overflow-hidden shadow-md bg-white hover:shadow-xl transition-all duration-300 cursor-pointer snap-center"
-              initial={{ opacity: 0, y: 30 }}
+              onClick={() => handleNavigate(city.name)}
+              className="relative group flex-shrink-0 snap-center min-w-[180px] sm:min-w-[200px] lg:min-w-0 bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.03 }}
             >
               <img
                 src={city.image}
                 alt={city.name}
-                className="w-full h-28 sm:h-32 object-cover"
+                className="w-full h-32 sm:h-36 object-cover"
               />
-              <div className="py-3 text-center text-slate-800 font-semibold text-sm sm:text-base">
+
+              {/* Overlay */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileHover={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <div className="text-white font-medium text-sm sm:text-base bg-yellow-600 px-4 py-1 rounded-full shadow-md hover:bg-yellow-700 transition">
+                  Explore {city.name}
+                </div>
+              </motion.div>
+
+              <div className="py-3 text-center text-slate-800 font-semibold text-sm sm:text-base z-10 relative">
                 {city.name}
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
+
+        <div className="block lg:hidden text-sm text-slate-600 mt-4">
+          Swipe to explore more →
+        </div>
       </motion.div>
-    </div>
+    </section>
   );
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Navbar from "../components/NavBar";
-import { Footer } from "../components/Footer";
+import Navbar from "../components/common/NavBar";
+import { Footer } from "../components/common/Footer";
 import {
   ShieldCheck,
   BedDouble,
@@ -18,7 +18,7 @@ export const About: React.FC = () => {
         {/* Hero Section */}
         <div className="relative h-[50vh] w-full">
           <img
-            src="https://images.unsplash.com/photo-1608198093002-ad4e005484d3?q=80&w=1920&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Luxurious Hotel"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
@@ -79,7 +79,7 @@ export const About: React.FC = () => {
               viewport={{ once: true }}
             >
               <img
-                src="https://images.unsplash.com/photo-1558864555-8e8f9d1c00b5?q=80&w=1200&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1551590192-8070a16d9f67?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Hotel Interior"
                 className="w-full h-full object-cover"
               />

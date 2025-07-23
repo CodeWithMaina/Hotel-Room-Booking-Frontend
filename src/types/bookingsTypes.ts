@@ -18,12 +18,13 @@
 
 import type { TRoom } from "./roomsTypes";
 
+
 export type TBookingForm = {
   bookingId?: number;
   checkInDate: string;
   checkOutDate: string;
   totalAmount: string | number;
-  bookingStatus: "Pending" | "Confirmed" | "Cancelled";
+  bookingStatus: TBookingStatus;
   roomId: number;
   userId: number;
   gallery: string[];
@@ -72,7 +73,7 @@ export type TBooking = {
   roomId: number;
   checkInDate: string; // ISO format
   checkOutDate: string; // ISO format
-  bookingStatus: "Confirmed" | "Pending" | "Cancelled"; // Optional: Expand if more statuses
+  bookingStatus: TBookingStatus;
   totalAmount: string;
   createdAt: string; // ISO date
   updatedAt: string; // ISO date

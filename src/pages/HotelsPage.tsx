@@ -1,32 +1,58 @@
 // pages/HotelsPage.tsx
+import { useEffect } from "react";
 import HotelCard from "../components/hotel/HotelCard";
-import NavBar from "../components/NavBar";
-import Sections from "../components/Sections";
+import NavBar from "../components/common/NavBar";
+import Sections from "../components/common/Sections";
 import { useGetHotelsQuery } from "../features/api";
 import type { THotel } from "../types/hotelsTypes";
-import { Error } from "./Error";
-import { Loading } from "./Loading";
+import { Error } from "../components/common/Error";
+import { Loading } from "../components/common/Loading";
+import { parseRTKError } from "../utils/parseRTKError";
+import { NoData } from "../components/common/NoData";
+import { ImageCarousel } from "../components/hotel/ImageCarosel";
 
 export const HotelsPage = () => {
-  const { data: hotelsData, isLoading, error } = useGetHotelsQuery();
-  console.log(hotelsData)
-  if (isLoading){
-    return <Loading/>;
+  const {
+    data: hotelsData,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useGetHotelsQuery();
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  if (isLoading || isFetching) return <Loading />;
+
+  if (error) {
+    const errorMessage = parseRTKError(error, "Failed to fetch hotels.");
+    return <Error message={errorMessage} />;
   }
-  if (error){
-    return <Error/>;
+
+  if (!hotelsData || hotelsData.length === 0) {
+    return (
+      <NoData
+        title="No hotels found"
+        subtitle="Please check back later or adjust your filters."
+      />
+    );
   }
-  if (hotelsData?.length === 0){
-    return <span>No hotel found</span>
-  }
+
   return (
-    <div className="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen">
+    <div className="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen text-neutral-800 font-sans">
       <NavBar />
-      <Sections title="Featured Hotels" subtitle="Luxury is where your peace is at">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-6 max-w-7xl mx-auto">
-            {hotelsData?.map((hotel: THotel) => (
+      <ImageCarousel />
+
+      <Sections
+        title="Featured Hotels"
+        subtitle="Luxury is where your peace is at"
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 md:px-8 py-12 max-w-7xl mx-auto">
+          {hotelsData.map((hotel: THotel) => (
             <HotelCard key={hotel.hotelId} hotel={hotel} />
-            ))}
+          ))}
         </div>
       </Sections>
     </div>

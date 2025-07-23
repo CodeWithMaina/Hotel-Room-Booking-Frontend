@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { BedDouble, Trash2 } from "lucide-react";
-import { Button } from "../Button";
+import { Button } from "../ui/Button";
 
 export interface RoomData {
   roomId: number;
@@ -51,12 +51,14 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ room, wishlistId, on
           <Button
             className="w-full bg-blue-600 text-white hover:bg-blue-700"
             onClick={() => navigate(`/room/${room.roomId}`)}
+            
           >
             View Details
           </Button>
           <Button
             className="w-full bg-green-600 text-white hover:bg-green-700"
-            onClick={() => navigate(`/booking/${room.roomId}`)}
+            onClick={() => navigate(`/user/checkout/${room.roomId}`)}
+
           >
             Book Now
           </Button>

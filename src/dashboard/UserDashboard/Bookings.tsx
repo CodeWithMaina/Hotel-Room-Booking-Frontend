@@ -13,6 +13,7 @@ import { BookingTabs } from "../../components/booking/BookingTabs";
 import {
   useDeleteBookingMutation,
   useGetBookingsByUserIdQuery,
+  useUpdateBookingMutation,
 } from "../../features/api";
 
 import type { RootState } from "../../app/store";
@@ -44,6 +45,7 @@ export const Bookings = () => {
     );
 
   const [deleteBooking] = useDeleteBookingMutation();
+  const [updateBooking] = useUpdateBookingMutation();
 
   const fetchedBookings = useMemo(() => data?.data ?? [], [data]);
   const totalPages = data?.pagination?.totalPages ?? 1;
@@ -93,12 +95,32 @@ export const Bookings = () => {
           .unwrap()
           .then(() => {
             toast.success("Booking deleted successfully.");
-            setAllBookings((prev) =>
-              prev.filter((b) => b.bookingId !== bookingId)
-            );
           })
           .catch(() =>
             toast.error("Failed to delete booking. Please try again.")
+          );
+      }
+    });
+  };
+
+  const handleCancel = (bookingId: number) => {
+    Swal.fire({
+      title: "Cancel Booking?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e63946",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, cancel it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateBooking({ bookingId: bookingId, data: { bookingStatus: "Cancelled" } })
+          .unwrap()
+          .then(() => {
+            toast.success("Booking cancelled successfully.");
+          })
+          .catch(() =>
+            toast.error("Failed to cancel booking. Please try again.")
           );
       }
     });
@@ -180,7 +202,7 @@ export const Bookings = () => {
                     checkOutDate={booking.checkOutDate}
                     totalAmount={booking.totalAmount}
                     room={booking.room}
-                    onEdit={() => setShowEdit(true)}
+                    onCancel={() => handleCancel(booking.bookingId)}
                     onDelete={() => handleDelete(booking.bookingId)}
                     userType={userType || ""}
                   />

@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LayoutDashboard, LogOut, Bell, Menu, X } from "lucide-react";
-import { clearCredentials } from "../features/auth/authSlice";
-import type { RootState } from "../app/store";
-import { cn } from "../lib/utils";
-import { useGetUserByIdQuery } from "../features/api";
-import { Avatar } from "./ui/Avatar";
-import type { AppDispatch } from "../app/store";
+import { clearCredentials } from "../../features/auth/authSlice";
+import type { RootState } from "../../app/store";
+import { cn } from "../../lib/utils";
+import { useGetUserByIdQuery } from "../../features/api";
+import { Avatar } from "../ui/Avatar";
+import type { AppDispatch } from "../../app/store";
 
 const NAV_LINKS = ["Home", "Hotels", "Rooms", "About", "Contact"];
 

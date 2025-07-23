@@ -29,7 +29,12 @@ import { Wishlist } from "./dashboard/UserDashboard/Wishlist";
 import { UserPayment } from "./dashboard/UserDashboard/UserPayment";
 import { Checkout } from "./dashboard/UserDashboard/Checkout";
 import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
-import { PaymentCancelledPage } from "./pages/PaymentCancelledPage";
+import { AdminPayment } from "./dashboard/AdminDashboard/AdminPayment";
+import { ProtectedRoute } from "./components/ProtectedRoutes";
+import CreateRoomFormWrapper from "./components/room/CreateRoomFormWrapper";
+import { PaymentFailedPage } from "./pages/PaymentFailedPage";
+import { HotelRooms } from "./pages/HotelRooms";
+import { AvailabilityPage } from "./pages/AvailabilityPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -53,6 +58,10 @@ function App() {
       path: "/about",
       element: <About />,
     },
+    {
+      path: "/availability",
+      element: <AvailabilityPage />,
+    },
 
     {
       path: "/hotel/:id",
@@ -61,6 +70,10 @@ function App() {
     {
       path: "/room/:id",
       element: <RoomDetailsPage />,
+    },
+    {
+      path: "hotel/:id/rooms",
+      element: <HotelRooms />,
     },
     {
       path: "/register",
@@ -107,6 +120,14 @@ function App() {
           element: <RoomDetails />,
         },
         {
+          path: "/admin/payments",
+          element: <AdminPayment />,
+        },
+        {
+          path: "/admin/create-room/:hotelId",
+          element: <CreateRoomFormWrapper  />,
+        },
+        {
           path: "/admin/ticket",
           element: <Ticket />,
         },
@@ -122,7 +143,11 @@ function App() {
     },
     {
       path: "/user",
-      element: <DashboardPage />,
+      element: (
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "/user/dashboard",
@@ -149,8 +174,8 @@ function App() {
           element: <PaymentSuccessPage />,
         },
         {
-          path: "/user/payment/payment-cancelled",
-          element: <PaymentCancelledPage />,
+          path: "/user/payment/payment-failed",
+          element: <PaymentFailedPage />,
         },
 
         {
@@ -159,6 +184,32 @@ function App() {
         },
         {
           path: "/user/profile",
+          element: <Profile />,
+        },
+      ],
+    },
+    {
+      path: "/owner",
+      element: (
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: "/owner/dashboard",
+          element: <UserDashboard />,
+        },
+        {
+          path: "/owner/payment",
+          element: <UserPayment />,
+        },
+        {
+          path: "/owner/tickets",
+          element: <UserTickets />,
+        },
+        {
+          path: "/owner/profile",
           element: <Profile />,
         },
       ],

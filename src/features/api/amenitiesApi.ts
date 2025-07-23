@@ -2,39 +2,42 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const amenitiesApi = createApi({
   reducerPath: "amenitiesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Amenity"],
   endpoints: (builder) => ({
     getAmenities: builder.query({
-      query: () => 'amenities',
-      providesTags: ['Amenity'],
+      query: () => "amenities",
+      providesTags: ["Amenity"],
     }),
     getAmenityById: builder.query({
       query: (id) => `amenity/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Amenity', id }],
+      providesTags: (result, error, id) => [{ type: "Amenity", id }],
     }),
     createAmenity: builder.mutation({
       query: (newAmenity) => ({
-        url: 'amenity',
-        method: 'POST',
+        url: "amenity",
+        method: "POST",
         body: newAmenity,
       }),
-      invalidatesTags: ['Amenity'],
+      invalidatesTags: ["Amenity"],
     }),
     updateAmenity: builder.mutation({
       query: ({ amenityId, ...patch }) => ({
         url: `amenity/${amenityId}`,
-        method: 'PUT',
+        method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { amenityId }) => [{ type: 'Amenity', id: amenityId }],
+      invalidatesTags: (result, error, { amenityId }) => [
+        { type: "Amenity", id: amenityId },
+      ],
     }),
     deleteAmenity: builder.mutation<void, number>({
       query: (id) => ({
         url: `amenity/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Amenity'],
+      invalidatesTags: ["Amenity"],
     }),
   }),
 });

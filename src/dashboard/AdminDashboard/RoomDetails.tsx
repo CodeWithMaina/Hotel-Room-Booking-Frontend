@@ -16,8 +16,8 @@ import {
   useGetRoomWithAmenitiesQuery,
   useUpdateRoomMutation,
 } from "../../features/api/roomsApi";
-import { Loading } from "../../pages/Loading";
-import { Error } from "../../pages/Error";
+import { Loading } from "../../components/common/Loading";
+import { Error } from "../../components/common/Error";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -79,6 +79,7 @@ export const RoomDetails = () => {
         toast.dismiss();
         toast.success("Room deleted successfully!");
         refetch();
+        navigate("/admin/hotels");
       }
     } catch (error: any) {
       toast.dismiss();

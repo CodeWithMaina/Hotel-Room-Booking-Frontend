@@ -1,5 +1,8 @@
-import { useParams } from "react-router";
-import { useCreateBookingMutation, useGetRoomByIdQuery } from "../../features/api";
+import { Link, useParams } from "react-router";
+import {
+  useCreateBookingMutation,
+  useGetRoomByIdQuery,
+} from "../../features/api";
 import { Loader2, Users } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,16 +15,20 @@ import { useStripePayment } from "../../hook/useStripePayment";
 import type { TBookingForm } from "../../types/bookingsTypes";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
+import { parseRTKError } from "../../utils/parseRTKError"; // ✅ Error handler import
 
 export const Checkout = () => {
   const { id } = useParams();
   const roomId = Number(id);
   const { initiatePayment, isLoading: isPaymentLoading } = useStripePayment();
-  const [createBooking] = useCreateBookingMutation(); 
+  const [createBooking] = useCreateBookingMutation();
+  const { userId } = useSelector((state: RootState) => state.auth);
 
-  const {userId} = useSelector((state: RootState) => state.auth)
-
-  const { data: room, isLoading, isError } = useGetRoomByIdQuery(roomId) as {
+  const {
+    data: room,
+    isLoading,
+    isError,
+  } = useGetRoomByIdQuery(roomId) as {
     data: TRoom | undefined;
     isLoading: boolean;
     isError: boolean;
@@ -44,64 +51,86 @@ export const Checkout = () => {
 
   const handleBooking = async () => {
     if (!checkInDate || !checkOutDate) {
-      toast.error("Please select check-in and check-out dates.");
+      toast.error("Please select both check-in and check-out dates.");
       return;
     }
 
     if (nights <= 0) {
-      toast.error("Check-out date must be after check-in.");
+      toast.error("Check-out date must be after check-in date.");
       return;
     }
 
     if (!room) {
-      toast.error("Room information is not available.");
+      toast.error("Room data unavailable. Please refresh.");
       return;
     }
 
+    const bookingPayload: TBookingForm = {
+      roomId,
+      userId: Number(userId),
+      checkInDate: checkInDate.toISOString(),
+      checkOutDate: checkOutDate.toISOString(),
+      totalAmount: totalPrice.toFixed(2),
+      bookingStatus: "Pending",
+      gallery: [],
+    };
+
+    const toastId = toast.loading("Booking your stay...");
+
     try {
-      toast.loading("Processing payment...");
-      const bookingPayload: TBookingForm = {
-            roomId,
-            userId: Number(userId),
-            checkInDate: checkInDate.toISOString(),
-            checkOutDate: checkOutDate.toISOString(),
-            totalAmount: totalPrice.toFixed(2),
-            bookingStatus: "Pending",
-            gallery: []
-          };
+      const bookingResponse = await createBooking(bookingPayload).unwrap();
+      const bookingId = Number(bookingResponse?.bookingId);
 
-          const bookingResponse = await createBooking(bookingPayload)
-
-          const bookingId = Number(bookingResponse.data?.bookingId);
-      
-      // Create a booking first (you'll need to implement this API)
-      // const bookingResponse = await createBooking({
-      //   roomId: room.roomId,
-      //   checkInDate,
-      //   checkOutDate,
-      //   totalAmount: totalPrice
-      // });
-      
-
-      // Initiate Stripe payment
-      const paymentUrl = await initiatePayment(bookingId, totalPrice);
-      
-      if (paymentUrl) {
-        toast.dismiss();
-        window.location.href = paymentUrl;
-      } else {
-        throw new Error("Failed to get payment URL");
+      if (!bookingId || isNaN(bookingId)) {
+        throw new Error("Invalid booking ID received");
       }
-    } catch (error) {
-      toast.dismiss();
-      Swal.fire({
-        icon: "error",
-        title: "Payment Failed",
-        text: "There was an error processing your payment. Please try again.",
-      });
-      console.error("Payment error:", error);
+
+      toast.loading("Redirecting to payment...", { id: toastId });
+
+      const paymentUrl = await initiatePayment(bookingId, totalPrice);
+      if (!paymentUrl) throw new Error("Failed to obtain payment URL");
+
+      window.location.href = paymentUrl;
+    } catch (err) {
+      toast.dismiss(toastId);
+
+      const errorMsg = parseRTKError(err, "Failed to create booking.");
+
+      if (
+        errorMsg.toLowerCase().includes("already booked") ||
+        errorMsg.toLowerCase().includes("date conflict") ||
+        errorMsg.toLowerCase().includes("unavailable")
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "Room Already Booked",
+          text: "The room is already booked for the selected dates. Please try different dates.",
+        });
+      } else {
+        toast.error(errorMsg);
+        console.error("Booking Error:", err);
+      }
     }
   };
+  // ✅ Return early if room ID is invalid
+  if (!id || isNaN(roomId)) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          No room selected for checkout.
+        </h2>
+        <p className="text-gray-500 mb-6">
+          Please choose a room before proceeding to checkout.
+        </p>
+        <Link
+          to="/rooms"
+          className="inline-block bg-primary text-white px-6 py-3 rounded-md hover:bg-primary/80 transition-all font-semibold"
+        >
+          Browse Rooms
+        </Link>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -114,7 +143,7 @@ export const Checkout = () => {
   if (isError || !room) {
     return (
       <div className="text-center mt-20 text-red-600 font-semibold">
-        Failed to load room details. Please try again.
+        Failed to load room details. Please try again later.
       </div>
     );
   }
@@ -125,7 +154,7 @@ export const Checkout = () => {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-md my-10"
     >
-      {/* Left - Room Preview */}
+      {/* Left: Room Overview */}
       <div>
         <img
           src={room.thumbnail}
@@ -151,7 +180,7 @@ export const Checkout = () => {
         </div>
       </div>
 
-      {/* Right - Checkout Form */}
+      {/* Right: Booking Form */}
       <div className="flex flex-col gap-4">
         <h3 className="text-xl font-semibold text-gray-700">
           Select Your Stay

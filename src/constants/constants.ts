@@ -1,0 +1,1 @@
+export const hotelName = "Azure Palace"

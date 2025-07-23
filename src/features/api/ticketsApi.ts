@@ -1,10 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TTicket } from "../../types/ticketsTypes";
-import type { TCreateTicketSchema, TReplyTicketSchema } from "../../validation/ticketSchema";
+import type {
+  TCreateTicketSchema,
+  TReplyTicketSchema,
+} from "../../validation/ticketSchema";
 
 export const ticketsApi = createApi({
   reducerPath: "ticketsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["Ticket"],
   endpoints: (builder) => ({
     getTickets: builder.query<TTicket[], void>({
@@ -46,9 +51,7 @@ export const ticketsApi = createApi({
     }),
     getUserTickets: builder.query<TTicket[], number>({
       query: (userId) => `/${userId}/tickets`,
-      providesTags: (result, error, userId) => [
-        { type: 'Ticket', id: userId }
-      ],
+      providesTags: (result, error, userId) => [{ type: "Ticket", id: userId }],
     }),
   }),
 });

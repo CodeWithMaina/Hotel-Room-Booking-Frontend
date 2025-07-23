@@ -1,4 +1,4 @@
-export type UploadContext = "userProfile" | "hotel" | "room" | "other";
+export type UploadContext = "userProfile" | "hotel" | "room" | "room-gallery" | "thumbnail" | "gallery" | "other";
 
 export interface UploadImageArgs {
   file: File;

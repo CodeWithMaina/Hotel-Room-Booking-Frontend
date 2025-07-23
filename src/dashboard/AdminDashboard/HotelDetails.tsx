@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import {
   useGetHotelByIdQuery,
   useGetRoomByHotelIdQuery,
@@ -27,14 +27,15 @@ export const HotelDetails = () => {
   const {
     data: hotel,
     isError: isHotelError,
-    isLoading: isHotelLoading, refetch: hotelRefetch
+    isLoading: isHotelLoading,
+    refetch: hotelRefetch,
   } = useGetHotelByIdQuery(hotelId);
 
   const {
     data: rooms,
     isError: isRoomsError,
     isLoading: isRoomsLoading,
-    refetch: roomRefetch
+    refetch: roomRefetch,
   } = useGetRoomByHotelIdQuery(hotelId);
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -44,7 +45,11 @@ export const HotelDetails = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
 
-  useEffect(()=>{roomRefetch()},[])
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    roomRefetch();
+  }, []);
 
   const handleDelete = () => {
     Swal.fire({
@@ -56,7 +61,7 @@ export const HotelDetails = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
-      hotelRefetch()
+      hotelRefetch();
       if (result.isConfirmed) {
         Swal.fire("Deleted!", "The hotel has been removed.", "success");
       }
@@ -65,17 +70,16 @@ export const HotelDetails = () => {
 
   const filteredRooms = rooms?.filter((room: TRoom) => {
     const matchesType = roomType ? room.roomType === roomType : true;
-    const matchesCapacity = minCapacity ? room.capacity >= Number(minCapacity) : true;
+    const matchesCapacity = minCapacity
+      ? room.capacity >= Number(minCapacity)
+      : true;
     const matchesPrice =
       (!minPrice || room.pricePerNight >= Number(minPrice)) &&
       (!maxPrice || room.pricePerNight <= Number(maxPrice));
     const matchesAvailability = availableOnly ? room.isAvailable : true;
 
     return (
-      matchesType &&
-      matchesCapacity &&
-      matchesPrice &&
-      matchesAvailability
+      matchesType && matchesCapacity && matchesPrice && matchesAvailability
     );
   });
 
@@ -94,7 +98,9 @@ export const HotelDetails = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center gap-4">
         <AlertCircle size={48} className="text-red-500" />
-        <p className="text-xl font-semibold text-gray-800">Oops! Unable to load hotel details.</p>
+        <p className="text-xl font-semibold text-gray-800">
+          Oops! Unable to load hotel details.
+        </p>
         <p className="text-sm text-gray-500">Please try again later.</p>
       </div>
     );
@@ -116,7 +122,9 @@ export const HotelDetails = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#03071E]/80 to-transparent" />
         <div className="absolute bottom-10 left-10 z-10 text-white space-y-3">
-          <h1 className="text-4xl font-extrabold drop-shadow-md">{hotel.name}</h1>
+          <h1 className="text-4xl font-extrabold drop-shadow-md">
+            {hotel.name}
+          </h1>
 
           <div className="flex items-center gap-3 text-sm text-slate-100">
             <MapPin size={18} />
@@ -161,50 +169,84 @@ export const HotelDetails = () => {
         className="px-6 md:px-12 py-12 bg-white rounded-t-3xl -mt-16 relative z-20 shadow-xl"
       >
         {/* Header + Filters */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-          <h2 className="text-3xl font-semibold text-[#14213D]">Available Rooms</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 w-full">
-        
-            <select
-              className="select select-bordered"
-              value={roomType}
-              onChange={(e) => setRoomType(e.target.value)}
+        <div className="flex flex-col gap-6 mb-10">
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <h2 className="text-3xl font-semibold text-[#14213D]">
+              Available Rooms
+            </h2>
+            <button
+              onClick={() => navigate(`/admin/create-room/${hotelId}`)}
+              className="btn btn-primary shadow-md bg-[#FCA311] text-white hover:bg-[#e18d0a]"
             >
-              <option value="">All Types</option>
-              <option value="Single">Single</option>
-              <option value="Double">Double</option>
-              <option value="Suite">Suite</option>
-            </select>
-            <input
-              type="number"
-              placeholder="Min Capacity"
-              value={minCapacity}
-              onChange={(e) => setMinCapacity(e.target.value)}
-              className="input input-bordered"
-            />
-            <input
-              type="number"
-              placeholder="Min Price"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="input input-bordered"
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="input input-bordered"
-            />
-            <label className="label cursor-pointer gap-2">
+              + Create Room
+            </button>
+          </div>
+
+          <div className="bg-slate-50 p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="form-control">
+              <label className="label text-sm text-gray-600">Room Type</label>
+              <select
+                className="select select-bordered w-full"
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+              >
+                <option value="">All Types</option>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Suite">Suite</option>
+              </select>
+            </div>
+
+            <div className="form-control">
+              <label className="label text-sm text-gray-600">
+                Min Capacity
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 2"
+                value={minCapacity}
+                onChange={(e) => setMinCapacity(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div className="form-control">
+              <label className="label text-sm text-gray-600">
+                Min Price (Ksh)
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 5000"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div className="form-control">
+              <label className="label text-sm text-gray-600">
+                Max Price (Ksh)
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 20000"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div className="form-control flex items-center gap-2 pt-6">
               <input
                 type="checkbox"
                 className="checkbox checkbox-primary"
                 checked={availableOnly}
                 onChange={() => setAvailableOnly((prev) => !prev)}
               />
-              <span className="label-text">Available only</span>
-            </label>
+              <span className="label-text text-sm text-gray-700">
+                Available only
+              </span>
+            </div>
           </div>
         </div>
 
@@ -222,7 +264,11 @@ export const HotelDetails = () => {
       </motion.section>
 
       {/* Edit Modal Component */}
-      <EditHotelModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} hotel={hotel} />
+      <EditHotelModal
+        isOpen={isEditOpen}
+        setIsOpen={setIsEditOpen}
+        hotel={hotel}
+      />
     </div>
   );
 };

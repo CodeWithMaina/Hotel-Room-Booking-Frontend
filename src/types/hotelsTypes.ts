@@ -6,6 +6,7 @@ export type THotel = {
   contactPhone?: string | null;
   category?: string | null;
   rating?: number | null;
+  gallery: string[];
   createdAt: Date;
   updatedAt: Date;
 };

@@ -2,39 +2,42 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const entityAmenitiesApi = createApi({
   reducerPath: "entityAmenitiesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+
   tagTypes: ["EntityAmenity"],
   endpoints: (builder) => ({
     getEntityAmenities: builder.query({
-      query: () => 'entity-amenities',
-      providesTags: ['EntityAmenity'],
+      query: () => "entity-amenities",
+      providesTags: ["EntityAmenity"],
     }),
     getEntityAmenityById: builder.query({
       query: (id) => `entity-amenity/${id}`,
-      providesTags: (result, error, id) => [{ type: 'EntityAmenity', id }],
+      providesTags: (result, error, id) => [{ type: "EntityAmenity", id }],
     }),
     createEntityAmenity: builder.mutation({
       query: (newEntityAmenity) => ({
-        url: 'entity-amenity',
-        method: 'POST',
+        url: "entity-amenity",
+        method: "POST",
         body: newEntityAmenity,
       }),
-      invalidatesTags: ['EntityAmenity'],
+      invalidatesTags: ["EntityAmenity"],
     }),
     updateEntityAmenity: builder.mutation({
       query: ({ id, ...patch }) => ({
         url: `entity-amenity/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'EntityAmenity', id }],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "EntityAmenity", id },
+      ],
     }),
     deleteEntityAmenity: builder.mutation<void, number>({
       query: (id) => ({
         url: `entity-amenity/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['EntityAmenity'],
+      invalidatesTags: ["EntityAmenity"],
     }),
   }),
 });

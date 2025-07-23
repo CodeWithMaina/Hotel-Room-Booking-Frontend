@@ -4,7 +4,7 @@ import type { TAddress } from "../../types/addressTypes";
 
 export const addressesApi = createApi({
   reducerPath: "addressesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL}),
   tagTypes: ["Address"],
   endpoints: (builder) => ({
     getAddresses: builder.query({

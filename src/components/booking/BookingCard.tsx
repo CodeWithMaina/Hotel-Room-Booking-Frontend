@@ -24,7 +24,7 @@ type Booking = {
     isAvailable: boolean;
     createdAt: string;
   };
-  onEdit: () => void;
+  onCancel: () => void;
   onDelete: () => void;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
   userType: string;
@@ -36,7 +36,7 @@ export const BookingCard = ({
   checkOutDate,
   totalAmount,
   room,
-  onEdit,
+  onCancel,
   onDelete,
   onClick,
   userType,
@@ -49,18 +49,20 @@ export const BookingCard = ({
   const formattedCheckOut = format(new Date(checkOutDate), "dd MMM yyyy");
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((userType === 'admin' || userType === 'owner') && onClick) {
+    if ((userType === "admin" || userType === "owner") && onClick) {
       onClick(e);
     }
   };
 
   return (
-    <div 
+    <div
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
       className={`group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm w-full max-w-sm md:max-w-[340px] font-sans ${
-        (userType === 'admin' || userType === 'owner') ? 'cursor-pointer' : 'cursor-default'
+        userType === "admin" || userType === "owner"
+          ? "cursor-pointer"
+          : "cursor-default"
       }`}
     >
       {/* Image */}
@@ -112,15 +114,18 @@ export const BookingCard = ({
         >
           {bookingStatus}
         </span>
-        
-        {(userType === "user" || userType === "owner") && (
+
+        {userType === "user" && (
           <div className="pt-4 flex flex-wrap gap-2 justify-between">
-            <button
-              onClick={onEdit}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
-            >
-              <Pencil size={16} /> Edit
-            </button>
+            {bookingStatus === "Pending" && (
+              <button
+                onClick={onCancel}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+              >
+                <Pencil size={16} /> Cancel
+              </button>
+            )}
+
             <button
               onClick={onDelete}
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"

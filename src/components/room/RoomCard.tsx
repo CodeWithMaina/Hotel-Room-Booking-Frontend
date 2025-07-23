@@ -1,4 +1,3 @@
-
 import {
   BedDouble,
   DollarSign,
@@ -16,43 +15,50 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
 
   return (
     <div
-      className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition cursor-pointer"
+      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 cursor-pointer overflow-hidden border border-slate-200"
       onClick={() => navigate(`/room/${room.roomId}`)}
     >
+      {/* Image */}
       <div className="relative">
         <img
           src={room.thumbnail}
           alt={room.roomType}
           className="w-full h-48 object-cover"
         />
+
+        {/* Availability Badge */}
         <span
-          className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded-full backdrop-blur-sm ${
+          className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold uppercase rounded-full backdrop-blur-md border ${
             room.isAvailable
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+              : "bg-rose-100 text-rose-800 border-rose-200"
           }`}
         >
           {room.isAvailable ? "Available" : "Booked"}
         </span>
       </div>
 
-      <div className="p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <BedDouble className="w-5 h-5 text-blue-600" /> {room.roomType}
+      {/* Content */}
+      <div className="p-4 space-y-4">
+        {/* Room Type */}
+        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 tracking-wide uppercase">
+          <BedDouble className="w-5 h-5 text-gold-600" />
+          {room.roomType}
         </h3>
 
-        <div className="flex items-center justify-between text-gray-600">
+        {/* Capacity & Price */}
+        <div className="flex items-center justify-between text-slate-600">
           <p className="flex items-center gap-1 text-sm">
-            <Users className="w-4 h-4 text-blue-600" /> {room.capacity} Guests
+            <Users className="w-4 h-4 text-gold-500" /> {room.capacity} Guests
           </p>
-          <p className="flex items-center gap-1 text-sm font-medium">
-            <DollarSign className="w-4 h-4 text-blue-600" /> $
-            {room.pricePerNight}
+          <p className="flex items-center gap-1 text-sm font-semibold">
+            <DollarSign className="w-4 h-4 text-gold-500" /> ${room.pricePerNight}
           </p>
         </div>
 
+        {/* CTA Button */}
         <button
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition"
+          className="w-full py-2 text-sm font-semibold tracking-wide uppercase bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white hover:from-[#1e293b] hover:to-[#0f172a] rounded-lg shadow-inner transition duration-300"
         >
           Book Now
         </button>

@@ -5,7 +5,7 @@ import clsx from "clsx";
 import type { TEditRoomForm } from "../../types/roomsTypes";
 import { useImageUploader } from "../../hook/useImageUploader";
 import toast from "react-hot-toast";
-import { LoadingSpinner } from "../loadingSpinner";
+import { LoadingSpinner } from "../ui/loadingSpinner";
 
 interface EditRoomModalProps {
   isOpen: boolean;

@@ -19,7 +19,6 @@ import {
   Server,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "../../components/Button";
 import { Card, CardContent } from "../../components/dashboard/Card";
 import { useGetAdminAnalyticsSummaryQuery } from "../../features/api/analyticsApi";
 import type {
@@ -29,6 +28,7 @@ import type {
   SystemHealth,
 } from "../../types/analyticsTypes";
 import { Skeleton } from "../../components/dashboard/skeleton/AdminSkeleton";
+import { Button } from "../../components/ui/Button";
 
 export const Dashboard = () => {
   const { data: response, isError, isLoading } = useGetAdminAnalyticsSummaryQuery();
