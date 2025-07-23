@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newsletterSchema, type NewsletterFormSchema } from "../../validation/newsletterValidator";
 import { Mail } from "lucide-react";
+import { useSubscribeToNewsletterMutation } from "../../features/api/newsletterApi";
+import { toast } from "react-hot-toast";
+import { parseRTKError } from "../../utils/parseRTKError";
 
 export const Newsletter: React.FC = () => {
   const {
@@ -14,11 +17,17 @@ export const Newsletter: React.FC = () => {
     resolver: zodResolver(newsletterSchema),
   });
 
+  const [subscribeToNewsletter] = useSubscribeToNewsletterMutation();
+
   const onSubmit = async (data: NewsletterFormSchema) => {
-    // Simulate newsletter subscription logic
-    await new Promise((res) => setTimeout(res, 1500));
-    reset();
-    alert(`Subscribed: ${data.email}`);
+    try {
+      const res = await subscribeToNewsletter({ email: data.email }).unwrap();
+      toast.success(res.message || "Successfully subscribed!");
+      reset();
+    } catch (err) {
+      const errorMessage = parseRTKError(err, "Subscription failed. Please try again.");
+      toast.error(errorMessage);
+    }
   };
 
   return (

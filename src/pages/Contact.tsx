@@ -3,10 +3,16 @@ import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, ChevronDown } from "lucide-react";
 import Navbar from "../components/common/NavBar";
 import { Footer } from "../components/common/Footer";
-import toast from "react-hot-toast"; // Optional: For feedback messages
+import toast from "react-hot-toast";
+import { useSendContactMessageMutation } from "../features/api/contactApi";
+import { parseRTKError } from "../utils/parseRTKError";
+import { hotelContact, supportEmail } from "../constants/constants";
 
 export const Contact: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // RTK mutation hook
+  const [sendContactMessage, { isLoading }] = useSendContactMessageMutation();
 
   const [form, setForm] = useState({
     name: "",
@@ -23,11 +29,12 @@ export const Contact: React.FC = () => {
     return regex.test(email);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { name, email, message } = form;
 
+    // Client-side validation
     if (!name || !email || !message) {
       toast.error("Please fill in all fields.");
       return;
@@ -38,12 +45,14 @@ export const Contact: React.FC = () => {
       return;
     }
 
-    // Simulate sending
-    toast.success("Message sent successfully!");
-    // Reset form
-    setForm({ name: "", email: "", message: "" });
-
-    // You can integrate actual email sending via EmailJS, an API, or backend call here.
+    try {
+      await sendContactMessage({ name, email, message }).unwrap();
+      toast.success("Message sent successfully!");
+      setForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      const errorMessage = parseRTKError(error, "Failed to send the message.");
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -130,10 +139,43 @@ export const Contact: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-md"
+                disabled={isLoading}
+                className={`w-full ${
+                  isLoading
+                    ? "bg-yellow-400 cursor-not-allowed"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                } text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-md`}
               >
-                <Send className="w-4 h-4" />
-                Send Message
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
@@ -163,11 +205,11 @@ export const Contact: React.FC = () => {
           </p>
           <p className="flex items-center justify-center gap-3 text-lg">
             <Mail className="w-5 h-5 text-yellow-500" />
-            support@luxhotel.com
+            {supportEmail}
           </p>
           <p className="flex items-center justify-center gap-3 text-lg">
             <Phone className="w-5 h-5 text-yellow-500" />
-            +254 712 345 678
+            {hotelContact}
           </p>
         </div>
       </div>

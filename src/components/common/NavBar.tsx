@@ -73,7 +73,7 @@ const Navbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="text-xl md:text-2xl font-bold tracking-tight">
-          <span className="text-primary">Lux</span>Stay
+          <span className="text-primary">Stay</span>Cloud
         </Link>
 
         {/* Desktop Nav */}

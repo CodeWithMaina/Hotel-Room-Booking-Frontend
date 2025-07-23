@@ -23,6 +23,7 @@ import { analyticsApi } from "../features/api/analyticsApi";
 import { wishlistApi } from "../features/api/wishlistApi";
 import { contactApi } from "../features/api/contactApi";
 import { availabilityApi } from "../features/api/availabilityApi";
+import { newsletterApi } from "../features/api/newsletterApi";
 
 // Auth persist config
 const authPersistConfig = {
@@ -49,6 +50,7 @@ export const store = configureStore({
     [amenitiesApi.reducerPath]: amenitiesApi.reducer,
     [wishlistApi.reducerPath]: wishlistApi.reducer,
     [analyticsApi.reducerPath]: analyticsApi.reducer,
+    [newsletterApi.reducerPath]: newsletterApi.reducer,
     [addressesApi.reducerPath]: addressesApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
     [entityAmenitiesApi.reducerPath]: entityAmenitiesApi.reducer,
@@ -73,6 +75,7 @@ export const store = configureStore({
       availabilityApi.middleware,
       paymentsApi.middleware,
       amenitiesApi.middleware,
+      newsletterApi.middleware,
       addressesApi.middleware,
       analyticsApi.middleware,
       contactApi.middleware,

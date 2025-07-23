@@ -1,5 +1,5 @@
 import { Facebook, Twitter, Instagram, Globe } from "lucide-react";
-import { hotelName } from "../../constants/constants";
+import { hotelContact, hotelName, supportEmail } from "../../constants/constants";
 import { Link } from "react-router";
 
 export const Footer = () => {
@@ -86,15 +86,15 @@ export const Footer = () => {
         <div>
           <h6 className="text-lg font-semibold mb-4">Contact</h6>
           <p className="text-sm">
-            Email: support@hotelify.com
+            Email: {supportEmail}
             <br />
-            Phone: +1 234 567 890
+            Phone: {hotelContact}
           </p>
         </div>
       </div>
 
       <div className="mt-10 text-center text-sm text-neutral-content border-t border-neutral pt-6">
-        &copy; {new Date().getFullYear()} Hotelify. All rights reserved.
+        &copy; {new Date().getFullYear()} {hotelName}. All rights reserved.
       </div>
     </footer>
   );

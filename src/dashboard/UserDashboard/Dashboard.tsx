@@ -21,8 +21,15 @@ import {
 } from "../../components/dashboard/skeleton/MetricCard";
 import { MetricCardSkeleton } from "../../components/dashboard/skeleton/MetricCardSkeleton";
 import { useGetUserAnalyticsSummaryQuery } from "../../features/api/analyticsApi";
+import { useState } from "react";
 
 export const UserDashboard = () => {
+   const [tab, setTab] = useState("bookings");
+
+  const handleTabChange = (value: string) => {
+    setTab(value);
+  };
+  
   const {
     data: analytics,
     error,
@@ -179,7 +186,7 @@ export const UserDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <Tabs defaultValue="bookings">
+        <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="bg-base-200 border border-primary/30 p-1 rounded-xl flex gap-2 w-full mb-4">
             <TabsTrigger
               value="bookings"

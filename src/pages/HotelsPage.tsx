@@ -49,7 +49,7 @@ export const HotelsPage = () => {
         title="Featured Hotels"
         subtitle="Luxury is where your peace is at"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 md:px-8 py-12 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 md:px-8 py-12 max-w-7xl md:mx-auto">
           {hotelsData.map((hotel: THotel) => (
             <HotelCard key={hotel.hotelId} hotel={hotel} />
           ))}

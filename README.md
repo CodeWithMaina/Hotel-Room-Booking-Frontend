@@ -74,3 +74,8 @@ const links = [
   { id: "hotels", label: "Hotels", icon: Hotel },
   { id: "ticket", label: "Customer Support", icon: MessageSquare },
 ];
+
+
+
+const errorMessage = parseRTKError(err, "Subscription failed. Please try again.");
+toast.error(errorMessage);
