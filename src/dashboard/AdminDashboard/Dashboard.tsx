@@ -29,10 +29,13 @@ import type {
 } from "../../types/analyticsTypes";
 import { Skeleton } from "../../components/dashboard/skeleton/AdminSkeleton";
 import { Button } from "../../components/ui/Button";
+import { useNavigate } from "react-router";
 
 export const Dashboard = () => {
   const { data: response, isError, isLoading } = useGetAdminAnalyticsSummaryQuery();
   const data = response?.data;
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -286,7 +289,7 @@ export const Dashboard = () => {
             <h2 className="text-lg font-semibold text-primary">
               Recent Bookings
             </h2>
-            <Button className="btn btn-primary text-white">View All</Button>
+            <Button onClick={()=> navigate('/admin/booking-details')} className="btn btn-primary text-white">View All</Button>
           </div>
           <div className="overflow-x-auto">
             {recentBookings.length > 0 ? (

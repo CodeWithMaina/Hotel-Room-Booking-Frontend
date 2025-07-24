@@ -44,10 +44,20 @@ export const UserList = () => {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
-        className="text-3xl font-bold text-[#14213d] tracking-tight"
+        className="text-3xl flex items-center font-bold text-[#14213d] tracking-tight"
       >
         <span className="text-[#fca311]">Manage</span>{" "}
         {selectedType === "user" ? "Users" : "Owners"}
+        <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <UsersActionBar
+          onSearch={(query) => setSearchQuery(query)}
+          className="mt-6"
+        />
+      </motion.div>
       </motion.h1>
 
       <motion.div
@@ -61,16 +71,7 @@ export const UserList = () => {
         />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <UsersActionBar
-          onSearch={(query) => setSearchQuery(query)}
-          className="mt-6"
-        />
-      </motion.div>
+      
 
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-10">

@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { isAuthenticated, userId, userType, firstName } = useSelector(
+  const { isAuthenticated, userId, userType } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -144,7 +144,7 @@ const Navbar: React.FC = () => {
                   }
                   size="sm"
                 />
-                <span>{firstName}</span>
+                <span>{user?.firstName}</span>
               </button>
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-64 bg-base-100 text-base-content rounded-xl shadow-xl border border-border animate-fade-in overflow-hidden">

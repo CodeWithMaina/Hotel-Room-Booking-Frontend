@@ -27,12 +27,12 @@ export const UserCard: React.FC<Props> = ({ user }) => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleCardClick}
-        className="bg-white border border-base-300 rounded-2xl p-5 flex flex-col items-center text-base-content cursor-pointer transition-shadow hover:shadow-xl"
+        className="bg-white border-base-300 text-black rounded-2xl p-5 flex flex-col items-center cursor-pointer transition-shadow hover:shadow-xl"
       >
         <img
           src={user.profileImage || "/placeholder.jpg"}
           alt={`${user.firstName} ${user.lastName}`}
-          className="w-20 h-20 rounded-full object-cover border-4 border-primary mb-4"
+          className="w-20 h-20 rounded-full object-cover border-1 border-primary mb-4"
         />
 
         <h3 className="text-lg font-bold text-center">

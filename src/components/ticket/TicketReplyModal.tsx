@@ -28,7 +28,7 @@ export const TicketReplyModal = ({ ticket, onClose }: Props) => {
     resolver: zodResolver(replyTicketSchema),
     defaultValues: {
       reply: ticket.reply || "",
-      status: ticket.status,
+      status: ticket.status ?? "Open",
     },
   });
 

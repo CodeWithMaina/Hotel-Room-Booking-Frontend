@@ -16,7 +16,7 @@ export const UserTickets = () => {
   const id = Number(userId);
   const { data: tickets, isLoading, refetch: refetchTickets} = useGetUserTicketsQuery(id);
 
-  useEffect(()=>{refetchTickets()},[showModal])
+  useEffect(()=>{refetchTickets()},[refetchTickets, showModal])
 
   return (
     <div className="bg-gradient-to-br from-[#FEFAE0] to-white min-h-screen p-6 md:p-10 text-[#283618]">

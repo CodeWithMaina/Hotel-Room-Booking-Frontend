@@ -12,23 +12,18 @@ interface MetricCardProps {
   metric: Metric;
 }
 
-export const MetricCard: FC<MetricCardProps> = ({ metric }) => {
-  return (
-    <Card className="bg-base-100 border border-base-content/10 rounded-2xl shadow-sm hover:border-primary/60 transition-all">
-      <CardHeader className="flex items-center gap-4">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
-          {metric.icon}
-        </div>
-        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-primary">
-          {metric.title}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <p className="text-3xl font-bold text-base-content">
-          {metric.value}
-        </p>
-      </CardContent>
-    </Card>
-  );
-};
+export const MetricCard: FC<MetricCardProps> = ({ metric }) => (
+  <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+    <CardHeader className="flex items-center gap-3 pb-2">
+      <div className="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+        {metric.icon}
+      </div>
+      <CardTitle className="text-sm font-medium text-slate-600 uppercase tracking-wide">
+        {metric.title}
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="pt-0">
+      <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
+    </CardContent>
+  </Card>
+);

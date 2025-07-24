@@ -1,3 +1,4 @@
+// components/dashboard/Tabs.tsx
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
@@ -43,7 +44,12 @@ interface TabsListProps {
 
 export const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
   return (
-    <div className={cn("flex gap-3 pb-1 mb-6 border-b", className)}>
+    <div
+      className={cn(
+        "flex gap-2 p-1 bg-base-200 border border-base-300 rounded-xl shadow-sm w-full",
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -63,9 +69,9 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, class
     <button
       onClick={() => setActiveTab(value)}
       className={cn(
-        "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-full text-left",
+        "flex-1 text-sm font-medium px-4 py-2 rounded-lg transition duration-150",
         isActive
-          ? "bg-primary text-white shadow-sm"
+          ? "bg-primary text-white shadow-md"
           : "text-muted hover:text-primary",
         className
       )}
@@ -83,7 +89,5 @@ interface TabsContentProps {
 
 export const TabsContent: React.FC<TabsContentProps> = ({ value, children, className }) => {
   const { activeTab } = useTabsContext();
-  return activeTab === value ? (
-    <div className={cn("text-base-content", className)}>{children}</div>
-  ) : null;
+  return activeTab === value ? <div className={cn("pt-4", className)}>{children}</div> : null;
 };

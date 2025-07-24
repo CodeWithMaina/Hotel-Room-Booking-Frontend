@@ -15,7 +15,7 @@ import { useStripePayment } from "../../hook/useStripePayment";
 import type { TBookingForm } from "../../types/bookingsTypes";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
-import { parseRTKError } from "../../utils/parseRTKError"; // ✅ Error handler import
+import { parseRTKError } from "../../utils/parseRTKError";
 
 export const Checkout = () => {
   const { id } = useParams();
