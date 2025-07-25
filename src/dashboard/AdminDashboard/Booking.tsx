@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { BookingCard } from "../../components/booking/BookingCard";
 import { BookingCardSkeleton } from "../../components/booking/BookingCardSkeleton";
@@ -13,32 +13,24 @@ import type { TSingleBooking } from "../../types/bookingsTypes";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { Filter } from "lucide-react";
 
 export const Booking = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedRoomType, setSelectedRoomType] = useState("All");
-  const [showMobileFilter, setShowMobileFilter] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
-
-  const lastScrollY = useRef(0);
-
   const { userType } = useSelector((state: RootState) => state.auth);
 
   const {
     data: bookingsData,
     isLoading,
     isError,
-  } = useGetBookingsQuery(
-    { page: 1, limit: 10 },
-    { skip: userType !== "admin" }
-  );
+  } = useGetBookingsQuery({ page: 1, limit: 10 }, { skip: userType !== "admin" });
 
-  const allBookings = bookingsData?.data
-  console.log(allBookings)
-
+  const allBookings = bookingsData?.data;
   const [deleteBooking] = useDeleteBookingMutation();
 
   const bookings: TSingleBooking[] = useMemo(() => {
@@ -53,17 +45,14 @@ export const Booking = () => {
     return Array.from(types);
   }, [bookings]);
 
-  const filteredBookings = bookings.filter((booking: TSingleBooking) => {
+  const filteredBookings = bookings.filter((booking) => {
     const matchStatus =
       filterStatus === "All" || booking.bookingStatus === filterStatus;
     const matchRoom =
       selectedRoomType === "All" || booking.room?.roomType === selectedRoomType;
-
     const matchSearch =
       searchQuery.trim() === "" ||
-      booking.room?.roomType
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
+      booking.room?.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
@@ -88,79 +77,47 @@ export const Booking = () => {
       if (result.isConfirmed) {
         deleteBooking(bookingId)
           .unwrap()
-          .then(() => {
-            toast.success("Booking deleted successfully.");
-          })
-          .catch(() => {
-            Swal.fire("Error", "Failed to delete booking", "error");
-          });
+          .then(() => toast.success("Booking deleted successfully."))
+          .catch(() => Swal.fire("Error", "Failed to delete booking", "error"));
       }
     });
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScroll = window.scrollY;
-      const direction = currentScroll > lastScrollY.current ? "down" : "up";
-      setShowMobileFilter(direction !== "down");
-      lastScrollY.current = currentScroll;
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div>
-      <main className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-4 sm:p-6">
-        {/* Header with Search */}
-        <div className="max-w-6xl mx-auto px-4 pb-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-[#000000] mb-1">
-                Your Bookings
-              </h1>
-              <p className="text-[#14213d] text-sm">
-                View, edit or manage hotel bookings
-              </p>
+    <div className="relative">
+      {/* 🟡 Drawer Toggle */}
+      <input id="filter-drawer" type="checkbox" className="drawer-toggle" />
+
+      <div className="drawer">
+        {/* Main Page Content */}
+        <div className="drawer-content min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-4 sm:p-6 pb-24">
+          {/* Header with Search */}
+          <div className="max-w-6xl mx-auto px-4 pb-6">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-[#000000] mb-1">
+                  Your Bookings
+                </h1>
+                <p className="text-[#14213d] text-sm">
+                  View, edit or manage hotel bookings
+                </p>
+              </div>
+              <div className="w-full max-w-md">
+                <input
+                  type="text"
+                  placeholder="Search by room type, status, or date..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-white text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
+                />
+              </div>
             </div>
-            <div className="w-full max-w-md">
-              <input
-                type="text"
-                placeholder="Search by room type, status, or date..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 rounded-md border border-[#d1d5db] bg-[#ffffff] text-[#03071e] placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#fca311] transition duration-200"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row gap-6 relative">
-          {/* Mobile Filter */}
-          <div
-            className={`lg:hidden transition-all duration-300 ease-in-out z-30 ${
-              showMobileFilter
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-full"
-            }`}
-          >
-            <BookingFilterSidebar
-              filterStatus={filterStatus}
-              setFilterStatus={setFilterStatus}
-              selectedRoomType={selectedRoomType}
-              setSelectedRoomType={setSelectedRoomType}
-              availableRoomTypes={roomTypes}
-              onClear={() => {
-                setFilterStatus("All");
-                setSelectedRoomType("All");
-              }}
-            />
           </div>
 
-          {/* Main Booking Section */}
-          <section className="flex-1">
+          {/* Booking Cards */}
+          <div className="max-w-6xl mx-auto px-4">
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="flex flex-col gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <BookingCardSkeleton key={i} />
                 ))}
@@ -168,7 +125,7 @@ export const Booking = () => {
             ) : isError ? (
               <p className="text-red-500">Error fetching bookings.</p>
             ) : filteredBookings.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-6">
                 {filteredBookings.map((booking) => (
                   <BookingCard
                     key={booking.bookingId}
@@ -178,7 +135,7 @@ export const Booking = () => {
                     checkOutDate={booking.checkOutDate}
                     totalAmount={booking.totalAmount}
                     room={booking.room}
-                    onEdit  ={() => setShowEdit(true)}
+                    onEdit={() => setShowEdit(true)}
                     onDelete={() => handleDelete(booking.bookingId!)}
                     onClick={(e) => {
                       e.preventDefault();
@@ -193,10 +150,33 @@ export const Booking = () => {
                 No bookings found.
               </p>
             )}
-          </section>
+          </div>
 
-          {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-full lg:w-72">
+          {/* 🟢 Floating Filter Button */}
+          <label
+            htmlFor="filter-drawer"
+            className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg cursor-pointer transition"
+          >
+            <Filter className="w-5 h-5" />
+          </label>
+
+          {/* 🔵 Booking Edit Modal */}
+          <BookingEditModal show={showEdit} onClose={() => setShowEdit(false)} />
+        </div>
+
+        {/* Drawer Sidebar Content */}
+        <div className="drawer-side z-50">
+          <label htmlFor="filter-drawer" className="drawer-overlay"></label>
+          <div className="w-80 bg-white h-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Filter Bookings</h2>
+              <label
+                htmlFor="filter-drawer"
+                className="btn btn-sm btn-circle btn-outline"
+              >
+                ✕
+              </label>
+            </div>
             <BookingFilterSidebar
               filterStatus={filterStatus}
               setFilterStatus={setFilterStatus}
@@ -208,12 +188,9 @@ export const Booking = () => {
                 setSelectedRoomType("All");
               }}
             />
-          </aside>
+          </div>
         </div>
-
-        {/* Modals */}
-        <BookingEditModal show={showEdit} onClose={() => setShowEdit(false)} />
-      </main>
+      </div>
     </div>
   );
 };
