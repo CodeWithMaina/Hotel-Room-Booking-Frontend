@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Mail, Lock, LogIn, Eye, EyeOff } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import "sweetalert2/src/sweetalert2.scss";
 import { loginSchema, type LoginData } from "../validation/login.validation";
 import { authApi } from "../features/api/authApi";
 import { Loading } from "../components/common/Loading";
@@ -48,100 +49,104 @@ export const Login = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 py-8"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1501117716987-c8e6fca29c9d?auto=format&fit=crop&w=1470&q=80')",
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-[#03071e] text-white px-4 py-12">
       <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
 
-      <div className="w-full max-w-md bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl p-8 animate-fade-in border border-gray-200">
-        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-2">
-          Lux<span className="text-[#fca311]">Hotels</span>
-        </h1>
-        <p className="text-center text-gray-600 text-sm mb-6">
-          Sign in to your account
-        </p>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fca311] focus:border-[#fca311]"
-                {...register("email")}
-              />
-            </div>
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.email.message}
-              </p>
-            )}
+      <div className="w-full max-w-6xl mx-auto grid md:grid-cols-2 bg-[#14213d] rounded-2xl shadow-2xl overflow-hidden animate-fade-in border border-[#fca311]/20">
+        {/* Image Side */}
+        <div className="hidden md:block relative">
+          <img
+            src="https://images.unsplash.com/photo-1517840901100-8179e982acb7?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Replace with your image path
+            alt="Luxury hotel entrance"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center">
+            <h2 className="text-3xl font-bold text-[#fca311] px-6 text-center">
+              Indulge in Class. <br />
+              Log In & Relax.
+            </h2>
           </div>
+        </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fca311] focus:border-[#fca311]"
-                {...register("password")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-[#fca311]"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+        {/* Login Form */}
+        <div className="w-full p-8 md:p-12 bg-[#14213d] text-white">
+          <h1 className="text-4xl font-extrabold text-center mb-1 text-[#fca311] tracking-wide">
+            Lux<span className="text-white">Hotels</span>
+          </h1>
+          <p className="text-center text-[#e5e5e5] mb-6 text-sm">
+            Sign in to continue your luxurious journey.
+          </p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-[#e5e5e5]">Email</label>
+              <div className="flex items-center bg-black rounded-lg px-3 py-2 border border-[#fca311]/40 focus-within:ring-2 focus-within:ring-[#fca311]">
+                <Mail className="w-5 h-5 text-[#fca311] mr-2" />
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="bg-transparent w-full text-sm placeholder-[#e5e5e5]/60 text-white outline-none"
+                  {...register("email")}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password.message}
-              </p>
-            )}
-            <div className="text-right mt-1">
-              <button
-                type="button"
-                onClick={() => navigate("/forgot-password")}
-                className="text-sm text-[#fca311] hover:underline"
-              >
-                Forgot Password?
-              </button>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-[#e5e5e5]">Password</label>
+              <div className="flex items-center bg-black rounded-lg px-3 py-2 border border-[#fca311]/40 focus-within:ring-2 focus-within:ring-[#fca311] relative">
+                <Lock className="w-5 h-5 text-[#fca311] mr-2" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="bg-transparent w-full text-sm placeholder-[#e5e5e5]/60 text-white outline-none pr-8"
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 text-[#e5e5e5]/60 hover:text-[#fca311] transition"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
+              )}
+              <div className="text-right mt-1">
+                <button
+                  type="button"
+                  onClick={()=> navigate('/forgot-password')}
+                  className="text-sm text-[#fca311] hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
             </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="w-full bg-[#fca311] hover:bg-[#fca311]/90 text-black font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
+            >
+              <LogIn className="w-5 h-5" />
+              Log In
+            </button>
+          </form>
+
+          {/* Register */}
+          <div className="text-center mt-6">
+            <button
+              onClick={() => navigate("/register")}
+              className="text-sm text-[#e5e5e5] hover:text-[#fca311] transition"
+            >
+              Don’t have an account? <span className="font-medium">Register</span>
+            </button>
           </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-[#fca311] hover:bg-[#fca311]/90 text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
-          >
-            <LogIn className="w-5 h-5" />
-            Log In
-          </button>
-        </form>
-
-        {/* Register */}
-        <div className="text-center mt-6">
-          <button
-            onClick={() => navigate("/register")}
-            className="text-sm text-gray-600 hover:text-[#fca311] transition"
-          >
-            Don’t have an account? <span className="font-medium">Register</span>
-          </button>
         </div>
       </div>
 
