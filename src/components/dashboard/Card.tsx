@@ -10,7 +10,7 @@ interface CardProps {
 export const Card: FC<CardProps> = ({ className, children }) => (
   <div
     className={cn(
-      "bg-base-100 text-base-content border border-base-content/10 rounded-2xl px-6 py-5 shadow-sm transition hover:shadow-md",
+      "bg-white text-base-content border border-base-content/10 rounded-2xl px-6 py-5 shadow-sm transition hover:shadow-md",
       className
     )}
   >
