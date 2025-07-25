@@ -13,7 +13,7 @@ export const addressesApi = createApi({
     }),
     getAddressById: builder.query({
       query: (id) => `address/${id}`,
-      providesTags: (result, error, id) => [{ type: "Address", id }],
+      providesTags: (_, __, id) => [{ type: "Address", id }],
     }),
     createAddress: builder.mutation({
       query: (newAddress) => ({
@@ -29,7 +29,7 @@ export const addressesApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { addressId }) => [
+      invalidatesTags: (_, __, { addressId }) => [
         { type: "Address", id: addressId },
       ],
     }),
@@ -45,7 +45,7 @@ export const addressesApi = createApi({
       { entityId: number; entityType: TAddressEntity }
     >({
       query: ({ entityId, entityType }) => `address/${entityType}/${entityId}`,
-      providesTags: (result, error, { entityId, entityType }) => [
+      providesTags: (_, __, { entityId, entityType }) => [
         { type: "Address", entityId: entityId, entityType: entityType },
       ],
     }),

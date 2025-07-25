@@ -49,7 +49,7 @@ export const wishlistApi = createApi({
         url: "wishlist",
         params: { userId, roomId },
       }),
-      providesTags: (result, error, { roomId }) => [
+      providesTags: (_, __, { roomId }) => [
         { type: "Wishlist", id: `CHECK-${roomId}` },
       ],
     }),

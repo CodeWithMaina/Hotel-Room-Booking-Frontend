@@ -27,7 +27,7 @@ export const UserTypeTabs: React.FC<Props> = ({ selectedType, onSelect }) => {
     <div className="w-full max-w-3xl mx-auto">
       <div
         ref={containerRef}
-        className="relative bg-base-100 border border-base-300 rounded-full flex justify-between items-center px-2 py-2 shadow-md"
+        className="relative bg-white rounded-full flex justify-between items-center px-2 shadow-md"
       >
         <motion.div
           layout

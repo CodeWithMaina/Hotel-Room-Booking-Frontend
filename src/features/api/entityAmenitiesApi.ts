@@ -12,7 +12,7 @@ export const entityAmenitiesApi = createApi({
     }),
     getEntityAmenityById: builder.query({
       query: (id) => `entity-amenity/${id}`,
-      providesTags: (result, error, id) => [{ type: "EntityAmenity", id }],
+      providesTags: (_, __, id) => [{ type: "EntityAmenity", id }],
     }),
     createEntityAmenity: builder.mutation({
       query: (newEntityAmenity) => ({
@@ -28,7 +28,7 @@ export const entityAmenitiesApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_, __, { id }) => [
         { type: "EntityAmenity", id },
       ],
     }),

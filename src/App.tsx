@@ -35,6 +35,7 @@ import CreateRoomFormWrapper from "./components/room/CreateRoomFormWrapper";
 import { PaymentFailedPage } from "./pages/PaymentFailedPage";
 import { HotelRooms } from "./pages/HotelRooms";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
+import { PaymentReceiptPage } from "./components/payment/PaymentReceiptPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -124,8 +125,12 @@ function App() {
           element: <AdminPayment />,
         },
         {
+          path: "/admin/payment/receipt/:paymentId",
+          element: <PaymentReceiptPage />,
+        },
+        {
           path: "/admin/create-room/:hotelId",
-          element: <CreateRoomFormWrapper  />,
+          element: <CreateRoomFormWrapper />,
         },
         {
           path: "/admin/ticket",
@@ -181,6 +186,10 @@ function App() {
         {
           path: "/user/tickets",
           element: <UserTickets />,
+        },
+        {
+          path: "/user/payment/receipt/:paymentId",
+          element: <PaymentReceiptPage />,
         },
         {
           path: "/user/profile",

@@ -18,7 +18,7 @@ export const ticketsApi = createApi({
     }),
     getTicketById: builder.query<TTicket, number>({
       query: (id) => `ticket/${id}`,
-      providesTags: (result, error, id) => [{ type: "Ticket", id }],
+      providesTags: (_, __, id) => [{ type: "Ticket", id }],
     }),
     createTicket: builder.mutation<TTicket, TCreateTicketSchema>({
       query: (newTicket) => ({
@@ -37,7 +37,7 @@ export const ticketsApi = createApi({
         method: "PUT",
         body: ticketData,
       }),
-      invalidatesTags: (result, error, { ticketId }) => [
+      invalidatesTags: (_, __, { ticketId }) => [
         { type: "Ticket", id: ticketId },
         { type: "Ticket", id: "LIST" },
       ],
@@ -51,7 +51,7 @@ export const ticketsApi = createApi({
     }),
     getUserTickets: builder.query<TTicket[], number>({
       query: (userId) => `/${userId}/tickets`,
-      providesTags: (result, error, userId) => [{ type: "Ticket", id: userId }],
+      providesTags: (_, __, userId) => [{ type: "Ticket", id: userId }],
     }),
   }),
 });

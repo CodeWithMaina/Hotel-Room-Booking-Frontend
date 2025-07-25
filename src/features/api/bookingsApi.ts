@@ -53,7 +53,7 @@ export const bookingsApi = createApi({
     // Get booking by ID
     getBookingById: builder.query<TBooking, number>({
       query: (bookingId) => `booking/${bookingId}`,
-      providesTags: (result, error, bookingId) => [
+      providesTags: (_, __, bookingId) => [
         { type: "Booking", id: bookingId },
       ],
     }),
@@ -84,7 +84,7 @@ export const bookingsApi = createApi({
 
         return `bookings/user/${userId}?${queryParams.toString()}`;
       },
-      providesTags: (result, error, { userId }) =>
+      providesTags: (result, _, { userId }) =>
         result?.data
           ? [
               ...result.data.map(({ bookingId }) => ({
@@ -125,7 +125,7 @@ export const bookingsApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-      invalidatesTags: (result, error, { bookingId }) => [
+      invalidatesTags: (_, __, { bookingId }) => [
         { type: "Booking", id: bookingId },
         { type: "Booking", id: "LIST" },
       ],
@@ -137,7 +137,7 @@ export const bookingsApi = createApi({
         url: `booking/${bookingId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, bookingId) => [
+      invalidatesTags: (_, __, bookingId) => [
         { type: "Booking", id: bookingId },
         { type: "Booking", id: "LIST" },
       ],

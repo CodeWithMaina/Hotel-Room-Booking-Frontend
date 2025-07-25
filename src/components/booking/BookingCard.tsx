@@ -24,8 +24,9 @@ type Booking = {
     isAvailable: boolean;
     createdAt: string;
   };
-  onCancel: () => void;
+  onCancel?: () => void;
   onDelete: () => void;
+  onEdit?: () => void;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
   userType: string;
 };
@@ -39,6 +40,7 @@ export const BookingCard = ({
   onCancel,
   onDelete,
   onClick,
+  onEdit,
   userType,
 }: Booking) => {
   const nights = differenceInCalendarDays(
@@ -117,7 +119,13 @@ export const BookingCard = ({
 
         {userType === "user" && (
           <div className="pt-4 flex flex-wrap gap-2 justify-between">
-            {bookingStatus === "Pending" && (
+            <button
+    onClick={onEdit}
+    className="btn btn-sm bg-yellow-500 text-white hover:bg-yellow-600"
+  >
+    <Pencil size={16} /> Edit
+  </button>
+            {bookingStatus !== "Confirmed" && (
               <button
                 onClick={onCancel}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"

@@ -8,13 +8,13 @@ export const paymentsApi = createApi({
 
   tagTypes: ["Payment"],
   endpoints: (builder) => ({
-    getPayments: builder.query<TPaymentResponse[], void>({
+    getPayments: builder.query<TPaymentResponse, void>({
       query: () => "payments",
       providesTags: ["Payment"],
     }),
     getPaymentById: builder.query<TPayment, number>({
       query: (id) => `payment/${id}`,
-      providesTags: (result, error, id) => [{ type: "Payment", id }],
+      providesTags: (_, __, id) => [{ type: "Payment", id }],
     }),
     getPaymentsByUserId: builder.query<TPaymentResponse, number>({
       query: (userId) => `/payment/user/${userId}`,
@@ -36,7 +36,7 @@ export const paymentsApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { paymentId }) => [
+      invalidatesTags: (_, __, { paymentId }) => [
         { type: "Payment", id: paymentId },
       ],
     }),

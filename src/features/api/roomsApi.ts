@@ -14,11 +14,11 @@ export const roomsApi = createApi({
     }),
     getRoomById: builder.query<TRoom, number>({
       query: (id) => `room/${id}`,
-      providesTags: (result, error, id) => [{ type: "Room", id }],
+      providesTags: (_, __, id) => [{ type: "Room", id }],
     }),
     getRoomByHotelId: builder.query<TRoom[], number>({
       query: (id) => `hotel/${id}/rooms`,
-      providesTags: (result, error, id) => [{ type: "Room", id }],
+      providesTags: (_, __, id) => [{ type: "Room", id }],
     }),
     createRoom: builder.mutation<TRoom, Partial<TRoom>>({
       query: (newRoom) => ({
@@ -34,7 +34,7 @@ export const roomsApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { roomId }) => [
+      invalidatesTags: (_, __, { roomId }) => [
         { type: "Room", id: roomId },
       ],
     }),
@@ -49,7 +49,7 @@ export const roomsApi = createApi({
       query: (id) => ({
         url: `room/${id}/room-details`,
       }),
-      providesTags: (result, error, id) => [{ type: "RoomAmenity", id }],
+      providesTags: (_, __, id) => [{ type: "RoomAmenity", id }],
     }),
   }),
 });

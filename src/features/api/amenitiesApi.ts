@@ -12,7 +12,7 @@ export const amenitiesApi = createApi({
     }),
     getAmenityById: builder.query({
       query: (id) => `amenity/${id}`,
-      providesTags: (result, error, id) => [{ type: "Amenity", id }],
+      providesTags: (_, __, id) => [{ type: "Amenity", id }],
     }),
     createAmenity: builder.mutation({
       query: (newAmenity) => ({
@@ -28,7 +28,7 @@ export const amenitiesApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { amenityId }) => [
+      invalidatesTags: (_, __, { amenityId }) => [
         { type: "Amenity", id: amenityId },
       ],
     }),

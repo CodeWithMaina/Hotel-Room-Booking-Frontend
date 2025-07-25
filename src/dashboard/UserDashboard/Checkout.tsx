@@ -79,6 +79,7 @@ export const Checkout = () => {
 
     try {
       const bookingResponse = await createBooking(bookingPayload).unwrap();
+      console.log("Booking Response:", bookingResponse);
       const bookingId = Number(bookingResponse?.bookingId);
 
       if (!bookingId || isNaN(bookingId)) {
@@ -87,12 +88,23 @@ export const Checkout = () => {
 
       toast.loading("Redirecting to payment...", { id: toastId });
 
-      const paymentUrl = await initiatePayment(bookingId, totalPrice);
-      if (!paymentUrl) throw new Error("Failed to obtain payment URL");
+      const { url, error } = await initiatePayment(bookingId, totalPrice);
 
-      window.location.href = paymentUrl;
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (!url) {
+        throw new Error("Payment URL not received");
+      }
+
+      window.location.href = url;
     } catch (err) {
       toast.dismiss(toastId);
+
+      // Improved error logging
+      console.error("Booking Error:", err);
+      console.error("Booking Error (JSON):", JSON.stringify(err, null, 2));
 
       const errorMsg = parseRTKError(err, "Failed to create booking.");
 
@@ -108,7 +120,6 @@ export const Checkout = () => {
         });
       } else {
         toast.error(errorMsg);
-        console.error("Booking Error:", err);
       }
     }
   };

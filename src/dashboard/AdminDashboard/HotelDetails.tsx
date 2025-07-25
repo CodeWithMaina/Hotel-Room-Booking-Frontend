@@ -13,7 +13,6 @@ import {
   Trash2,
   Plus,
   Filter,
-  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -55,7 +54,7 @@ export const HotelDetails = () => {
 
   useEffect(() => {
     roomRefetch();
-  }, []);
+  }, [hotelId, roomRefetch]);
 
   const onFilter = (filters: RoomFilters) => {
     if (!rooms) return;
@@ -126,12 +125,6 @@ export const HotelDetails = () => {
         />
         <div className="absolute inset-0 bg-black/30 flex flex-col justify-between">
           <div className="flex justify-end p-4 gap-2">
-            <button
-              onClick={() => setShowMobileFilters(true)}
-              className="btn btn-sm btn-neutral"
-            >
-              <Filter className="w-4 h-4 mr-1" /> Filters
-            </button>
             <button
               onClick={() => setIsEditOpen(true)}
               className="btn btn-sm btn-white"
@@ -205,28 +198,18 @@ export const HotelDetails = () => {
         <AnimatePresence>
           {showMobileFilters && (
             <motion.div
-              className="fixed inset-0 bg-black/40 z-50 flex justify-center items-start pt-20 px-4"
+              className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center md:justify-end md:items-end md:py-5 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowMobileFilters(false)}
             >
               <motion.div
-                className="bg-white rounded-lg p-4 shadow-lg w-full max-w-md"
                 onClick={(e) => e.stopPropagation()}
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 50, opacity: 0 }}
               >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-bold text-gray-800">Filters</h3>
-                  <button
-                    onClick={() => setShowMobileFilters(false)}
-                    className="btn btn-sm btn-ghost"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
                 <RoomFilterSidebar onFilter={onFilter} />
               </motion.div>
             </motion.div>

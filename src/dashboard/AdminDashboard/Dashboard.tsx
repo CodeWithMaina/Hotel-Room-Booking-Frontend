@@ -114,7 +114,7 @@ export const Dashboard = () => {
   const health: SystemHealth | undefined = data?.systemHealth;
 
   return (
-    <div className="min-h-screen bg-base-200 p-6 md:p-12 text-base-content">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-6 md:p-12 text-base-content">
       <h1 className="text-4xl font-bold mb-10 text-primary tracking-wide">
         Admin Dashboard
       </h1>
@@ -190,7 +190,7 @@ export const Dashboard = () => {
                   label
                   dataKey="value"
                 >
-                  {pieData.map((entry, index) => (
+                  {pieData.map((_entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={pieColors[index % pieColors.length]}

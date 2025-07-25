@@ -241,6 +241,7 @@ export const Register = () => {
 
   const onSubmit = async (data: RegisterData) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword: _, ...userData } = data;
       await registerUser(userData).unwrap();
       toast.success("User registered successfully!", {
@@ -413,7 +414,7 @@ const InputField = ({
   placeholder: string;
   error?: string;
   type?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }) => (
   <div>
     <label className="block text-sm font-medium text-[#e5e5e5] mb-1">

@@ -122,8 +122,8 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between mb-8">
             {!collapsed && (
               <Link to="/" className="text-2xl font-bold tracking-tight">
-                <span className="text-yellow-500">Lanka</span>
-                <span className="text-white">Stay</span>
+                <span className="text-yellow-500">Stay</span>
+                <span className="text-white">Cloud</span>
               </Link>
             )}
             <div className="flex gap-2 items-center">

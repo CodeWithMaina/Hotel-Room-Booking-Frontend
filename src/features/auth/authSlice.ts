@@ -1,5 +1,3 @@
-// Implement Persisting data slice
-
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthProps {

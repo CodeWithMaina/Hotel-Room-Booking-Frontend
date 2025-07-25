@@ -1,21 +1,3 @@
-// export type TBooking = {
-//   bookingId: number | undefined;
-//   bookingStatus: string;
-//   checkInDate: string;
-//   checkOutDate: string;
-//   totalAmount: string;
-//   room: {
-//     roomType: string;
-//     capacity: number;
-//     pricePerNight: string;
-//     thumbnail: string;
-//     hotelId: number;
-//     roomId: number;
-//     isAvailable: boolean;
-//     createdAt: string;
-//   };
-// };
-
 import type { TRoom } from "./roomsTypes";
 
 

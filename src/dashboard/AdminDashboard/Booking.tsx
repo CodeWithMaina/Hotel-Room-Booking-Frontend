@@ -178,7 +178,7 @@ export const Booking = () => {
                     checkOutDate={booking.checkOutDate}
                     totalAmount={booking.totalAmount}
                     room={booking.room}
-                    onEdit={() => setShowEdit(true)}
+                    onEdit  ={() => setShowEdit(true)}
                     onDelete={() => handleDelete(booking.bookingId!)}
                     onClick={(e) => {
                       e.preventDefault();

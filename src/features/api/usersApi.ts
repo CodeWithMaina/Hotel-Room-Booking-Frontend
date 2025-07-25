@@ -15,7 +15,7 @@ export const usersApi = createApi({
     }),
     getUserById: builder.query<TUser, number>({
       query: (id) => `user/${id}`,
-      providesTags: (result, error, id) => [{ type: "User", id }],
+      providesTags: (_, __, id) => [{ type: "User", id }],
     }),
     createUser: builder.mutation<TUser, Partial<TUser>>({
       query: (newUser) => ({
@@ -31,7 +31,7 @@ export const usersApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { userId }) => [
+      invalidatesTags: (_, __, { userId }) => [
         { type: "User", id: userId },
       ],
     }),

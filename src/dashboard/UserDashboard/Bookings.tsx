@@ -31,6 +31,7 @@ export const Bookings = () => {
   const limit = 10;
 
   const { userId, userType } = useSelector((state: RootState) => state.auth);
+
   const id = Number(userId);
 
   const { data, isLoading, isFetching, isError, error } =

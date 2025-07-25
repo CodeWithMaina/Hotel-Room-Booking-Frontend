@@ -18,7 +18,7 @@ export const hotelsApi = createApi({
     }),
     getHotelById: builder.query({
       query: (id) => `hotel/${id}`,
-      providesTags: (result, error, id) => [{ type: "Hotel", id }],
+      providesTags: (_, __, id) => [{ type: "Hotel", id }],
     }),
     createHotel: builder.mutation({
       query: (newHotel) => ({
@@ -37,7 +37,7 @@ export const hotelsApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (result, error, { hotelId }) => [
+      invalidatesTags: (_, __, { hotelId }) => [
         { type: "Hotel", id: hotelId },
       ],
     }),
@@ -52,7 +52,7 @@ export const hotelsApi = createApi({
     // Hotel Address endpoint
     getHotelAddress: builder.query({
       query: (hotelId) => `hotel/${hotelId}/address`,
-      providesTags: (result, error, hotelId) => [
+      providesTags: (_, __, hotelId) => [
         { type: "HotelAddress", id: hotelId },
       ],
     }),
@@ -60,7 +60,7 @@ export const hotelsApi = createApi({
     // Hotel Entity Amenities endpoint
     getHotelEntityAmenities: builder.query({
       query: (hotelId) => `hotel/${hotelId}/entity-amenities`,
-      providesTags: (result, error, hotelId) => [
+      providesTags: (_, __, hotelId) => [
         { type: "HotelAmenity", id: hotelId },
       ],
     }),
@@ -68,7 +68,7 @@ export const hotelsApi = createApi({
     // Hotel Amenity Details endpoint
     getHotelAmenityDetails: builder.query({
       query: (hotelId) => `hotel/${hotelId}/amenities`,
-      providesTags: (result, error, hotelId) => [
+      providesTags: (_, __, hotelId) => [
         { type: "HotelAmenity", id: hotelId },
       ],
     }),
@@ -84,7 +84,7 @@ export const hotelsApi = createApi({
       number
     >({
       query: (hotelId) => `hotel/${hotelId}/details`,
-      providesTags: (result, error, hotelId) => [
+      providesTags: (_, __, hotelId) => [
         { type: "Hotel", id: hotelId },
         { type: "HotelAddress", id: hotelId },
         { type: "HotelAmenity", id: hotelId },

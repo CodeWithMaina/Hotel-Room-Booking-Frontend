@@ -3,7 +3,14 @@ import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import * as LucideIcons from "lucide-react";
-import { Users, CheckCircle, XCircle, Heart, Loader2 } from "lucide-react";
+import {
+  Users,
+  CheckCircle,
+  XCircle,
+  Heart,
+  Loader2,
+  Circle,
+} from "lucide-react";
 
 import Navbar from "../components/common/NavBar";
 import { Loading } from "../components/common/Loading";
@@ -11,13 +18,13 @@ import { Error } from "../components/common/Error";
 import { SuggestedRooms } from "../components/room/SuggestedRooms";
 import { useGetRoomWithAmenitiesQuery } from "../features/api";
 import { useAddToWishlistMutation } from "../features/api/wishlistApi";
-import { parseRTKError } from "../utils/parseRTKError"; // ✅ Use your provided utility here
+import { parseRTKError } from "../utils/parseRTKError";
+import { Footer } from "../components/common/Footer";
+import { Button } from "../components/ui/Button";
 
 import type { RootState } from "../app/store";
 import type { TRoomWithAmenities } from "../types/roomsTypes";
-import { Button } from "../components/ui/Button";
 import { isValidElementType } from "react-is";
-import { Footer } from "../components/common/Footer";
 
 export const RoomDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +41,8 @@ export const RoomDetailsPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const [addToWishlist, { isLoading: isWishLoading }] = useAddToWishlistMutation();
+  const [addToWishlist, { isLoading: isWishLoading }] =
+    useAddToWishlistMutation();
 
   const handleBooking = () => navigate(`/user/checkout/${roomId}`);
 
@@ -57,7 +65,7 @@ export const RoomDetailsPage = () => {
     const IconCandidate = LucideIcons[iconName as keyof typeof LucideIcons];
     return isValidElementType(IconCandidate)
       ? React.createElement(IconCandidate as React.ElementType, { size: 20 })
-      : <LucideIcons.Circle size={20} />;
+      : <Circle size={20} />;
   };
 
   if (isRoomLoading) return <Loading />;
@@ -68,63 +76,80 @@ export const RoomDetailsPage = () => {
   return (
     <>
       <Navbar />
-      <main className="bg-white min-h-screen font-body text-gray-800">
-        <div className="w-full h-[420px] overflow-hidden">
+      <main className="bg-gradient-to-br from-white to-slate-100 text-[#03071E] min-h-screen">
+        {/* Hero */}
+        <div className="w-full h-[420px] overflow-hidden shadow-sm">
           <img
             src={room.thumbnail}
-            alt={`${room.roomType} Thumbnail`}
-            className="w-full h-full object-cover object-center rounded-b-3xl shadow-md"
+            alt={room.roomType}
+            className="w-full h-full object-cover object-center rounded-b-3xl"
           />
         </div>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-12">
-          <h1 className="text-4xl sm:text-5xl font-heading text-blue-900 text-center font-bold">
+        {/* Main Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 py-14 space-y-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-center text-[#03071E] font-heading">
             {room.roomType}
           </h1>
 
-          <div className="grid lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2 space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-blue-800">About This Room</h2>
-                <p className="text-gray-600 leading-relaxed">
-                  Experience luxury in our <strong>{room.roomType}</strong> suite featuring a king-sized bed, minibar, AC, and stunning views. 
+          <div className="grid lg:grid-cols-12 gap-12">
+            {/* Main Content */}
+            <div className="lg:col-span-8 space-y-12">
+              {/* About Room */}
+              <div>
+                <h2 className="text-2xl font-semibold text-[#0B2545] mb-4">
+                  About This Room
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Experience luxury in our <strong>{room.roomType}</strong> suite featuring a king-sized bed, minibar, AC, and stunning views.
                   Perfect for a peaceful stay at Blue Origin Farms.
                 </p>
-                <div className="flex flex-wrap gap-5 mt-4 text-sm text-gray-600">
+
+                <div className="flex flex-wrap gap-6 mt-6 text-sm text-gray-700">
                   <div className="flex items-center gap-2">
-                    <Users className="text-blue-700" size={18} />
+                    <Users className="text-blue-800" size={18} />
                     <span>{room.capacity} Guests</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {room.isAvailable ? (
-                      <CheckCircle className="text-green-500" size={18} />
+                      <CheckCircle className="text-green-600" size={18} />
                     ) : (
-                      <XCircle className="text-red-400" size={18} />
+                      <XCircle className="text-red-500" size={18} />
                     )}
                     <span>{room.isAvailable ? "Available" : "Unavailable"}</span>
                   </div>
                 </div>
               </div>
 
+              {/* Amenities */}
               <div>
-                <h2 className="text-2xl font-semibold text-blue-800 mb-4">Room Amenities</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <h2 className="text-2xl font-semibold text-[#0B2545] mb-4">
+                  Room Amenities
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {amenities.map((amenity) => (
                     <div
                       key={amenity.name}
-                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg border border-gray-200 hover:shadow transition"
+                      className="flex items-center gap-2 bg-white border border-gray-200 p-3 rounded-xl shadow-sm hover:shadow-md transition"
                     >
-                      <span className="text-yellow-500">{getAmenityIcon(amenity.icon)}</span>
-                      <span className="text-sm text-gray-700">{amenity.name}</span>
+                      <span className="text-yellow-600">
+                        {getAmenityIcon(amenity.icon)}
+                      </span>
+                      <span className="text-sm text-gray-800 font-medium">
+                        {amenity.name}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
 
+              {/* Gallery */}
               <div>
-                <h2 className="text-2xl font-semibold text-blue-800 mt-8 mb-4">Gallery</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {room.gallery.slice(0, 3).map((img, index) => (
+                <h2 className="text-2xl font-semibold text-[#0B2545] mb-4">
+                  Gallery
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {room.gallery.slice(0, 6).map((img, index) => (
                     <div
                       key={index}
                       className="overflow-hidden rounded-xl border border-gray-200 shadow-sm group"
@@ -132,7 +157,7 @@ export const RoomDetailsPage = () => {
                       <img
                         src={img}
                         alt={`Room Gallery ${index + 1}`}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ))}
@@ -140,18 +165,19 @@ export const RoomDetailsPage = () => {
               </div>
             </div>
 
-            <aside className="space-y-6 bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm h-fit">
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-blue-800">Start Booking</h3>
-                <p className="text-3xl text-blue-700 font-bold">
+            {/* Sidebar */}
+            <aside className="lg:col-span-4 space-y-8 sticky top-28 h-fit bg-white p-6 border border-gray-200 rounded-2xl shadow-sm">
+              <div className="space-y-4 text-center">
+                <h3 className="text-xl font-semibold text-blue-900">Start Booking</h3>
+                <div className="text-4xl font-bold text-blue-800">
                   ${room.pricePerNight}
-                  <span className="text-sm text-gray-500"> /night</span>
-                </p>
+                  <span className="text-sm font-normal text-gray-500"> / night</span>
+                </div>
 
                 <Button
                   onClick={handleBooking}
                   disabled={!room.isAvailable}
-                  className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold"
+                  className="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold"
                 >
                   Book Now
                 </Button>
@@ -170,12 +196,14 @@ export const RoomDetailsPage = () => {
                 </Button>
               </div>
 
-              <SuggestedRooms currentRoomId={roomId} />
+              <div>
+                <SuggestedRooms currentRoomId={roomId} />
+              </div>
             </aside>
           </div>
         </section>
       </main>
-      <Footer/>
+      <Footer />
     </>
   );
 };

@@ -6,16 +6,18 @@ import { TicketFilters } from "../../components/ticket/TicketFilters";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import { Loader } from "lucide-react";
+import type { TTicket } from "../../types/ticketsTypes";
+
 
 export const Ticket = () => {
   const { data: tickets, isLoading, refetch } = useGetTicketsQuery();
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState<TTicket | null>(null);
   const { userType } = useSelector((state: RootState) => state.auth);
   const [filters, setFilters] = useState({ status: "", user: "" });
 
-  useEffect(()=>{refetch()},[tickets])
+  useEffect(()=>{refetch()},[refetch, tickets])
 
-  const filteredTickets = tickets?.filter((ticket: any) => {
+  const filteredTickets = tickets?.filter((ticket: TTicket) => {
     const matchesStatus = filters.status
       ? ticket.status === filters.status
       : true;
@@ -43,7 +45,7 @@ export const Ticket = () => {
             <Loader className="animate-spin text-[#fca311]" size={32} />
           </div>
         ) : filteredTickets?.length ? (
-          filteredTickets.map((ticket: any) => (
+          filteredTickets.map(ticket => (
             <TicketCard
               key={ticket.ticketId}
               ticket={ticket}
