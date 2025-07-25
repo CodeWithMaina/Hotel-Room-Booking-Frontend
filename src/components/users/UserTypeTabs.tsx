@@ -1,9 +1,10 @@
-import { Users, ShieldCheck, UserCircle } from "lucide-react";
+import { Users, ShieldCheck, UserCircle, PersonStanding } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const userTypes = [
+  { type: "all", label: "All", icon: PersonStanding },
   { type: "user", label: "Users", icon: Users },
   { type: "owner", label: "Owners", icon: UserCircle },
   { type: "admin", label: "Admins", icon: ShieldCheck },

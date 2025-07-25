@@ -4,34 +4,62 @@ import { UserTypeTabs } from "./UserTypeTabs";
 import type { TUser } from "../../types/usersTypes";
 import { AlertCircle } from "lucide-react";
 import { UsersActionBar } from "./UsersActionBar";
-import { useGetUsersQuery } from "../../features/api/usersApi";
+import {
+  useGetUserByIdQuery,
+  useGetUsersQuery,
+} from "../../features/api/usersApi";
 import { UserCardSkeleton } from "./skeleton/UserCardSkeleton";
 import { motion } from "framer-motion";
+import type { RootState } from "../../app/store";
+import { useSelector } from "react-redux";
 
 export const UserList = () => {
-  const [selectedType, setSelectedType] = useState<"user" | "owner">("user");
+  const [selectedType, setSelectedType] = useState<
+    "user" | "owner" | "admin" | "all"
+  >("all");
   const [filteredUsers, setFilteredUsers] = useState<TUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { userId, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const { data: user } = useGetUserByIdQuery(Number(userId));
+  const userType = user?.role;
 
   const { data: usersData, isLoading, isError, refetch } = useGetUsersQuery();
 
   useEffect(() => {
-    if (usersData) {
-      let filtered = usersData.filter((user) => user.role === selectedType);
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter((user) =>
-          [
-            user.firstName,
-            user.lastName,
-            user.email,
-            user.contactPhone || "",
-          ].some((field) => field.toLowerCase().includes(query))
-        );
-      }
-      setFilteredUsers(filtered);
+    if (!usersData) return;
+
+    let filtered = usersData;
+
+    // ✅ Filter by role if not 'all'
+    if (selectedType !== "all") {
+      filtered = filtered.filter((user) => user.role === selectedType);
     }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((user) =>
+        [
+          user.firstName,
+          user.lastName,
+          user.email,
+          user.contactPhone || "",
+        ].some((field) => field.toLowerCase().includes(query))
+      );
+    }
+
+    setFilteredUsers(filtered);
   }, [selectedType, usersData, searchQuery]);
+
+  if (userType !== "admin" && !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center text-red-500 font-semibold text-lg px-4">
+        You do not have permission to view this page.
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -40,25 +68,29 @@ export const UserList = () => {
       transition={{ duration: 0.4 }}
       className="min-h-screen px-6 py-10 bg-gradient-to-br from-slate-100 to-slate-200 text-[#03071e] space-y-10"
     >
-      <motion.h1
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.1 }}
-        className="text-3xl flex items-center font-bold text-[#14213d] tracking-tight"
-      >
-        <span className="text-[#fca311]">Manage</span>{" "}
-        {selectedType === "user" ? "Users" : "Owners"}
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
         <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <UsersActionBar
-          onSearch={(query) => setSearchQuery(query)}
-          className="mt-6"
-        />
-      </motion.div>
-      </motion.h1>
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h1 className="text-3xl font-bold text-[#14213d] tracking-tight">
+            <span className="text-[#fca311]">Manage</span>{" "}
+            {selectedType === "user" ? "Users" : "Owners"}
+          </h1>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <UsersActionBar
+            onSearch={(query) => setSearchQuery(query)}
+            className="w-full sm:w-80 md:w-[24rem]"
+          />
+        </motion.div>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -67,11 +99,9 @@ export const UserList = () => {
       >
         <UserTypeTabs
           selectedType={selectedType}
-          onSelect={(type) => setSelectedType(type as "user" | "owner")}
+          onSelect={(type) => setSelectedType(type as "user" | "owner" | "admin" | "all")}
         />
       </motion.div>
-
-      
 
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-10">

@@ -36,6 +36,7 @@ import { PaymentFailedPage } from "./pages/PaymentFailedPage";
 import { HotelRooms } from "./pages/HotelRooms";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
 import { PaymentReceiptPage } from "./components/payment/PaymentReceiptPage";
+import { Settings } from "./dashboard/UserDashboard/Settings";
 
 function App() {
   const router = createBrowserRouter([
@@ -143,6 +144,10 @@ function App() {
         {
           path: "/admin/profile",
           element: <Profile />,
+        },
+        {
+          path: "/admin/settings",
+          element: <Settings />,
         },
       ],
     },

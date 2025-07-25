@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Mail, Phone, Pencil } from "lucide-react";
 import type { TUser } from "../../types/usersTypes";
-import { UserDetailsModal } from "./UserDetailsModal";
-import { UserEditModal } from "./UserEditModal";
+import { UserDetailsDrawer } from "./UserDetailsDrawer";
+import { UserEditDrawer } from "./UserEditDrawer";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -10,14 +10,14 @@ interface Props {
 }
 
 export const UserCard: React.FC<Props> = ({ user }) => {
-  const [showDetails, setShowDetails] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [editUser, setEditUser] = useState(false);
 
-  const handleCardClick = () => setShowDetails(true);
+  const handleCardClick = () => setShowDrawer(true);
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setShowEdit(true);
+    setEditUser(true);
   };
 
   return (
@@ -65,13 +65,17 @@ export const UserCard: React.FC<Props> = ({ user }) => {
         </button>
       </motion.div>
 
-      {showDetails && (
-        <UserDetailsModal user={user} onClose={() => setShowDetails(false)} />
-      )}
+      <UserDetailsDrawer
+        user={user}
+        isOpen={showDrawer}
+        onClose={() => setShowDrawer(false)}
+      />
 
-      {showEdit && (
-        <UserEditModal user={user} onClose={() => setShowEdit(false)} />
-      )}
+      <UserEditDrawer
+  user={user}
+  isOpen={editUser}
+  onClose={() => setEditUser(false)}
+/>
     </>
   );
 };

@@ -6,7 +6,8 @@ export const userFormSchema = z.object({
   email: z.string().email("Invalid email"),
   contactPhone: z.string().min(10, "Phone must be at least 10 digits"),
   bio: z.string().optional(),
-  profileImage: z.string()
+  profileImage: z.string().optional()
 });
 
 export type TUserForm = z.infer<typeof userFormSchema>;
+
