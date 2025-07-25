@@ -1,9 +1,14 @@
-// src/pages/ResetPasswordPage.tsx
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import {
+  Lock,
+  Mail,
+  KeyRound,
+  ShieldCheck,
+} from "lucide-react";
 import { useResetPasswordMutation } from "../features/api/authApi";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
@@ -23,7 +28,6 @@ type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
 export default function ResetPasswordPage() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const {
@@ -46,84 +50,117 @@ export default function ResetPasswordPage() {
       setTimeout(() => navigate("/login"), 2000);
     } catch (error: unknown) {
       const err = error as FetchBaseQueryError;
-
       const errorMessage =
         "data" in err && typeof err.data === "object" && err.data !== null
           ? (err.data as { error?: string }).error || "Something went wrong"
           : "Network error or unknown error";
-
       toast.error(errorMessage);
     }
   };
 
   return (
-    <div className="min-h-screen text-black bg-slate-100 flex items-center justify-center">
-      <div className="w-full max-w-md bg-white shadow-md rounded-xl p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          {/* Email */}
-          <div className="form-control mb-4">
-            <label className="label">
-              <span className="label-text">Email Address</span>
-            </label>
-            <input
-              type="email"
-              {...register("email")}
-              placeholder="you@example.com"
-              className="input input-bordered w-full"
-            />
+    <div
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center px-4 py-12"
+      style={{
+        backgroundImage:
+          "url('https://www.ghmhotels.com/wp-content/uploads/CAM-Dining-The-Courtyard-Night021-865x780.jpg')",
+      }}
+    >
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-2xl border border-slate-200 rounded-2xl p-10 animate-fade-in">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Reset<span className="text-[#c89d25]">Password</span>
+          </h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Create a new password for your account
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Email Field */}
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-1">Email</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
+              <input
+                type="email"
+                placeholder="you@example.com"
+                {...register("email")}
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
+              />
+            </div>
             {errors.email && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </span>
+              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
             )}
           </div>
 
-          {/* Password */}
-          <div className="form-control mb-4">
-            <label className="label">
-              <span className="label-text">New Password</span>
-            </label>
-            <input
-              type="password"
-              {...register("password")}
-              placeholder="Enter new password"
-              className="input input-bordered w-full"
-            />
+          {/* New Password Field */}
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-1">New Password</label>
+            <div className="relative">
+              <KeyRound className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
+              <input
+                type="password"
+                placeholder="Enter new password"
+                {...register("password")}
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
+              />
+            </div>
             {errors.password && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </span>
+              <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
             )}
           </div>
 
-          {/* Confirm Password */}
-          <div className="form-control mb-6">
-            <label className="label">
-              <span className="label-text">Confirm Password</span>
-            </label>
-            <input
-              type="password"
-              {...register("confirmPassword")}
-              placeholder="Confirm new password"
-              className="input input-bordered w-full"
-            />
+          {/* Confirm Password Field */}
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-1">Confirm Password</label>
+            <div className="relative">
+              <ShieldCheck className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
+              <input
+                type="password"
+                placeholder="Re-enter new password"
+                {...register("confirmPassword")}
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
+              />
+            </div>
             {errors.confirmPassword && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword.message}
-              </span>
+              <p className="text-xs text-red-500 mt-1">{errors.confirmPassword.message}</p>
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="btn btn-primary w-full"
+            className="w-full py-2.5 bg-[#c89d25] hover:bg-[#b6891f] text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
             disabled={isLoading}
           >
+            <Lock className="w-5 h-5" />
             {isLoading ? "Resetting..." : "Reset Password"}
           </button>
         </form>
+
+        <div className="text-center mt-6">
+          <a
+            href="/login"
+            className="text-sm text-slate-600 hover:text-[#c89d25] transition"
+          >
+            Back to Login
+          </a>
+        </div>
       </div>
+
+      {/* Fade-in Animation */}
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.4s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

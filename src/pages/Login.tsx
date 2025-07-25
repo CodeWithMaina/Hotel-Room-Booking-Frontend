@@ -29,11 +29,7 @@ export const Login = () => {
       const response = await loginUser(data).unwrap();
       dispatch(persistCredentials(response));
       toast.success(`Welcome back, ${response.firstName}!`);
-      if (response.userType === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/user/dashboard");
-      }
+      navigate(response.userType === "admin" ? "/admin/dashboard" : "/user/dashboard");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error?.status;
@@ -49,110 +45,102 @@ export const Login = () => {
 
   return (
     <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 py-8"
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center px-4 py-12"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1501117716987-c8e6fca29c9d?auto=format&fit=crop&w=1470&q=80')",
+          "url('https://media.istockphoto.com/id/104731717/photo/luxury-resort.jpg?s=612x612&w=0&k=20&c=cODMSPbYyrn1FHake1xYz9M8r15iOfGz9Aosy9Db7mI=')",
       }}
     >
       <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
 
-      <div className="w-full max-w-md bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl p-8 animate-fade-in border border-gray-200">
-        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-2">
-          Lux<span className="text-[#fca311]">Hotels</span>
-        </h1>
-        <p className="text-center text-gray-600 text-sm mb-6">
-          Sign in to your account
-        </p>
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-2xl border border-slate-200 rounded-2xl p-10 animate-fade-in">
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
+            Stay<span className="text-[#c89d25]">Cloud</span>
+          </h1>
+          <p className="text-sm text-slate-600 mt-1">Sign in to continue</p>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email */}
+          {/* Email Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label className="text-sm font-medium text-slate-700 block mb-1">Email</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+              <Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
               <input
                 type="email"
                 placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fca311] focus:border-[#fca311]"
                 {...register("email")}
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
               />
             </div>
             {errors.email && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.email.message}
-              </p>
+              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
             )}
           </div>
 
-          {/* Password */}
+          {/* Password Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <label className="text-sm font-medium text-slate-700 block mb-1">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fca311] focus:border-[#fca311]"
                 {...register("password")}
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-[#fca311]"
+                className="absolute right-3 top-3.5 text-slate-400 hover:text-[#c89d25]"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password.message}
-              </p>
+              <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
             )}
             <div className="text-right mt-1">
               <button
                 type="button"
                 onClick={() => navigate("/forgot-password")}
-                className="text-sm text-[#fca311] hover:underline"
+                className="text-sm text-[#c89d25] hover:underline"
               >
                 Forgot Password?
               </button>
             </div>
           </div>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#fca311] hover:bg-[#fca311]/90 text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
+            className="w-full py-2.5 bg-[#c89d25] hover:bg-[#b6891f] text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
           >
             <LogIn className="w-5 h-5" />
             Log In
           </button>
         </form>
 
-        {/* Register */}
+        {/* Register Redirect */}
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/register")}
-            className="text-sm text-gray-600 hover:text-[#fca311] transition"
+            className="text-sm text-slate-600 hover:text-[#c89d25] transition"
           >
-            Don’t have an account? <span className="font-medium">Register</span>
+            Don’t have an account? <span className="font-semibold">Register</span>
           </button>
         </div>
       </div>
 
-      {/* Animation */}
+      {/* Fade-in Animation */}
       <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
+          animation: fade-in 0.4s ease-out;
         }
       `}</style>
     </div>

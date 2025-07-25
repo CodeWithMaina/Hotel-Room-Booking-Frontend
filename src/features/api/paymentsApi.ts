@@ -16,6 +16,9 @@ export const paymentsApi = createApi({
       query: (id) => `payment/${id}`,
       providesTags: (_, __, id) => [{ type: "Payment", id }],
     }),
+    getPaymentByBookingId: builder.query<TPayment | null, number>({
+      query: (bookingId) => `payment/${bookingId}`,
+    }),
     getPaymentsByUserId: builder.query<TPaymentResponse, number>({
       query: (userId) => `/payment/user/${userId}`,
     }),
