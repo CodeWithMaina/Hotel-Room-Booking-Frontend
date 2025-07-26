@@ -24,6 +24,8 @@ import { wishlistApi } from "../features/api/wishlistApi";
 import { contactApi } from "../features/api/contactApi";
 import { availabilityApi } from "../features/api/availabilityApi";
 import { newsletterApi } from "../features/api/newsletterApi";
+import { roomTypeApi } from "../features/api/roomTypeApi";
+import { reviewApi } from "../features/api/reviewApi";
 
 // Auth persist config
 const authPersistConfig = {
@@ -48,6 +50,8 @@ export const store = configureStore({
     [availabilityApi.reducerPath]: availabilityApi.reducer,
     [ticketsApi.reducerPath]: ticketsApi.reducer,
     [amenitiesApi.reducerPath]: amenitiesApi.reducer,
+    [roomTypeApi.reducerPath]: roomTypeApi.reducer,
+    [reviewApi.reducerPath]: reviewApi.reducer,
     [wishlistApi.reducerPath]: wishlistApi.reducer,
     [analyticsApi.reducerPath]: analyticsApi.reducer,
     [newsletterApi.reducerPath]: newsletterApi.reducer,
@@ -74,8 +78,10 @@ export const store = configureStore({
       bookingsApi.middleware,
       availabilityApi.middleware,
       paymentsApi.middleware,
+      reviewApi.middleware,
       amenitiesApi.middleware,
       newsletterApi.middleware,
+      roomTypeApi.middleware,
       addressesApi.middleware,
       analyticsApi.middleware,
       contactApi.middleware,

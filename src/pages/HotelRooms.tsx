@@ -39,7 +39,7 @@ export const HotelRooms = () => {
     return (rooms ?? [])
       .filter((room) => !filters.availableOnly || room.isAvailable)
       .filter((room) =>
-        room.roomType.toLowerCase().includes(filters.search.toLowerCase())
+        room.roomType.name.toLowerCase().includes(filters.search.toLowerCase())
       )
       .filter((room) => Number(room.pricePerNight) <= filters.maxPrice)
       .filter((room) => room.capacity >= filters.minGuests)

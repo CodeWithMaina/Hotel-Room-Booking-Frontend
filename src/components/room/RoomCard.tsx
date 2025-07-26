@@ -22,7 +22,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
       <div className="relative">
         <img
           src={room.thumbnail}
-          alt={room.roomType}
+          alt={room.roomType?.name ?? "Room Image"}
           className="w-full h-48 object-cover"
         />
 
@@ -43,7 +43,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
         {/* Room Type */}
         <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 tracking-wide uppercase">
           <BedDouble className="w-5 h-5 text-gold-600" />
-          {room.roomType}
+          {room.roomType?.name ?? "Unknown Room Type"}
         </h3>
 
         {/* Capacity & Price */}

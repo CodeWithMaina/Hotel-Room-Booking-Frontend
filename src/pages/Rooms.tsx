@@ -9,6 +9,7 @@ import {
   RoomFilterSidebar,
   type RoomFilterValues,
 } from "../components/room/RoomFilterSidebar";
+import { Loading } from "../components/common/Loading";
 
 export const Rooms = () => {
   const { data: rooms = [], isLoading, isError } = useGetRoomsQuery();
@@ -27,7 +28,7 @@ export const Rooms = () => {
     return rooms
       .filter((room) => !filters.availableOnly || room.isAvailable)
       .filter((room) =>
-        room.roomType.toLowerCase().includes(filters.search.toLowerCase())
+        room.roomType.name.toLowerCase().includes(filters.search.toLowerCase())
       )
       .filter((room) => Number(room.pricePerNight) <= filters.maxPrice)
       .filter((room) => room.capacity >= filters.minGuests)
@@ -39,17 +40,7 @@ export const Rooms = () => {
   }, [rooms, filters, sortOrder]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-        <motion.p
-          className="text-xl text-[#14213d] font-medium"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          Loading rooms...
-        </motion.p>
-      </div>
-    );
+    return <Loading/>
   }
 
   if (isError) {

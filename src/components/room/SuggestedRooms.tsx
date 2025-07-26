@@ -79,12 +79,15 @@ export const SuggestedRooms: React.FC<SuggestedRoomsProps> = ({
           >
             <img
               src={room.thumbnail}
-              alt={room.roomType}
+              alt={room.roomType.name}
               className="h-32 w-full object-cover"
             />
             <div className="p-3">
               <h4 className="font-semibold text-gray-700 text-sm">
-                {room.roomType}
+                {room.pricePerNight}
+              </h4>
+              <h4 className="font-semibold text-gray-700 text-sm">
+                {room.roomType.name}
               </h4>
             </div>
           </div>

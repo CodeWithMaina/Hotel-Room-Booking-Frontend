@@ -7,6 +7,7 @@ export type THotel = {
   category?: string | null;
   rating?: number | null;
   gallery: string[];
+  description: string;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -1,8 +1,15 @@
+export type TRoomType = {
+    roomTypeId: number;
+    name: string;
+    description: string;
+    createdAt: string;
+  };
 export type TRoom = {
   roomId: number;
   hotelId: number;
-  roomType: string;
+  roomType: TRoomType;
   thumbnail: string;
+  description: string;
   pricePerNight: number;
   capacity: number;
   amenities?: string[];
@@ -12,9 +19,10 @@ export type TRoom = {
 };
 
 export type TEditRoomForm = {
-  roomType: string;
+  roomType: TRoomType;
   capacity: number;
   thumbnail: string;
+  description: string;
   pricePerNight: number;
   isAvailable: boolean;
 };
