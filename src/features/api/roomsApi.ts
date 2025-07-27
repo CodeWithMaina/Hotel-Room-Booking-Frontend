@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TRoom, TRoomType, TRoomWithAmenities } from "../../types/roomsTypes";
+import type {
+  TRoom,
+  TRoomType,
+  TRoomWithAmenities,
+} from "../../types/roomsTypes";
 
 export const roomsApi = createApi({
   reducerPath: "roomsApi",
@@ -29,25 +33,32 @@ export const roomsApi = createApi({
       invalidatesTags: ["Room"],
     }),
     updateRoom: builder.mutation<
-  TRoomWithAmenities, // Return the full room with amenities
-  {
-    roomId: number;
-    roomData: Partial<TRoom> & {
-      amenities?: number[];
-      roomType?: Partial<TRoomType>;
-    };
-  }
->({
-  query: ({ roomId, roomData }) => ({
-    url: `room/${roomId}`,
-    method: "PUT",
-    body: roomData,
-  }),
-  invalidatesTags: (_, __, { roomId }) => [
-    { type: "Room", id: roomId },
-    { type: "RoomAmenity", id: roomId },
-  ],
-}),
+      TRoomWithAmenities,
+      {
+        roomId: number;
+        roomData: Partial<TRoom> & {
+          amenities?: number[];
+          roomType?: Partial<TRoomType>;
+        };
+      }
+    >({
+      query: ({ roomId, roomData }) => ({
+        url: `room/${roomId}`,
+        method: "PUT",
+        body: {
+          roomData: {
+            
+            ...roomData,
+            pricePerNight: roomData.pricePerNight?.toString(),
+            amenities: roomData.amenities || [],
+          },
+        },
+      }),
+      invalidatesTags: (_, __, { roomId }) => [
+        { type: "Room", id: roomId },
+        { type: "RoomAmenity", id: roomId },
+      ],
+    }),
     deleteRoom: builder.mutation<void, number>({
       query: (id) => ({
         url: `room/${id}`,

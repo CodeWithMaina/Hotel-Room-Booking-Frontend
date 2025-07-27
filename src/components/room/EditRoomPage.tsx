@@ -1,7 +1,16 @@
 // EditRoomPage.tsx
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Loader2, X, Upload, Image, CheckCircle2, AlertCircle, Camera, Tag } from "lucide-react";
+import {
+  Loader2,
+  X,
+  Upload,
+  Image,
+  CheckCircle2,
+  AlertCircle,
+  Camera,
+  Tag,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 import { useImageUploader } from "../../hook/useImageUploader";
@@ -52,16 +61,22 @@ export const EditRoomPage = ({
   const [updateRoom, { isLoading: isUpdating }] = useUpdateRoomMutation();
   const { upload, isLoading: isImageLoading } = useImageUploader();
 
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(room.thumbnail);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(
+    room.thumbnail
+  );
   const [gallery, setGallery] = useState<string[]>(room.gallery || []);
-  const [selectedAmenities, setSelectedAmenities] = useState<number[]>(room.amenities || []);
+  const [selectedAmenities, setSelectedAmenities] = useState<number[]>(
+    room.amenities || []
+  );
 
   useEffect(() => {
     if (isRoomTypesError) toast.error("Failed to load room types");
     if (isAmenitiesError) toast.error("Failed to load amenities");
   }, [isRoomTypesError, isAmenitiesError]);
 
-  const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -82,7 +97,9 @@ export const EditRoomPage = ({
     }
   };
 
-  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = Array.from(e.target.files || []);
     if (files.length + gallery.length > 10) {
       toast.error("Maximum 10 gallery images allowed");
@@ -131,6 +148,7 @@ export const EditRoomPage = ({
           ...data,
           gallery,
           amenities: selectedAmenities,
+          pricePerNight: data.pricePerNight, // Ensure this is a number
         },
       };
 
@@ -156,10 +174,12 @@ export const EditRoomPage = ({
               <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 Edit Room
               </h1>
-              <p className="text-slate-600 mt-1">Update room details and configuration</p>
+              <p className="text-slate-600 mt-1">
+                Update room details and configuration
+              </p>
             </div>
-            <button 
-              onClick={onCancel} 
+            <button
+              onClick={onCancel}
               className="px-6 py-2.5 text-slate-600 hover:text-slate-800 hover:bg-white/60 rounded-xl transition-all duration-200 font-medium border border-slate-200/60"
             >
               Cancel
@@ -185,9 +205,13 @@ export const EditRoomPage = ({
                 </label>
                 <div className="relative">
                   <select
-                    {...register("roomTypeId", { required: "Room type is required" })}
+                    {...register("roomTypeId", {
+                      required: "Room type is required",
+                    })}
                     className={`w-full px-4 py-3 bg-white border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 appearance-none ${
-                      errors.roomTypeId ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : "border-slate-200"
+                      errors.roomTypeId
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                        : "border-slate-200"
                     }`}
                     disabled={isRoomTypesLoading}
                   >
@@ -199,8 +223,18 @@ export const EditRoomPage = ({
                     ))}
                   </select>
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-5 h-5 text-slate-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -224,7 +258,9 @@ export const EditRoomPage = ({
                     min: { value: 1, message: "Minimum capacity is 1" },
                   })}
                   className={`w-full px-4 py-3 bg-white border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 ${
-                    errors.capacity ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : "border-slate-200"
+                    errors.capacity
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                      : "border-slate-200"
                   }`}
                   placeholder="Number of guests"
                 />
@@ -242,16 +278,23 @@ export const EditRoomPage = ({
                   Price Per Night (USD) <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">
+                    $
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     {...register("pricePerNight", {
                       required: "Price is required",
-                      min: { value: 0.01, message: "Price must be greater than 0" },
+                      min: {
+                        value: 0.01,
+                        message: "Price must be greater than 0",
+                      },
                     })}
                     className={`w-full pl-8 pr-4 py-3 bg-white border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 ${
-                      errors.pricePerNight ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : "border-slate-200"
+                      errors.pricePerNight
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                        : "border-slate-200"
                     }`}
                     placeholder="0.00"
                   />
@@ -306,8 +349,8 @@ export const EditRoomPage = ({
                     <label
                       htmlFor="thumbnail-upload"
                       className={`flex items-center justify-center w-full p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-                        isImageLoading 
-                          ? "border-slate-300 bg-slate-50 cursor-not-allowed" 
+                        isImageLoading
+                          ? "border-slate-300 bg-slate-50 cursor-not-allowed"
                           : "border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/50"
                       }`}
                     >
@@ -319,20 +362,24 @@ export const EditRoomPage = ({
                       ) : (
                         <div className="text-center">
                           <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                          <p className="text-slate-600 font-medium">Click to upload thumbnail</p>
-                          <p className="text-slate-400 text-sm mt-1">PNG, JPG up to 5MB</p>
+                          <p className="text-slate-600 font-medium">
+                            Click to upload thumbnail
+                          </p>
+                          <p className="text-slate-400 text-sm mt-1">
+                            PNG, JPG up to 5MB
+                          </p>
                         </div>
                       )}
                     </label>
                   </div>
-                  
+
                   {thumbnailPreview && (
                     <div className="relative inline-block">
                       <div className="relative h-48 w-72 rounded-xl overflow-hidden border-2 border-slate-200">
-                        <img 
-                          src={thumbnailPreview} 
-                          alt="Thumbnail preview" 
-                          className="w-full h-full object-cover" 
+                        <img
+                          src={thumbnailPreview}
+                          alt="Thumbnail preview"
+                          className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                       </div>
@@ -370,15 +417,19 @@ export const EditRoomPage = ({
                     <label
                       htmlFor="gallery-upload"
                       className={`flex items-center justify-center w-full p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-                        isImageLoading 
-                          ? "border-slate-300 bg-slate-50 cursor-not-allowed" 
+                        isImageLoading
+                          ? "border-slate-300 bg-slate-50 cursor-not-allowed"
                           : "border-slate-300 hover:border-blue-400 hover:bg-blue-50/50"
                       }`}
                     >
                       <div className="text-center">
                         <Image className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                        <p className="text-slate-600 font-medium text-sm">Add gallery images</p>
-                        <p className="text-slate-400 text-xs mt-1">Max 10 images • Recommended: 1200x800px</p>
+                        <p className="text-slate-600 font-medium text-sm">
+                          Add gallery images
+                        </p>
+                        <p className="text-slate-400 text-xs mt-1">
+                          Max 10 images • Recommended: 1200x800px
+                        </p>
                       </div>
                     </label>
                   </div>
@@ -388,10 +439,10 @@ export const EditRoomPage = ({
                       {gallery.map((url, index) => (
                         <div key={url} className="relative group">
                           <div className="aspect-square rounded-xl overflow-hidden border-2 border-slate-200">
-                            <img 
-                              src={url} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" 
-                              alt={`Gallery ${index + 1}`} 
+                            <img
+                              src={url}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                              alt={`Gallery ${index + 1}`}
                             />
                           </div>
                           <button
@@ -425,7 +476,7 @@ export const EditRoomPage = ({
               <label className="block text-sm font-semibold text-slate-700 mb-4">
                 Select Amenities <span className="text-red-500">*</span>
               </label>
-              
+
               {isAmenitiesLoading ? (
                 <div className="flex items-center justify-center py-8 text-slate-500">
                   <Loader2 className="animate-spin w-6 h-6 mr-3" />
@@ -454,7 +505,7 @@ export const EditRoomPage = ({
                   ))}
                 </div>
               )}
-              
+
               {selectedAmenities.length === 0 && (
                 <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
                   <p className="text-red-600 text-sm flex items-center gap-2">
@@ -473,41 +524,47 @@ export const EditRoomPage = ({
               <div className="mb-6">
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <div className="relative">
-                    <input 
-                      type="checkbox" 
-                      {...register("isAvailable")} 
-                      className="sr-only" 
+                    <input
+                      type="checkbox"
+                      {...register("isAvailable")}
+                      className="sr-only"
                     />
                     <div className="w-12 h-6 bg-slate-300 rounded-full transition-colors duration-200 group-hover:bg-slate-400">
                       <div className="w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform duration-200 translate-x-0.5 translate-y-0.5"></div>
                     </div>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-slate-700">Available for booking</span>
-                    <p className="text-xs text-slate-500">Toggle room availability for guests</p>
+                    <span className="text-sm font-semibold text-slate-700">
+                      Available for booking
+                    </span>
+                    <p className="text-xs text-slate-500">
+                      Toggle room availability for guests
+                    </p>
                   </div>
                 </label>
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 justify-end">
-                <button 
-                  type="button" 
-                  onClick={onCancel} 
+                <button
+                  type="button"
+                  onClick={onCancel}
                   className="px-8 py-3 text-slate-600 hover:text-slate-800 bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-slate-300 rounded-xl transition-all duration-200 font-semibold"
                   disabled={isLoading}
                 >
                   Cancel Changes
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl transition-all duration-200 font-semibold shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
                       <Loader2 className="animate-spin w-5 h-5" />
-                      <span>{isImageLoading ? "Uploading..." : "Saving..."}</span>
+                      <span>
+                        {isImageLoading ? "Uploading..." : "Saving..."}
+                      </span>
                     </>
                   ) : (
                     <>

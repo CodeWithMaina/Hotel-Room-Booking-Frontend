@@ -9,7 +9,6 @@ import {
   Phone,
   Landmark,
   Star,
-  Pencil,
   Trash2,
   Plus,
   Filter,
@@ -18,7 +17,6 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardRoomCard } from "../../components/room/DashboardRoomCard";
-import EditHotelModal from "../../components/hotel/EditHotelModal";
 import { RoomFilterSidebar } from "../../components/room/RoomFilterSidebar";
 import type { TRoom } from "../../types/roomsTypes";
 
@@ -36,7 +34,6 @@ export const HotelDetails = () => {
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filteredRooms, setFilteredRooms] = useState<TRoom[]>([]);
-  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const {
     data: hotel,
@@ -125,12 +122,6 @@ export const HotelDetails = () => {
         />
         <div className="absolute inset-0 bg-black/30 flex flex-col justify-between">
           <div className="flex justify-end p-4 gap-2">
-            <button
-              onClick={() => setIsEditOpen(true)}
-              className="btn btn-sm btn-white"
-            >
-              <Pencil className="w-4 h-4 mr-1" /> Edit
-            </button>
             <button onClick={handleDelete} className="btn btn-sm btn-error">
               <Trash2 className="w-4 h-4 mr-1" /> Delete
             </button>
@@ -224,11 +215,6 @@ export const HotelDetails = () => {
         </div>
       </div>
 
-      <EditHotelModal
-        isOpen={isEditOpen}
-        setIsOpen={setIsEditOpen}
-        hotel={hotel}
-      />
     </div>
   );
 };
