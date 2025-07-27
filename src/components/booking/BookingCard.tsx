@@ -7,6 +7,7 @@ import {
   Clock,
 } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
+import type { TRoomType } from "../../types/roomsTypes";
 
 type Booking = {
   bookingId?: number;
@@ -15,7 +16,7 @@ type Booking = {
   checkOutDate: string;
   totalAmount: string;
   room: {
-    roomType: string;
+    roomType: TRoomType;
     capacity: number;
     pricePerNight: number;
     thumbnail: string;
@@ -47,6 +48,7 @@ export const BookingCard = ({
     new Date(checkOutDate),
     new Date(checkInDate)
   );
+
   const formattedCheckIn = format(new Date(checkInDate), "dd MMM yyyy");
   const formattedCheckOut = format(new Date(checkOutDate), "dd MMM yyyy");
 
@@ -72,7 +74,7 @@ export const BookingCard = ({
         <div className="relative flex-shrink-0 sm:w-64 md:w-72">
           <img
             src={room.thumbnail}
-            alt={room.roomType}
+            alt={room.roomType.name}
             className="w-full h-48 sm:h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -87,7 +89,7 @@ export const BookingCard = ({
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 leading-tight">
-                {room.roomType}
+                {room.roomType.name}
               </h2>
               <span
                 className={`inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${

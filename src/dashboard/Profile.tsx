@@ -1,22 +1,9 @@
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { useGetUserByIdQuery, useUpdateUserMutation } from "../../features/api";
-import {
-  useGetEntityAddressQuery,
-  useUpdateAddressMutation,
-  useCreateAddressMutation,
-  useDeleteAddressMutation,
-} from "../../features/api/addressesApi";
-import type { RootState } from "../../app/store";
-import { Loading } from "../../components/common/Loading";
-import { ProfileInfoDisplay } from "../../components/profile/ProfileInfoDisplay";
-import { AddressFormModal } from "../../components/profile/AddressFormModal";
-import { UserFormModal } from "../../components/profile/UserFormModal";
+
 import toast from "react-hot-toast";
-import type { TAddress } from "../../types/addressTypes";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import type { TUserFormValues } from "../../types/usersTypes";
 import { 
   User, 
   Edit3, 
@@ -32,6 +19,15 @@ import {
   Edit2,
   Trash2
 } from "lucide-react";
+import { useGetUserByIdQuery, useUpdateUserMutation } from "../features/api/usersApi";
+import { useCreateAddressMutation, useDeleteAddressMutation, useGetEntityAddressQuery, useUpdateAddressMutation } from "../features/api/addressesApi";
+import type { TAddress } from "../types/addressTypes";
+import { Loading } from "../components/common/Loading";
+import { UserFormModal } from "../components/profile/UserFormModal";
+import { ProfileInfoDisplay } from "../components/profile/ProfileInfoDisplay";
+import type { TUserFormValues } from "../types/usersTypes";
+import type { RootState } from "../app/store";
+import { AddressFormModal } from "../components/profile/AddressFormModal";
 
 const MySwal = withReactContent(Swal);
 

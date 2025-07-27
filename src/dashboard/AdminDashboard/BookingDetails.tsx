@@ -210,7 +210,7 @@ export const BookingDetails = () => {
             <div className="relative overflow-hidden">
               <img
                 src={room.thumbnail}
-                alt={room.roomType}
+                alt={room.roomType.name}
                 className="w-full h-80 object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -267,7 +267,7 @@ export const BookingDetails = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm text-slate-500 font-medium">Room Type</p>
-                  <p className="text-slate-800 font-semibold">{room.roomType}</p>
+                  <p className="text-slate-800 font-semibold">{room?.roomType?.name}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-slate-500 font-medium">Capacity</p>

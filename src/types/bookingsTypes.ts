@@ -17,17 +17,7 @@ export interface TSingleBooking {
   checkInDate: string;
   checkOutDate: string;
   totalAmount: string;
-  room: {
-    roomType: string;
-    capacity: number;
-    pricePerNight: number;
-    thumbnail: string;
-    hotelId: number;
-    roomId: number;
-    isAvailable: boolean;
-    createdAt: string;
-    gallery: string[];
-  };
+  room: TRoom;
 }
 
 export type TUser = {
@@ -39,26 +29,17 @@ export type TUser = {
   role: string;
 };
 
-// export type TRoom = {
-//   roomId: number;
-//   roomType: string;
-//   pricePerNight: string;
-//   capacity: number;
-//   thumbnail: string;
-//   isAvailable: boolean;
-//   hotelId: number;
-// };
 
 export type TBooking = {
   bookingId: number;
   userId: number;
   roomId: number;
-  checkInDate: string; // ISO format
-  checkOutDate: string; // ISO format
+  checkInDate: string; 
+  checkOutDate: string; 
   bookingStatus: TBookingStatus;
   totalAmount: string;
-  createdAt: string; // ISO date
-  updatedAt: string; // ISO date
+  createdAt: string; 
+  updatedAt: string; 
   user: TUser;
   room: TRoom;
 };
@@ -98,16 +79,7 @@ export type TBookingsResponse = Array<{
     address: string;
     role: string;
   };
-  room: {
-    roomId: number;
-    roomType: string;
-    hotelId: number;
-    pricePerNight: string;
-    capacity: number;
-    amenities: string;
-    isAvailable: boolean;
-    gallery: string[];
-  };
+  room: TRoom;
 }>;
 
 export type TBookingStatus = "Pending" | "Confirmed" | "Cancelled";

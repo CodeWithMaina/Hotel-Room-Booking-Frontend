@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Home,
   CardSim,
+  House,
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -26,10 +27,11 @@ interface SideNavProps {
 }
 
 const navLinks = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "analytics", label: "Analytics", icon: LayoutDashboard },
   { id: "users", label: "Users", icon: Users },
   { id: "booking-details", label: "Booking Details", icon: ClipboardList },
   { id: "hotels", label: "Hotels", icon: Hotel },
+  { id: "rooms", label: "Rooms", icon: House },
   { id: "payments", label: "Payments", icon: CardSim },
   { id: "ticket", label: "Customer Support", icon: MessageSquare },
 ];
@@ -220,9 +222,6 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
               </div>
             ) : !isError && userData ? (
               <UserProfileButton
-                firstName={userData.firstName}
-                lastName={userData.lastName}
-                avatarUrl={userData.profileImage}
                 collapsed={collapsed}
               />
             ) : (

@@ -60,7 +60,7 @@ export const HotelDetails = () => {
     if (!rooms) return;
     const filtered = rooms.filter((room: TRoom) => {
       const matchSearch = filters.search
-        ? room.roomType.toLowerCase().includes(filters.search.toLowerCase())
+        ? room.roomType.name.toLowerCase().includes(filters.search.toLowerCase())
         : true;
       const matchAvailable = filters.availableOnly ? room.isAvailable : true;
       const matchPrice =

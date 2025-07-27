@@ -30,6 +30,8 @@ export const Booking = () => {
     isError,
   } = useGetBookingsQuery({ page: 1, limit: 10 }, { skip: userType !== "admin" });
 
+  console.log(bookingsData);
+
   const allBookings = bookingsData?.data;
   const [deleteBooking] = useDeleteBookingMutation();
 
@@ -40,7 +42,7 @@ export const Booking = () => {
   const roomTypes = useMemo(() => {
     const types = new Set<string>();
     bookings.forEach((b) => {
-      if (b?.room?.roomType) types.add(b.room.roomType);
+      if (b?.room?.roomType) types.add(b.room.roomType.name);
     });
     return Array.from(types);
   }, [bookings]);
@@ -49,10 +51,10 @@ export const Booking = () => {
     const matchStatus =
       filterStatus === "All" || booking.bookingStatus === filterStatus;
     const matchRoom =
-      selectedRoomType === "All" || booking.room?.roomType === selectedRoomType;
+      selectedRoomType === "All" || booking.room?.roomType.name === selectedRoomType;
     const matchSearch =
       searchQuery.trim() === "" ||
-      booking.room?.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.room?.roomType.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());

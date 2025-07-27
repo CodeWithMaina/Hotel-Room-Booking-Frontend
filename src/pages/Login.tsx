@@ -29,7 +29,7 @@ export const Login = () => {
       const response = await loginUser(data).unwrap();
       dispatch(persistCredentials(response));
       toast.success(`Welcome back, ${response.firstName}!`);
-      navigate(response.userType === "admin" ? "/admin/dashboard" : "/user/dashboard");
+      navigate(response.userType === "admin" ? "/admin/analytics" : "/user/analytics");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error?.status;

@@ -153,8 +153,8 @@ const Navbar: React.FC = () => {
                     <Link
                       to={
                         userType === "admin"
-                          ? "/admin/dashboard"
-                          : "/user/dashboard"
+                          ? "/admin/analytics"
+                          : "/user/analytics"
                       }
                       className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-base-200 hover:text-primary transition-colors"
                     >

@@ -8,13 +8,10 @@ import { Login } from "./pages/Login";
 import { Rooms } from "./pages/Rooms";
 import { About } from "./pages/About";
 import { DashboardPage } from "./pages/DashboardPage";
-import { Profile } from "./dashboard/AdminDashboard/Profile";
-import { Dashboard } from "./dashboard/AdminDashboard/Dashboard";
 import { Booking } from "./dashboard/AdminDashboard/Booking";
 import { Hotels } from "./dashboard/AdminDashboard/Hotels";
 import { Users } from "./dashboard/AdminDashboard/Users";
 import { Ticket } from "./dashboard/AdminDashboard/AdminTicket";
-import { UserDashboard } from "./dashboard/UserDashboard/Dashboard";
 import { Bookings } from "./dashboard/UserDashboard/Bookings";
 import { UserTickets } from "./dashboard/UserDashboard/UserTickets";
 import { HotelDetailsPage } from "./pages/HotelDetailsPage";
@@ -36,7 +33,10 @@ import { PaymentFailedPage } from "./pages/PaymentFailedPage";
 import { HotelRooms } from "./pages/HotelRooms";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
 import { PaymentReceiptPage } from "./components/payment/PaymentReceiptPage";
-import { Settings } from "./dashboard/UserDashboard/Settings";
+import { Settings } from "./dashboard/Settings";
+import { Analytics } from "./dashboard/Analytics";
+import { RoomsDashboard } from "./dashboard/RoomsDashboard";
+import { Profile } from "./dashboard/Profile";
 
 function App() {
   const router = createBrowserRouter([
@@ -98,8 +98,8 @@ function App() {
       element: <DashboardPage />,
       children: [
         {
-          path: "/admin/dashboard",
-          element: <Dashboard />,
+          path: "/admin/analytics",
+          element: <Analytics />,
         },
         {
           path: "/admin/users",
@@ -142,6 +142,10 @@ function App() {
           element: <Hotels />,
         },
         {
+          path: "/admin/rooms",
+          element: <RoomsDashboard />,
+        },
+        {
           path: "/admin/profile",
           element: <Profile />,
         },
@@ -160,8 +164,8 @@ function App() {
       ),
       children: [
         {
-          path: "/user/dashboard",
-          element: <UserDashboard />,
+          path: "/user/analytics",
+          element: <Analytics />,
         },
         {
           path: "/user/booking-details",
@@ -211,8 +215,8 @@ function App() {
       ),
       children: [
         {
-          path: "/owner/dashboard",
-          element: <UserDashboard />,
+          path: "/owner/analytics",
+          element: <Analytics />,
         },
         {
           path: "/owner/payment",

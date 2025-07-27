@@ -1,4 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { TAmenityInsert, TAmenitySelect } from "../../types/roomsTypes";
+
+// interface AmenitiesResponse {
+//   Amenities: TAmenitySelect[];
+// }
 
 export const amenitiesApi = createApi({
   reducerPath: "amenitiesApi",
@@ -6,35 +11,62 @@ export const amenitiesApi = createApi({
 
   tagTypes: ["Amenity"],
   endpoints: (builder) => ({
-    getAmenities: builder.query({
+    // Get all amenities
+    getAmenities: builder.query<TAmenitySelect[], void>({
       query: () => "amenities",
-      providesTags: ["Amenity"],
+      transformResponse: (response: { Amenities: TAmenitySelect[] }) =>
+        response.Amenities, // Fix the response type
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ amenityId }) => ({
+                type: "Amenity" as const,
+                id: amenityId,
+              })),
+              { type: "Amenity", id: "LIST" },
+            ]
+          : [{ type: "Amenity", id: "LIST" }],
     }),
-    getAmenityById: builder.query({
-      query: (id) => `amenity/${id}`,
+
+    // Get single amenity by ID
+    getAmenityById: builder.query<TAmenitySelect, number>({
+      query: (id) => `amenities/${id}`,
+      transformResponse: (response: { Amenity: TAmenitySelect }) =>
+        response.Amenity,
       providesTags: (_, __, id) => [{ type: "Amenity", id }],
     }),
-    createAmenity: builder.mutation({
+
+    // Create new amenity
+    createAmenity: builder.mutation<TAmenitySelect, TAmenityInsert>({
       query: (newAmenity) => ({
-        url: "amenity",
+        url: "amenities",
         method: "POST",
         body: newAmenity,
       }),
+      transformResponse: (response: { Amenity: TAmenitySelect }) =>
+        response.Amenity,
       invalidatesTags: ["Amenity"],
     }),
-    updateAmenity: builder.mutation({
-      query: ({ amenityId, ...patch }) => ({
-        url: `amenity/${amenityId}`,
+
+    // Update existing amenity
+    updateAmenity: builder.mutation<
+      TAmenitySelect,
+      { id: number; data: Partial<TAmenityInsert> }
+    >({
+      query: ({ id, data }) => ({
+        url: `amenities/${id}`,
         method: "PUT",
-        body: patch,
+        body: data,
       }),
-      invalidatesTags: (_, __, { amenityId }) => [
-        { type: "Amenity", id: amenityId },
-      ],
+      transformResponse: (response: { Amenity: TAmenitySelect }) =>
+        response.Amenity,
+      invalidatesTags: (_, __, { id }) => [{ type: "Amenity", id }],
     }),
+
+    // Delete amenity
     deleteAmenity: builder.mutation<void, number>({
       query: (id) => ({
-        url: `amenity/${id}`,
+        url: `amenities/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Amenity"],
@@ -42,6 +74,7 @@ export const amenitiesApi = createApi({
   }),
 });
 
+// Export hooks for usage in components
 export const {
   useGetAmenitiesQuery,
   useGetAmenityByIdQuery,

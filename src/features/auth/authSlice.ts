@@ -22,28 +22,27 @@ export const authSlice = createSlice({
   name: "Auth",
   initialState,
   reducers: {
-    persistCredentials: (
-      state,
-      action: PayloadAction<AuthProps>
-    ) => {
-        state.firstName = action.payload.firstName;
-        state.email = action.payload.email;
-        state.token = action.payload.token;
-        state.userId = action.payload.userId;
-        state.userType = action.payload.userType;
-        state.isAuthenticated = true;
+    persistCredentials: (state, action: PayloadAction<AuthProps>) => {
+      state.firstName = action.payload.firstName;
+      state.email = action.payload.email;
+      state.token = action.payload.token;
+      state.userId = action.payload.userId;
+      state.userType = action.payload.userType;
+      state.isAuthenticated = true;
+
+      // Store in localStorage
+      localStorage.setItem("token", action.payload.token || "");
     },
     clearCredentials: (state) => {
-        state.firstName = null;
-        state.email = null;
-        state.token = null;
-        state.userId = null;
-        state.userType = null;
-        state.isAuthenticated = false;
-    }
+      state.firstName = null;
+      state.email = null;
+      state.token = null;
+      state.userId = null;
+      state.userType = null;
+      state.isAuthenticated = false;
+    },
   },
 });
 
-export const {persistCredentials, clearCredentials} = authSlice.actions;
+export const { persistCredentials, clearCredentials } = authSlice.actions;
 export default authSlice.reducer;
-

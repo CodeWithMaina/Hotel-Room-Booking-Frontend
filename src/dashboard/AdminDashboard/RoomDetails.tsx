@@ -1,3 +1,4 @@
+// RoomDetails.tsx
 import {
   Tv,
   Snowflake,
@@ -14,11 +15,10 @@ import {
   Star,
   MapPin,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useDeleteRoomMutation,
   useGetRoomWithAmenitiesQuery,
-  useUpdateRoomMutation,
 } from "../../features/api/roomsApi";
 import { Loading } from "../../components/common/Loading";
 import { Error } from "../../components/common/Error";
@@ -26,9 +26,8 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { EditRoomModal } from "../../components/room/EditRoomModal";
-import type { TEditRoomForm } from "../../types/roomsTypes";
 import { parseRTKError } from "../../utils/parseRTKError";
+import { EditRoomPage } from "../../components/room/EditRoomPage";
 
 const fallBackUrl =
   "https://plus.unsplash.com/premium_photo-1661964071015-d97428970584?q=80&w=1620&auto=format&fit=crop";
@@ -39,11 +38,7 @@ export const RoomDetails = () => {
   const { id } = useParams<{ id: string }>();
   const roomId = Number(id);
   const navigate = useNavigate();
-
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [updateRoom] = useUpdateRoomMutation();
-  const [deleteRoom] = useDeleteRoomMutation();
-  const [selectedGalleryImage, setSelectedGalleryImage] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
     data: roomDetails,
@@ -55,13 +50,7 @@ export const RoomDetails = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  if (isLoading) return <Loading />;
-  if (isError || !roomDetails) {
-    toast.error("Failed to load room details.");
-    return <Error />;
-  }
-
-  const { room, amenities } = roomDetails;
+  const [deleteRoom] = useDeleteRoomMutation();
 
   const handleDelete = async () => {
     try {
@@ -81,7 +70,7 @@ export const RoomDetails = () => {
         await deleteRoom(roomId).unwrap();
         toast.dismiss();
         toast.success("Room deleted successfully!");
-        navigate("/admin/hotels");
+        navigate("/admin/rooms");
       }
     } catch (error) {
       const errorMessage = parseRTKError(
@@ -92,19 +81,13 @@ export const RoomDetails = () => {
     }
   };
 
-  const handleEditSubmit = async (data: TEditRoomForm) => {
-    try {
-      toast.loading("Updating room...");
-      await updateRoom({ roomId, ...data }).unwrap();
-      toast.dismiss();
-      toast.success("Room updated successfully!");
-      setIsEditOpen(false);
-      refetch();
-    } catch (error) {
-      const errorMessage = parseRTKError(error, "Update failed.");
-      toast.error(errorMessage);
-    }
-  };
+  if (isLoading) return <Loading />;
+  if (isError || !roomDetails) {
+    toast.error("Failed to load room details.");
+    return <Error />;
+  }
+
+  const { room, amenities } = roomDetails;
 
   const amenityIcons: Record<string, React.JSX.Element> = {
     TV: <Tv />,
@@ -113,8 +96,25 @@ export const RoomDetails = () => {
     "King Bed": <BedDouble />,
   };
 
+  if (isEditing) {
+    return (
+      <EditRoomPage 
+        room={{
+          ...room,
+          amenities: amenities.map(a => a.amenityId),
+          roomTypeId: room.roomType.roomTypeId
+        }}
+        onCancel={() => setIsEditing(false)}
+        onSuccess={() => {
+          setIsEditing(false);
+          refetch();
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#ffffff] to-[#e5e5e5] text-[#03071E]">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Navigation Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,7 +129,7 @@ export const RoomDetails = () => {
             
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setIsEditOpen(true)}
+                onClick={() => setIsEditing(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
               >
                 <Pencil className="w-4 h-4" />
@@ -159,12 +159,12 @@ export const RoomDetails = () => {
                 <span>Premium Room Collection</span>
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                {room.roomType}
+                {room.roomType.name || "StayCloud Room"}
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Experience luxury and comfort in our thoughtfully designed {room.roomType}. 
+                {room.description || `Experience luxury and comfort in our thoughtfully designed ${room.roomType.name}. 
                 Featuring premium amenities and elegant furnishings, this space offers 
-                the perfect retreat for discerning guests seeking an exceptional stay.
+                the perfect retreat for discerning guests seeking an exceptional stay.`}
               </p>
             </div>
 
@@ -173,7 +173,7 @@ export const RoomDetails = () => {
               <div className="aspect-video rounded-2xl overflow-hidden shadow-xl">
                 <img
                   src={room.thumbnail || fallBackUrl}
-                  alt={room.roomType}
+                  alt={room.roomType.name || "StayCloud Room"}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -184,30 +184,6 @@ export const RoomDetails = () => {
                 </div>
               </div>
             </div>
-
-            {/* Room Gallery */}
-            {room.gallery && room.gallery.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Room Gallery</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {room.gallery.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedGalleryImage(index)}
-                      className={`aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all ${
-                        selectedGalleryImage === index ? 'ring-2 ring-blue-500' : ''
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`Gallery image ${index + 1}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Sidebar */}
@@ -263,43 +239,10 @@ export const RoomDetails = () => {
                   ))}
                 </div>
               </div>
-
-              {/* Additional Info Card */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h3>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Business travelers
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Weekend getaways
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Special occasions
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Extended stays
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
       </div>
-
-
-      <EditRoomModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        room={room}
-        onSubmit={handleEditSubmit}
-      />
     </div>
   );
 };
-
-// While strictly maintaining the business logic that is currently in place. Redesign the following UI to have a professionally look. Strategically position every component. Remove the gallery image where they are and use it another place. Just the thumbnail should remain where it is. Maintain a white background: 

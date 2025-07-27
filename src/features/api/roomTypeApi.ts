@@ -35,7 +35,7 @@ type UpdateRoomTypeRequest = z.infer<typeof updateRoomTypeSchema>;
 
 export const roomTypeApi = createApi({
   reducerPath: 'roomTypeApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
   tagTypes: ['RoomType'],
   endpoints: (builder) => ({
     // Get all room types

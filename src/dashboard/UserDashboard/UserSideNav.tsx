@@ -25,7 +25,7 @@ interface SideNavProps {
 }
 
 const navLinks = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "analytics", label: "Analytics", icon: LayoutDashboard },
   { id: "booking-details", label: "Booking Details", icon: ClipboardList },
   { id: "tickets", label: "Customer Support", icon: MessageSquare },
   { id: "wishlist", label: "Wishlist", icon: Heart },
@@ -60,38 +60,37 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
   }, [onClose]);
 
   const handleLogOut = () => {
-  toast.custom((t) => (
-    <div
-      className={`bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 flex flex-col space-y-3 w-[300px] transition-all ${
-        t.visible ? "animate-enter" : "animate-leave"
-      }`}
-    >
-      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-        Are you sure you want to logout?
+    toast.custom((t) => (
+      <div
+        className={`bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 flex flex-col space-y-3 w-[300px] transition-all ${
+          t.visible ? "animate-enter" : "animate-leave"
+        }`}
+      >
+        <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          Are you sure you want to logout?
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 text-sm rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              dispatch(clearCredentials());
+              toast.dismiss(t.id);
+              toast.success("Logged out successfully.");
+              navigate("/login");
+            }}
+            className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+          >
+            Confirm
+          </button>
+        </div>
       </div>
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          className="px-3 py-1 text-sm rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => {
-            dispatch(clearCredentials());
-            toast.dismiss(t.id);
-            toast.success("Logged out successfully.");
-            navigate("/login");
-          }}
-          className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  ));
-};
-
+    ));
+  };
 
   return (
     <>
@@ -205,9 +204,6 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
               </div>
             ) : !isError && userData ? (
               <UserProfileButton
-                firstName={userData.firstName}
-                lastName={userData.lastName}
-                avatarUrl={userData.profileImage}
                 collapsed={collapsed}
               />
             ) : (
