@@ -1,6 +1,6 @@
 export type TRoomType = {
   roomTypeId: number;
-  name: string | React.ReactNode; 
+  name: string; 
   description: string;
   createdAt: string;
 };

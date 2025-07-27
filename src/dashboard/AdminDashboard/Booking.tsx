@@ -47,20 +47,22 @@ export const Booking = () => {
     return Array.from(types);
   }, [bookings]);
 
-  const filteredBookings = bookings.filter((booking) => {
-    const matchStatus =
-      filterStatus === "All" || booking.bookingStatus === filterStatus;
-    const matchRoom =
-      selectedRoomType === "All" || booking.room?.roomType.name === selectedRoomType;
-    const matchSearch =
-      searchQuery.trim() === "" ||
-      booking.room?.roomType.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
+  // Update the filteredBookings function in Booking.tsx
+const filteredBookings = bookings.filter((booking) => {
+  const matchStatus =
+    filterStatus === "All" || booking.bookingStatus === filterStatus;
+  const matchRoom =
+    selectedRoomType === "All" || 
+    booking.room?.roomType?.name === selectedRoomType;
+  const matchSearch =
+    searchQuery.trim() === "" ||
+    booking.room?.roomType?.name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+    booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchStatus && matchRoom && matchSearch;
-  });
+  return matchStatus && matchRoom && matchSearch;
+});
 
   const handleDelete = (bookingId: number) => {
     Swal.fire({
