@@ -1,25 +1,17 @@
 import { useState, useMemo } from "react";
-import {
-  useGetHotelsQuery,
-  useCreateHotelMutation,
-  useUpdateHotelMutation,
-} from "../../features/api/hotelsApi";
+import { useGetHotelsQuery } from "../../features/api/hotelsApi";
 import type { THotel } from "../../types/hotelsTypes";
-import { Building2, Search, Plus} from "lucide-react";
-import { toast } from "sonner";
-import { HotelFormModal } from "../../components/hotel/HotelFormModal";
+import { Building2, Search, Plus } from "lucide-react";
 import { Loading } from "../../components/common/Loading";
-import type { HotelFormData } from "../../validation/hotelFormSchema";
 import { DashboardHotelCard } from "../../components/hotel/DashboardHotelCard";
+import { HotelFormContainer } from "../../components/hotel/HotelFormContainer";
 
 export const Hotels = () => {
   const { data: hotelsData, isLoading, error, refetch } = useGetHotelsQuery();
-  const [createHotel] = useCreateHotelMutation();
-  const [updateHotel] = useUpdateHotelMutation();
   const [search, setSearch] = useState("");
   const [selectedHotel, setSelectedHotel] = useState<THotel | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
   const filteredHotels = useMemo(() => {
     if (!hotelsData) return [];
@@ -31,51 +23,36 @@ export const Hotels = () => {
     );
   }, [hotelsData, search]);
 
-  const openModal = (mode: "add" | "edit", hotel?: THotel) => {
-    setModalMode(mode);
+  const openForm = (mode: "create" | "edit", hotel?: THotel) => {
+    setFormMode(mode);
     setSelectedHotel(hotel || null);
-    setIsModalOpen(true);
+    setIsFormOpen(true);
   };
 
-  const closeModal = () => setIsModalOpen(false);
-
-
-  const handleSubmit = async (formData: HotelFormData): Promise<void> => {
-    try {
-      const payload = {
-        name: formData.name,
-        location: formData.location,
-        ...(formData.thumbnail && { thumbnail: formData.thumbnail }),
-      };
-
-      if (modalMode === "add") {
-        await createHotel(payload).unwrap();
-        toast.success("Hotel created successfully");
-      } else {
-        if (!selectedHotel) return;
-
-        await updateHotel({
-          hotelId: selectedHotel.hotelId,
-          ...payload,
-        }).unwrap();
-        toast.success("Hotel updated successfully");
-      }
-
-      refetch();
-      closeModal();
-    } catch (err) {
-      console.error("Submission error:", err);
-      toast.error("Operation failed. Please try again.");
-    }
+  const handleSuccess = () => {
+    refetch();
+    setIsFormOpen(false);
   };
 
   if (isLoading) return <Loading />;
-  if (error)
+  if (error) return <span className="text-red-500 text-center">Error fetching hotels.</span>;
+  if (!hotelsData?.length && !isFormOpen) {
     return (
-      <span className="text-red-500 text-center">Error fetching hotels.</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="flex flex-col items-center justify-center h-96">
+            <span className="text-gray-500 mb-4">No hotels found.</span>
+            <button
+              onClick={() => openForm("create")}
+              className="btn btn-primary text-white"
+            >
+              <Plus className="w-4 h-4" /> Add Your First Hotel
+            </button>
+          </div>
+        </div>
+      </div>
     );
-  if (!hotelsData?.length)
-    return <span className="text-gray-500">No hotel found.</span>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
@@ -101,7 +78,7 @@ export const Hotels = () => {
               />
             </div>
             <button
-              onClick={() => openModal("add")}
+              onClick={() => openForm("create")}
               className="btn btn-primary text-white"
             >
               <Plus className="w-4 h-4" /> Add Hotel
@@ -111,29 +88,34 @@ export const Hotels = () => {
 
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredHotels.map((hotel) => (
-            <div key={hotel.hotelId} className="relative">
-              <DashboardHotelCard hotel={hotel} />
-            </div>
+            <DashboardHotelCard
+              key={hotel.hotelId}
+              hotel={hotel}
+              onEdit={() => openForm("edit", hotel)}
+            />
           ))}
         </section>
       </main>
 
-      {isModalOpen && (
-        <HotelFormModal
-          mode={modalMode}
+      {isFormOpen && (
+        <HotelFormContainer
+          mode={formMode}
+          hotelId={formMode === "edit" ? selectedHotel?.hotelId : undefined}
           defaultValues={
-            modalMode === "edit" && selectedHotel
+            formMode === "edit" && selectedHotel
               ? {
                   name: selectedHotel.name,
                   location: selectedHotel.location ?? "",
-                  thumbnail:
-                    selectedHotel.thumbnail ??
-                    "https://plus.unsplash.com/premium_photo-1661964071015-d97428970584?q=80&w=1620&auto=format&fit=crop",
+                  description: selectedHotel.description ?? "",
+                  contactPhone: selectedHotel.contactPhone ?? "",
+                  category: selectedHotel.category ?? "",
+                  thumbnail: selectedHotel.thumbnail ?? "",
+                  amenities: selectedHotel.amenities ?? [],
+                  gallery: selectedHotel.gallery ?? [],
                 }
               : undefined
           }
-          onClose={closeModal}
-          onSubmit={handleSubmit}
+          onSuccess={handleSuccess}
         />
       )}
     </div>

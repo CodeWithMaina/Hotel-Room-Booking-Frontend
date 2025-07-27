@@ -166,7 +166,7 @@ console.log(amenitiesData);
       toast.success("Room created successfully!");
       methods.reset();
       setStep(0);
-      navigate("-1");
+      navigate(-1);
     } catch (error) {
       const errorMessage = parseRTKError(
         error,

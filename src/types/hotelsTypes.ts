@@ -1,25 +1,29 @@
 export type THotel = {
   hotelId: number;
   name: string;
-  thumbnail?:string;
+  thumbnail?: string;
   location?: string | null | undefined;
   contactPhone?: string | null;
   category?: string | null;
   rating?: number | null;
-  gallery: string[];
+  amenities?: number[];
+  gallery?: string[];
   description: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export type THotelInsert = Omit<THotel, 'hotelId' | 'createdAt' | 'updatedAt'> & {
+export type THotelInsert = Omit<
+  THotel,
+  "hotelId" | "createdAt" | "updatedAt"
+> & {
   hotelId?: number;
 };
 
 export type THotelAddress = {
   addressId: number;
   entityId: number;
-  entityType: 'hotel';
+  entityType: "hotel";
   street: string;
   city: string;
   state?: string | null;
@@ -41,7 +45,7 @@ export type THotelEntityAmenity = {
   id: number;
   amenityId: number;
   entityId: number;
-  entityType: 'hotel';
+  entityType: "hotel";
   createdAt: Date;
   amenity?: THotelAmenityDetail; // Optional nested amenity details
 };
