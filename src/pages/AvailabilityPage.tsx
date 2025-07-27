@@ -1,4 +1,3 @@
-// pages/AvailabilityPage.tsx
 import { useSearchParams } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { useCheckAvailabilityQuery } from "../features/api/availabilityApi";
@@ -37,20 +36,24 @@ export const AvailabilityPage = () => {
     }
   );
 
+  console.log(rooms)
+
   const filteredRooms = useMemo(() => {
-    if (!rooms) return [];
+  if (!rooms) return [];
 
-    return rooms.filter((room) => {
-      const matchesSearch = room.roomType
-        .toLowerCase()
-        .includes(filters.search.toLowerCase());
-      const matchesPrice = room.pricePerNight <= filters.maxPrice;
-      const matchesGuests = room.capacity >= filters.minGuests;
-      const matchesAvailability = filters.availableOnly ? room.isAvailable : true;
+  return rooms.filter((room) => {
+    const roomTypeName = room?.roomType?.name || "";
+    const matchesSearch = roomTypeName
+      .toLowerCase()
+      .includes(filters.search.toLowerCase());
 
-      return matchesSearch && matchesPrice && matchesGuests && matchesAvailability;
-    });
-  }, [rooms, filters]);
+    const matchesPrice = Number(room.pricePerNight) <= filters.maxPrice;
+    const matchesGuests = room.capacity >= filters.minGuests;
+    const matchesAvailability = filters.availableOnly ? room.isAvailable : true;
+
+    return matchesSearch && matchesPrice && matchesGuests && matchesAvailability;
+  });
+}, [rooms, filters]);
 
   const hasRooms = filteredRooms.length > 0;
 

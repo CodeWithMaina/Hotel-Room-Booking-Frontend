@@ -34,6 +34,15 @@ const navLinks = [
   { id: "rooms", label: "Rooms", icon: House },
   { id: "payments", label: "Payments", icon: CardSim },
   { id: "ticket", label: "Customer Support", icon: MessageSquare },
+  {
+    id: "utils",
+    label: "Manage Utils",
+    icon: ClipboardList,
+    children: [
+      { id: "amenities", label: "Amenities" },
+      { id: "roomtypes", label: "Room Types" },
+    ],
+  },
 ];
 
 const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
@@ -42,16 +51,12 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
   const current = pathname.split("/")[2];
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const { userId } = useSelector((state: RootState) => state.auth);
   const id = Number(userId);
 
-  const {
-    data: userData,
-    isLoading,
-    isError,
-    error,
-  } = useGetUserByIdQuery(id);
+  const { data: userData, isLoading, isError, error } = useGetUserByIdQuery(id);
 
   useEffect(() => {
     if (isError) {
@@ -69,44 +74,46 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
   }, [onClose]);
 
   const handleLogOut = () => {
-  toast.custom((t) => (
-    <div
-      className={`bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-md border border-zinc-200 dark:border-zinc-700 flex flex-col space-y-3 w-[300px] transition-all ${
-        t.visible ? "animate-enter" : "animate-leave"
-      }`}
-    >
-      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-        Are you sure you want to logout?
+    toast.custom((t) => (
+      <div
+        className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col space-y-4 w-[340px] transition-all duration-300 ${
+          t.visible ? "animate-enter" : "animate-leave"
+        }`}
+      >
+        <div className="text-base font-semibold text-gray-900 dark:text-gray-100">
+          Confirm Logout
+        </div>
+        <div className="text-sm text-gray-600 dark:text-gray-300">
+          Are you sure you want to logout? You'll need to sign in again to access your account.
+        </div>
+        <div className="flex justify-end gap-3 pt-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              dispatch(clearCredentials());
+              toast.dismiss(t.id);
+              toast.success("Logged out successfully.");
+              navigate("/login");
+            }}
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-200 shadow-md"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          className="px-3 py-1 text-sm rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => {
-            dispatch(clearCredentials());
-            toast.dismiss(t.id);
-            toast.success("Logged out successfully.");
-            navigate("/login");
-          }}
-          className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  ));
-};
-
+    ));
+  };
 
   return (
     <>
       {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 z-30 bg-black/60 backdrop-blur-sm transition-all duration-300 lg:hidden ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={onClose}
@@ -114,73 +121,110 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full z-40 bg-[#03071e] text-white shadow-xl transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-full z-40 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white shadow-2xl transition-all duration-300 ease-in-out border-r border-slate-700/50
           ${isOpen ? "translate-x-0" : "-translate-x-full"} 
           lg:translate-x-0 lg:static lg:flex
-          ${collapsed ? "w-20" : "w-64"}`}
+          ${collapsed ? "w-20" : "w-72"}`}
       >
-        <div className="flex flex-col w-full h-full p-4">
+        <div className="flex flex-col w-full h-full">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
             {!collapsed && (
-              <Link to="/" className="text-2xl font-bold tracking-tight">
-                <span className="text-yellow-500">Stay</span>
-                <span className="text-white">Cloud</span>
+              <Link to="/" className="text-2xl font-bold tracking-tight group">
+                <span className="text-blue-400 group-hover:text-blue-300 transition-colors duration-200">Stay</span>
+                <span className="text-white group-hover:text-gray-200 transition-colors duration-200">Cloud</span>
               </Link>
             )}
             <div className="flex gap-2 items-center">
               <button
                 onClick={() => setCollapsed((prev) => !prev)}
-                className="hidden lg:flex text-white hover:text-yellow-500 transition-colors"
+                className="hidden lg:flex p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
               >
-                {collapsed ? <ChevronRight /> : <ChevronLeft />}
+                {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
               </button>
               <button
                 onClick={onClose}
-                className="lg:hidden text-white hover:text-yellow-500"
+                className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
               >
-                <X />
+                <X size={18} />
               </button>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 flex flex-col items-center justify-center space-y-4 overflow-y-auto custom-scrollbar">
-            {navLinks.map(({ id, label, icon: Icon }) => {
-              const isActive = current === id;
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+            {navLinks.map(({ id, label, icon: Icon, children }) => {
+              const isActive =
+                current === id ||
+                children?.some((child) => current === child.id);
+              const isDropdownOpen = openDropdown === id;
 
               return (
-                <div key={id} className="relative group w-full">
+                <div key={id} className="relative group">
                   <button
                     onClick={() => {
-                      navigate(`/admin/${id}`);
-                      onClose();
-                    }}
-                    className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-300
-                      ${
-                        isActive
-                          ? "bg-[#fca311]/90 shadow-inner text-[#03071e]"
-                          : "hover:bg-[#1a1a1a] text-[#e5e5e5]"
+                      if (children) {
+                        setOpenDropdown((prev) => (prev === id ? null : id));
+                      } else {
+                        navigate(`/admin/${id}`);
+                        onClose();
                       }
-                      ${collapsed ? "justify-center" : "justify-start gap-3"}`}
+                    }}
+                    className={`group/button flex items-center w-full px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm ${
+                      isActive
+                        ? "bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg shadow-blue-600/25 text-white"
+                        : "hover:bg-slate-700/50 text-slate-300 hover:text-white"
+                    } ${collapsed ? "justify-center" : "justify-start gap-3"}`}
                   >
                     <Icon
-                      className={`w-5 h-5 transition-transform duration-200 ${
+                      className={`w-5 h-5 transition-all duration-200 ${
                         isActive
-                          ? "text-[#03071e]"
-                          : "text-yellow-400 group-hover:scale-110"
+                          ? "text-white"
+                          : "text-slate-400 group-hover/button:text-blue-400 group-hover/button:scale-110"
                       }`}
                     />
                     {!collapsed && (
-                      <span className="text-sm font-medium">{label}</span>
+                      <>
+                        <span className="flex-1 text-left">{label}</span>
+                        {children && (
+                          <ChevronRight
+                            className={`w-4 h-4 transform transition-transform duration-200 ${
+                              isDropdownOpen ? "rotate-90" : ""
+                            }`}
+                          />
+                        )}
+                      </>
                     )}
                   </button>
 
-                  {/* Tooltip */}
+                  {/* Tooltip for collapsed view */}
                   {collapsed && (
-                    <span className="absolute left-full top-2 ml-2 w-max whitespace-nowrap bg-slate-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 whitespace-nowrap border border-slate-600">
                       {label}
-                    </span>
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-800 border-l border-b border-slate-600 rotate-45"></div>
+                    </div>
+                  )}
+
+                  {/* Dropdown menu */}
+                  {children && isDropdownOpen && !collapsed && (
+                    <div className="mt-2 ml-4 space-y-1 border-l-2 border-slate-600 pl-4">
+                      {children.map((child) => (
+                        <button
+                          key={child.id}
+                          onClick={() => {
+                            navigate(`/admin/${child.id}`);
+                            onClose();
+                          }}
+                          className={`block w-full text-left text-sm px-3 py-2 rounded-lg transition-all duration-200 ${
+                            current === child.id 
+                              ? "bg-blue-600/20 text-blue-300 border-l-2 border-blue-400" 
+                              : "text-slate-400 hover:text-white hover:bg-slate-700/30"
+                          }`}
+                        >
+                          {child.label}
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               );
@@ -188,75 +232,90 @@ const AdminSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
           </nav>
 
           {/* Footer Section: Home + Profile + Logout */}
-          <div className="mt-auto pt-6 border-t border-[#1a1a1a] space-y-2">
+          <div className="p-4 border-t border-slate-700/50 space-y-2">
             {/* Home Button */}
             <button
               onClick={() => {
                 navigate("/");
                 onClose();
               }}
-              className={`group flex items-center w-full px-3 py-2 rounded-lg transition-all duration-300
+              className={`group/home flex items-center w-full px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
                 ${
                   pathname === "/"
-                    ? "bg-[#14213d] shadow-inner"
-                    : "hover:bg-[#1a1a1a]"
+                    ? "bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg shadow-emerald-600/25 text-white"
+                    : "hover:bg-slate-700/50 text-slate-300 hover:text-white"
                 }
                 ${collapsed ? "justify-center" : "justify-start gap-3"}`}
             >
               <Home
-                className={`w-5 h-5 transition-transform duration-200 ${
+                className={`w-5 h-5 transition-all duration-200 ${
                   pathname === "/"
-                    ? "text-[#fca311]"
-                    : "text-[#fca311] group-hover:scale-110"
+                    ? "text-white"
+                    : "text-slate-400 group-hover/home:text-emerald-400 group-hover/home:scale-110"
                 }`}
               />
-              {!collapsed && (
-                <span className="text-sm font-medium text-white">Home</span>
+              {!collapsed && <span>Home</span>}
+              {collapsed && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 whitespace-nowrap border border-slate-600">
+                  Home
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-800 border-l border-b border-slate-600 rotate-45"></div>
+                </div>
               )}
             </button>
 
             {/* Profile */}
             {isLoading ? (
-              <div className="flex items-center justify-center py-2 text-sm text-gray-400">
-                Loading profile...
+              <div className="flex items-center justify-center py-4">
+                <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                {!collapsed && <span className="ml-3 text-sm text-slate-400">Loading profile...</span>}
               </div>
             ) : !isError && userData ? (
-              <UserProfileButton
-                collapsed={collapsed}
-              />
+              <UserProfileButton collapsed={collapsed} />
             ) : (
-              <div className="flex items-center justify-center py-2 text-sm text-red-400">
-                Failed to load profile
+              <div className="flex items-center justify-center py-3 text-sm text-red-400 bg-red-900/20 rounded-lg">
+                {!collapsed && "Failed to load profile"}
+                {collapsed && "!"}
               </div>
             )}
 
             {/* Logout */}
             <button
               onClick={handleLogOut}
-              className={`group flex items-center w-full px-3 py-2 rounded-lg text-red-400 hover:bg-red-800/20 hover:text-red-200 transition ${
+              className={`group/logout flex items-center w-full px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm text-red-400 hover:bg-red-900/20 hover:text-red-300 ${
                 collapsed ? "justify-center" : "justify-start gap-3"
               }`}
             >
-              <LogOut className="w-5 h-5 group-hover:scale-110 transition" />
-              {!collapsed && <span className="font-semibold">Logout</span>}
+              <LogOut className="w-5 h-5 group-hover/logout:scale-110 transition-transform duration-200" />
+              {!collapsed && <span>Logout</span>}
               {collapsed && (
-                <span className="absolute left-full top-2 ml-2 w-max whitespace-nowrap bg-red-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-red-800 text-white text-sm rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 whitespace-nowrap border border-red-600">
                   Logout
-                </span>
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-red-800 border-l border-b border-red-600 rotate-45"></div>
+                </div>
               )}
             </button>
           </div>
         </div>
 
-        {/* Custom Scrollbar */}
+        {/* Custom Scrollbar Styles */}
         <style>
           {`
+            .custom-scrollbar {
+              scrollbar-width: thin;
+              scrollbar-color: #475569 transparent;
+            }
             .custom-scrollbar::-webkit-scrollbar {
               width: 6px;
             }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+            }
             .custom-scrollbar::-webkit-scrollbar-thumb {
-              background: #64748b;
+              background: #475569;
               border-radius: 9999px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #64748b;
             }
           `}
         </style>

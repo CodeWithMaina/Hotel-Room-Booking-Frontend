@@ -74,7 +74,7 @@ export const Bookings = () => {
     if (!query) return tabFiltered;
     return tabFiltered.filter((b) => {
       return (
-        b.room?.roomType?.toLowerCase().includes(query) ||
+        b.room?.roomType?.name.toLowerCase().includes(query) ||
         b.checkInDate?.toLowerCase().includes(query) ||
         b.checkOutDate?.toLowerCase().includes(query)
       );
@@ -115,7 +115,10 @@ export const Bookings = () => {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        updateBooking({ bookingId: bookingId, data: { bookingStatus: "Cancelled" } })
+        updateBooking({
+          bookingId: bookingId,
+          data: { bookingStatus: "Cancelled" },
+        })
           .unwrap()
           .then(() => {
             toast.success("Booking cancelled successfully.");
@@ -156,8 +159,12 @@ export const Bookings = () => {
       <div className="max-w-6xl mx-auto px-4 pt-10 pb-4">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">Your Bookings</h1>
-            <p className="text-gray-600 text-sm">View and manage all your hotel reservations.</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              Your Bookings
+            </h1>
+            <p className="text-gray-600 text-sm">
+              View and manage all your hotel reservations.
+            </p>
           </div>
           <div className="w-full max-w-md">
             <SearchBar
@@ -175,7 +182,7 @@ export const Bookings = () => {
 
       <section className="max-w-6xl mx-auto px-4 mt-4">
         {isLoading && page === 1 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+          <div className="flex flex-col gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <BookingCardSkeleton key={i} />
             ))}
@@ -188,13 +195,13 @@ export const Bookings = () => {
           <>
             <motion.div
               layout
-              className="flex flex-wrap gap-6 mt-6 justify-center md:justify-start"
+              className="flex flex-col gap-6"
             >
               {filteredBookings.map((booking) => (
                 <motion.div
                   layout
                   key={booking.bookingId}
-                  className="flex-grow basis-[calc(33.333%-1rem)] max-w-[calc(33.333%-1rem)] min-w-[280px]"
+                  className=" flex-shrink-0"
                 >
                   <BookingCard
                     bookingId={booking.bookingId}

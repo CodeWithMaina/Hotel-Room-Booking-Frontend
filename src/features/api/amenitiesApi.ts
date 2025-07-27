@@ -39,7 +39,7 @@ export const amenitiesApi = createApi({
     // Create new amenity
     createAmenity: builder.mutation<TAmenitySelect, TAmenityInsert>({
       query: (newAmenity) => ({
-        url: "amenities",
+        url: "amenity",
         method: "POST",
         body: newAmenity,
       }),
@@ -54,7 +54,7 @@ export const amenitiesApi = createApi({
       { id: number; data: Partial<TAmenityInsert> }
     >({
       query: ({ id, data }) => ({
-        url: `amenities/${id}`,
+        url: `amenity/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -66,7 +66,7 @@ export const amenitiesApi = createApi({
     // Delete amenity
     deleteAmenity: builder.mutation<void, number>({
       query: (id) => ({
-        url: `amenities/${id}`,
+        url: `amenity/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Amenity"],

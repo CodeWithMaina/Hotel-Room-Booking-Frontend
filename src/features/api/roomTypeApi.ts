@@ -62,7 +62,7 @@ export const roomTypeApi = createApi({
     // Create new room type
     createRoomType: builder.mutation<RoomTypeResponse, CreateRoomTypeRequest>({
       query: (body) => ({
-        url: 'room-types',
+        url: 'room-type',
         method: 'POST',
         body,
       }),

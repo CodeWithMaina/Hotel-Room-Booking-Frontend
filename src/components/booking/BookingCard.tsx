@@ -7,7 +7,7 @@ import {
   Clock,
 } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
-import type { TRoomType } from "../../types/roomsTypes";
+import type { TRoom } from "../../types/roomsTypes";
 
 type Booking = {
   bookingId?: number;
@@ -15,16 +15,7 @@ type Booking = {
   checkInDate: string;
   checkOutDate: string;
   totalAmount: string;
-  room: {
-    roomType: TRoomType;
-    capacity: number;
-    pricePerNight: number;
-    thumbnail: string;
-    hotelId: number;
-    roomId: number;
-    isAvailable: boolean;
-    createdAt: string;
-  };
+  room: TRoom;
   onCancel?: () => void;
   onDelete: () => void;
   onEdit?: () => void;
@@ -41,7 +32,7 @@ export const BookingCard = ({
   onCancel,
   onDelete,
   onClick,
-  onEdit,
+  // onEdit,
   userType,
 }: Booking) => {
   const nights = differenceInCalendarDays(
@@ -73,13 +64,13 @@ export const BookingCard = ({
         {/* Image Section */}
         <div className="relative flex-shrink-0 sm:w-64 md:w-72">
           <img
-            src={room.thumbnail}
-            alt={room.roomType.name}
+            src={room?.thumbnail ?? ''}
+            alt={room?.roomType?.name ?? "StayCloud"}
             className="w-full h-48 sm:h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           <span className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-slate-800 text-sm font-semibold px-3 py-1.5 rounded-lg shadow-lg border border-white/20">
-            ${room.pricePerNight} / night
+            ${room?.pricePerNight} / night
           </span>
         </div>
 
@@ -89,7 +80,7 @@ export const BookingCard = ({
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 leading-tight">
-                {room.roomType.name}
+                {room?.roomType?.name}
               </h2>
               <span
                 className={`inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${
@@ -149,13 +140,13 @@ export const BookingCard = ({
 
             {userType === "user" && (
               <div className="flex items-center gap-2">
-                <button
+                {/* <button
                   onClick={onEdit}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all duration-200 hover:shadow-sm"
                 >
                   <Pencil size={14} />
                   Edit
-                </button>
+                </button> */}
                 
                 {bookingStatus !== "Confirmed" && (
                   <button

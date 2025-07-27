@@ -37,6 +37,9 @@ import { Settings } from "./dashboard/Settings";
 import { Analytics } from "./dashboard/Analytics";
 import { RoomsDashboard } from "./dashboard/RoomsDashboard";
 import { Profile } from "./dashboard/Profile";
+import { RoomTypes } from "./dashboard/AdminDashboard/RoomTypes";
+import { Amenities } from "./dashboard/AdminDashboard/Amenities";
+import { AdminRouteGuard } from "./utils/AdminRouteGuard";
 
 function App() {
   const router = createBrowserRouter([
@@ -140,6 +143,22 @@ function App() {
         {
           path: "/admin/hotels",
           element: <Hotels />,
+        },
+        {
+          path: "/admin/amenities",
+          element: (
+            <AdminRouteGuard>
+              <Amenities />
+            </AdminRouteGuard>
+          ),
+        },
+        {
+          path: "/admin/roomtypes",
+          element: (
+            <AdminRouteGuard>
+              <RoomTypes />
+            </AdminRouteGuard>
+          ),
         },
         {
           path: "/admin/rooms",

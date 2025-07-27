@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -17,9 +17,7 @@ import {
   Clock,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
 import { format, subDays, subQuarters } from "date-fns";
-import type { RootState } from "../app/store";
 import {
   useGetRoleBasedAnalyticsQuery,
   type AdminDashboardStats,
@@ -39,14 +37,13 @@ type DateRangeOption = {
 };
 
 export const Analytics: React.FC = () => {
-  const { userType } = useSelector((state: RootState) => state.auth);
   const [selectedRangeOption, setSelectedRangeOption] = useState("30days");
   const [dateRange, setDateRange] = useState(() => ({
     startDate: subDays(new Date(), 30),
     endDate: new Date(),
   }));
 
-  const dateRangeOptions: DateRangeOption[] = [
+  const dateRangeOptions = useMemo<DateRangeOption[]>(() => [
     {
       label: "Last 7 Days",
       value: "7days",
@@ -71,19 +68,21 @@ export const Analytics: React.FC = () => {
         endDate: new Date(),
       }),
     },
-  ];
+  ], []);
 
   useEffect(() => {
     const selected = dateRangeOptions.find(
       (opt) => opt.value === selectedRangeOption
     );
     if (selected) setDateRange(selected.getRange());
-  }, [selectedRangeOption]);
+  }, [selectedRangeOption, dateRangeOptions]);
 
   const { data, isLoading, isError, refetch } = useGetRoleBasedAnalyticsQuery({
     startDate: dateRange.startDate.toISOString(),
     endDate: dateRange.endDate.toISOString(),
   });
+
+  console.log(data)
 
   const analyticsData = data?.data as AdminDashboardStats | undefined;
 
@@ -127,20 +126,19 @@ export const Analytics: React.FC = () => {
       date: item.date,
       revenue: item.amount,
       bookings:
-        analyticsData.bookingTrends?.find((b) => b.date === item.date)?.count || 0,
+        analyticsData.bookingTrends?.find((b: { date: string }) => b.date === item.date)
+          ?.count || 0,
     })) ?? [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 px-4 md:px-12 py-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-gray-500 text-sm">
-            Platform-wide metrics and trends
-          </p>
+          <h1 className="text-3xl font-bold text-gray-800">📊 Analytics</h1>
+          <p className="text-gray-500 text-sm">Platform-wide metrics and insights</p>
         </div>
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={selectedRangeOption}
           onChange={(e) => setSelectedRangeOption(e.target.value)}
         >
@@ -153,11 +151,11 @@ export const Analytics: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <p className="text-gray-600 text-center">Loading analytics...</p>
+        <p className="text-gray-600 text-center animate-pulse">Loading analytics...</p>
       ) : isError ? (
-        <div className="alert alert-error">
-          <span>Failed to load analytics.</span>
-          <button onClick={() => refetch()} className="btn btn-sm ml-auto">
+        <div className="alert alert-error flex items-center justify-between">
+          <span>❌ Failed to load analytics.</span>
+          <button onClick={() => refetch()} className="btn btn-sm">
             Retry
           </button>
         </div>
@@ -171,15 +169,15 @@ export const Analytics: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-md"
+                className="bg-white p-5 rounded-2xl shadow hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-lg bg-opacity-10 ${s.color}`}>
+                  <div className={`p-3 rounded-xl bg-opacity-10 ${s.color} bg-current`}>
                     <s.icon className={`w-6 h-6 ${s.color}`} />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">{s.title}</p>
-                    <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                    <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
                   </div>
                 </div>
               </motion.div>
@@ -187,8 +185,13 @@ export const Analytics: React.FC = () => {
           </div>
 
           {/* Line Chart */}
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold mb-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="bg-white p-6 rounded-2xl shadow"
+          >
+            <h2 className="text-lg font-semibold mb-4 text-gray-700">
               Revenue & Booking Trends
             </h2>
             <div className="w-full h-[400px]">
@@ -205,26 +208,33 @@ export const Analytics: React.FC = () => {
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#8884d8"
+                    stroke="#6366f1"
                     name="Revenue"
+                    strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="bookings"
-                    stroke="#82ca9d"
+                    stroke="#10b981"
                     name="Bookings"
+                    strokeWidth={2}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </motion.div>
 
           {/* Recent Bookings Table */}
-          <div className="mt-10 bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold mb-4">Recent Bookings</h2>
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-10 bg-white p-6 rounded-2xl shadow"
+          >
+            <h2 className="text-lg font-semibold mb-4 text-gray-700">Recent Bookings</h2>
+            <div className="overflow-x-auto rounded-xl">
+              <table className="table table-zebra text-sm">
+                <thead className="bg-slate-100 text-gray-600">
                   <tr>
                     <th>User</th>
                     <th>Email</th>
@@ -245,8 +255,12 @@ export const Analytics: React.FC = () => {
                       <td>{booking.room?.hotel?.name}</td>
                       <td>{format(new Date(booking.checkInDate), "PPP")}</td>
                       <td>{format(new Date(booking.checkOutDate), "PPP")}</td>
-                      <td>${parseFloat(booking.totalAmount).toFixed(2)}</td>
-                      <td>{booking.bookingStatus}</td>
+                      <td>${Number(booking.totalAmount).toFixed(2)}</td>
+                      <td>
+                        <span className="badge badge-outline">
+                          {booking.bookingStatus}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -257,7 +271,7 @@ export const Analytics: React.FC = () => {
                 </p>
               )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
     </div>

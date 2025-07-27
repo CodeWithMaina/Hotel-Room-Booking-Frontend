@@ -133,7 +133,7 @@ export const PaymentReceiptPage = () => {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-800">Room Type:</span>
-              <span className="capitalize text-gray-950">{room.roomType}</span>
+              <span className="capitalize text-gray-950">{room.roomType.name}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-800">Capacity:</span>

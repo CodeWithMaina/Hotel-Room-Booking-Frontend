@@ -104,7 +104,7 @@ export const HotelRooms = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Find the perfect room that suits your style, comfort, and budget.
+            {hotel?.description || "Find the perfect room that suits your style, comfort, and budget."}
           </motion.p>
         </div>
       </div>
