@@ -65,7 +65,7 @@ export const BookingCard = ({
         <div className="relative flex-shrink-0 sm:w-64 md:w-72">
           <img
             src={room?.thumbnail ?? ''}
-            alt={room?.roomType?.name ?? "StayCloud"}
+            alt={room?.roomType?.name?.toString() ?? "StayCloud"}
             className="w-full h-48 sm:h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -80,7 +80,7 @@ export const BookingCard = ({
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 leading-tight">
-                {room?.roomType?.name ?? "StayCloud"}
+                {room?.roomType?.name?.toString() ?? "StayCloud"}
               </h2>
               <span
                 className={`inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${
