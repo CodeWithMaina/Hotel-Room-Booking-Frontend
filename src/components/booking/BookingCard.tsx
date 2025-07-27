@@ -80,7 +80,7 @@ export const BookingCard = ({
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 leading-tight">
-                {room?.roomType?.name}
+                {room?.roomType?.name ?? "StayCloud"}
               </h2>
               <span
                 className={`inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${

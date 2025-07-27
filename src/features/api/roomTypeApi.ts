@@ -12,6 +12,13 @@ export const updateRoomTypeSchema = z.object({
   description: z.string().optional(),
 });
 
+export type RoomDetailsProps = {
+  roomTypes: {
+    roomTypeId: number;
+    name: string;
+  }[];
+};
+
 // Type definitions
 export type TRoomTypeSelect = {
   roomTypeId: number;

@@ -88,21 +88,25 @@ export const RoomDetails = () => {
 
   const { room, amenities } = roomDetails;
 
-  const getIconComponent = (iconName: string): React.JSX.Element => {
-    const formatted = iconName
-      .replace(/_./g, (match) => match[1].toUpperCase())
-      .replace(/^\w/, (c) => c.toUpperCase());
+  const getIconComponent = (iconName: string | null | undefined): React.JSX.Element => {
+  if (!iconName) {
+    return <ImagePlus className="w-5 h-5 text-gray-400" />;
+  }
 
-    const IconComponent = (
-      LucideIcons as unknown as Record<string, LucideIcon>
-    )[formatted];
+  const formatted = iconName
+    .replace(/_./g, (match) => match[1].toUpperCase())
+    .replace(/^\w/, (c) => c.toUpperCase());
 
-    return IconComponent ? (
-      <IconComponent className="w-5 h-5" />
-    ) : (
-      <ImagePlus className="w-5 h-5 text-gray-400" />
-    );
-  };
+  const IconComponent = (
+    LucideIcons as unknown as Record<string, LucideIcon>
+  )[formatted];
+
+  return IconComponent ? (
+    <IconComponent className="w-5 h-5" />
+  ) : (
+    <ImagePlus className="w-5 h-5 text-gray-400" />
+  );
+};
 
   if (isEditing) {
     return (

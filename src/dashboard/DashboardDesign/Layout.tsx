@@ -45,8 +45,8 @@ export const Layout = () => {
           </button>
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold">
-            <span className="text-blue-600">Lux</span>
-            <span className="text-gray-900">Hotel.</span>
+            <span className="text-blue-600">Stay</span>
+            <span className="text-gray-900">Cloud</span>
           </Link>
         </header>
 
