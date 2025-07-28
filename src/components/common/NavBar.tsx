@@ -224,7 +224,7 @@ const Navbar: React.FC = () => {
             <>
               <Link
                 to={
-                  userType === "admin" ? "/admin/dashboard" : "/user/dashboard"
+                  userType === "admin" ? "/admin/analytics" : "/user/analytics"
                 }
                 onClick={() => setDrawerOpen(false)}
                 className="block px-2 py-2 hover:bg-base-200"

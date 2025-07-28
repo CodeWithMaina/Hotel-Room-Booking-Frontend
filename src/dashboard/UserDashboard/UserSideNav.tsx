@@ -117,8 +117,8 @@ const UserSideNav: React.FC<SideNavProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
             {!collapsed && (
               <Link to="/" className="text-2xl font-bold tracking-tight group">
-                <span className="text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200">Lux</span>
-                <span className="text-white group-hover:text-gray-200 transition-colors duration-200">Hotel</span>
+                <span className="text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200">Stay</span>
+                <span className="text-white group-hover:text-gray-200 transition-colors duration-200">Cloud</span>
               </Link>
             )}
             <div className="flex gap-2 items-center">

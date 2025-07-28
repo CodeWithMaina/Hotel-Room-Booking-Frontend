@@ -40,6 +40,7 @@ import { Profile } from "./dashboard/Profile";
 import { RoomTypes } from "./dashboard/AdminDashboard/RoomTypes";
 import { Amenities } from "./dashboard/AdminDashboard/Amenities";
 import { AdminRouteGuard } from "./utils/AdminRouteGuard";
+import { DashboardWrapper } from "./dashboard/UserDashboard/DashboardWrapper";
 
 function App() {
   const router = createBrowserRouter([
@@ -184,7 +185,7 @@ function App() {
       children: [
         {
           path: "/user/analytics",
-          element: <Analytics />,
+          element: <DashboardWrapper />,
         },
         {
           path: "/user/booking-details",
