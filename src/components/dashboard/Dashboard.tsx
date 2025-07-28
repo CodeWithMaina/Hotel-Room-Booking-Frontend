@@ -3,7 +3,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { format } from 'date-fns';
 import type { UserAnalytics } from '../../types/userAnalyticsTypes';
 import { CalendarIcon } from 'lucide-react';
-import { Card } from './Card';
+import { UserDashboardCard } from './UserDashboardCard';
 
 const Dashboard = ({ userId }: { userId: number }) => {
   const { data: response, error, isLoading } = useGetUserAnalyticsQuery(userId);
@@ -72,7 +72,7 @@ const Dashboard = ({ userId }: { userId: number }) => {
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Open Tickets */}
-          <Card
+          <UserDashboardCard
             title="Open Support Tickets"
             value={openTicketsCount}
             badge={openTicketsCount > 0 ? 'Requires attention' : 'All resolved'}
@@ -82,7 +82,7 @@ const Dashboard = ({ userId }: { userId: number }) => {
           />
 
           {/* Total Paid */}
-          <Card
+          <UserDashboardCard
             title="Total Amount Paid"
             value={formatCurrency(totalAmountPaid)}
             badge="Lifetime payments"
@@ -92,7 +92,7 @@ const Dashboard = ({ userId }: { userId: number }) => {
           />
 
           {/* Pending Amount */}
-          <Card
+          <UserDashboardCard
             title="Pending Amount"
             value={formatCurrency(pendingAmount)}
             badge={pendingAmount > 0 ? 'Payment required' : 'All settled'}
