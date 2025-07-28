@@ -162,13 +162,13 @@ const FormField = ({
   <div>
     <label className="text-sm font-medium text-base-content block mb-1">{label}</label>
     <div className="relative">
-      <span className="absolute left-3 top-3.5 w-5 h-5">{icon}</span>
+      <span className="absolute left-3 text-black top-3.5 w-5 h-5">{icon}</span>
       <input
         type={type}
         placeholder={placeholder}
         {...register}
         disabled={disabled}
-        className="w-full rounded-lg border border-base-200 bg-white py-2.5 pl-10 pr-4 text-sm text-base-content placeholder-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+        className="w-full rounded-lg border text-black border-base-200 bg-white py-2.5 pl-10 pr-4 text-sm placeholder-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
       />
     </div>
     {error && <p className="text-xs text-error mt-1">{error}</p>}
