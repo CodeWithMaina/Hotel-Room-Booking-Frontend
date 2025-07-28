@@ -3,12 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
-import {
-  Lock,
-  Mail,
-  KeyRound,
-  ShieldCheck,
-} from "lucide-react";
+import { Lock, Mail, KeyRound, ShieldCheck, Loader2 } from "lucide-react";
 import { useResetPasswordMutation } from "../features/api/authApi";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
@@ -60,107 +55,122 @@ export default function ResetPasswordPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center px-4 py-12"
+      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center relative font-body"
       style={{
         backgroundImage:
           "url('https://www.ghmhotels.com/wp-content/uploads/CAM-Dining-The-Courtyard-Night021-865x780.jpg')",
       }}
     >
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-md" />
       <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
 
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-2xl border border-slate-200 rounded-2xl p-10 animate-fade-in">
+      <div className="relative z-10 w-full max-w-md bg-base-100/90 border border-base-200 rounded-2xl p-10 shadow-xl animate-fade-in">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            Reset<span className="text-[#c89d25]">Password</span>
+          <h1 className="text-3xl font-heading font-bold text-base-content">
+            Reset<span className="text-gold">Password</span>
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-muted mt-1">
             Create a new password for your account
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email Field */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-              <input
-                type="email"
-                placeholder="you@example.com"
-                {...register("email")}
-                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
-              />
-            </div>
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
-            )}
-          </div>
+          {/* Email */}
+          <FormField
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            icon={<Mail className="text-muted" />}
+            register={register("email")}
+            error={errors.email?.message}
+            disabled={isLoading}
+          />
 
-          {/* New Password Field */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">New Password</label>
-            <div className="relative">
-              <KeyRound className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-              <input
-                type="password"
-                placeholder="Enter new password"
-                {...register("password")}
-                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
-              />
-            </div>
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
-            )}
-          </div>
+          {/* New Password */}
+          <FormField
+            label="New Password"
+            type="password"
+            placeholder="Enter new password"
+            icon={<KeyRound className="text-muted" />}
+            register={register("password")}
+            error={errors.password?.message}
+            disabled={isLoading}
+          />
 
-          {/* Confirm Password Field */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">Confirm Password</label>
-            <div className="relative">
-              <ShieldCheck className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-              <input
-                type="password"
-                placeholder="Re-enter new password"
-                {...register("confirmPassword")}
-                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c89d25] focus:border-[#c89d25]"
-              />
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-xs text-red-500 mt-1">{errors.confirmPassword.message}</p>
-            )}
-          </div>
+          {/* Confirm Password */}
+          <FormField
+            label="Confirm Password"
+            type="password"
+            placeholder="Re-enter new password"
+            icon={<ShieldCheck className="text-muted" />}
+            register={register("confirmPassword")}
+            error={errors.confirmPassword?.message}
+            disabled={isLoading}
+          />
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2.5 bg-[#c89d25] hover:bg-[#b6891f] text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200"
             disabled={isLoading}
+            className="w-full py-2.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60"
           >
-            <Lock className="w-5 h-5" />
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-5 h-5" />}
             {isLoading ? "Resetting..." : "Reset Password"}
           </button>
         </form>
 
         <div className="text-center mt-6">
-          <a
-            href="/login"
-            className="text-sm text-slate-600 hover:text-[#c89d25] transition"
-          >
+          <a href="/login" className="text-sm text-muted hover:text-primary transition">
             Back to Login
           </a>
         </div>
       </div>
 
-      {/* Fade-in Animation */}
       <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fade-in 0.4s ease-out;
+          animation: fade-in 0.4s ease-out both;
         }
       `}</style>
     </div>
   );
 }
+
+type FormFieldProps = {
+  label: string;
+  type: string;
+  placeholder: string;
+  icon: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  register: any;
+  error?: string;
+  disabled?: boolean;
+};
+
+const FormField = ({
+  label,
+  type,
+  placeholder,
+  icon,
+  register,
+  error,
+  disabled,
+}: FormFieldProps) => (
+  <div>
+    <label className="text-sm font-medium text-base-content block mb-1">{label}</label>
+    <div className="relative">
+      <span className="absolute left-3 top-3.5 w-5 h-5">{icon}</span>
+      <input
+        type={type}
+        placeholder={placeholder}
+        {...register}
+        disabled={disabled}
+        className="w-full rounded-lg border border-base-200 bg-white py-2.5 pl-10 pr-4 text-sm text-base-content placeholder-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+      />
+    </div>
+    {error && <p className="text-xs text-error mt-1">{error}</p>}
+  </div>
+);

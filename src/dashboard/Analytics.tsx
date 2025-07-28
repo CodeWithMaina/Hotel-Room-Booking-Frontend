@@ -9,13 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import {
-  Users,
-  Hotel,
-  CalendarCheck,
-  DollarSign,
-  Clock,
-} from "lucide-react";
+import { Users, Hotel, CalendarCheck, DollarSign, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { format, subDays, subQuarters } from "date-fns";
 import {
@@ -37,44 +31,64 @@ type DateRangeOption = {
 };
 
 export const Analytics: React.FC = () => {
-  const [selectedRangeOption, setSelectedRangeOption] = useState("30days");
-  const [dateRange, setDateRange] = useState(() => ({
-    startDate: subDays(new Date(), 30),
-    endDate: new Date(),
-  }));
+  const [selectedRangeOption, setSelectedRangeOption] = useState("year");
+  const [dateRange, setDateRange] = useState(() => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1); // January 1st of current year
+    return {
+      startDate: startOfYear,
+      endDate: now,
+    };
+  });
 
-  const dateRangeOptions = useMemo<DateRangeOption[]>(() => [
-    {
-      label: "Last 7 Days",
-      value: "7days",
-      getRange: () => ({
-        startDate: subDays(new Date(), 7),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last 30 Days",
-      value: "30days",
-      getRange: () => ({
-        startDate: subDays(new Date(), 30),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last Quarter",
-      value: "quarter",
-      getRange: () => ({
-        startDate: subQuarters(new Date(), 1),
-        endDate: new Date(),
-      }),
-    },
-  ], []);
+  const dateRangeOptions = useMemo<DateRangeOption[]>(
+    () => [
+      {
+        label: "Last 7 Days",
+        value: "7days",
+        getRange: () => ({
+          startDate: subDays(new Date(), 7),
+          endDate: new Date(),
+        }),
+      },
+      {
+        label: "Last 30 Days",
+        value: "30days",
+        getRange: () => ({
+          startDate: subDays(new Date(), 30),
+          endDate: new Date(),
+        }),
+      },
+      {
+        label: "Last Quarter",
+        value: "quarter",
+        getRange: () => ({
+          startDate: subQuarters(new Date(), 1),
+          endDate: new Date(),
+        }),
+      },
+      {
+        label: "Year to Date",
+        value: "year",
+        getRange: () => {
+          const now = new Date();
+          return {
+            startDate: new Date(now.getFullYear(), 0, 1), // January 1st
+            endDate: now,
+          };
+        },
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const selected = dateRangeOptions.find(
       (opt) => opt.value === selectedRangeOption
     );
-    if (selected) setDateRange(selected.getRange());
+    if (selected) {
+      setDateRange(selected.getRange());
+    }
   }, [selectedRangeOption, dateRangeOptions]);
 
   const { data, isLoading, isError, refetch } = useGetRoleBasedAnalyticsQuery({
@@ -82,7 +96,7 @@ export const Analytics: React.FC = () => {
     endDate: dateRange.endDate.toISOString(),
   });
 
-  console.log(data)
+  console.log(data);
 
   const analyticsData = data?.data as AdminDashboardStats | undefined;
 
@@ -121,21 +135,87 @@ export const Analytics: React.FC = () => {
       ]
     : [];
 
-  const chartData =
-    analyticsData?.revenueTrends?.map((item) => ({
+  // Modify your chart data processing to handle year-long data
+  const chartData = useMemo(() => {
+    if (!analyticsData?.revenueTrends?.length) {
+      // If no data, return an empty array or some default values
+      return [];
+    }
+
+    // For year-long data, you might want to group by month
+    if (selectedRangeOption === "year") {
+      const monthlyData: Record<string, { revenue: number; bookings: number }> =
+        {};
+
+      // Group revenue by month
+      analyticsData.revenueTrends.forEach((item) => {
+        const month = item.date.substring(0, 7); // "YYYY-MM"
+        monthlyData[month] = {
+          revenue:
+            (monthlyData[month]?.revenue || 0) + Number(item.amount || 0),
+          bookings: 0, // Initialize, we'll add bookings next
+        };
+      });
+
+      // Add bookings data
+      analyticsData.bookingTrends?.forEach((item: { date: string; count: number; }) => {
+        const month = item.date.substring(0, 7); // "YYYY-MM"
+        if (monthlyData[month]) {
+          monthlyData[month].bookings += item.count;
+        } else {
+          monthlyData[month] = {
+            revenue: 0,
+            bookings: item.count,
+          };
+        }
+      });
+
+      // Convert to array and sort by month
+      return Object.entries(monthlyData)
+        .map(([date, values]) => ({
+          date,
+          ...values,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    // For shorter ranges, use the existing daily grouping
+    return analyticsData.revenueTrends.map((item) => ({
       date: item.date,
       revenue: item.amount,
       bookings:
-        analyticsData.bookingTrends?.find((b: { date: string }) => b.date === item.date)
-          ?.count || 0,
-    })) ?? [];
+        analyticsData.bookingTrends?.find(
+          (b: { date: string }) => b.date === item.date
+        )?.count || 0,
+    }));
+  }, [analyticsData, selectedRangeOption]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 px-4 md:px-12 py-8">
+    <div className="bg-white p-4 shadow-md rounded-md border border-gray-200">
+      <p className="font-semibold">
+        {selectedRangeOption === "year" 
+          ? format(new Date(label + "-01"), "MMMM yyyy") 
+          : format(new Date(label), "MMMM d, yyyy")}
+      </p>
+      <p className="text-indigo-500">Revenue: ${payload[0].value.toLocaleString()}</p>
+      <p className="text-green-500">Bookings: {payload[1].value}</p>
+    </div>
+  );
+};
+
+  return (
+    <div className="min-h-screen bg-white px-4 md:px-12 py-8">
+      {/* Header & Date Filter */}
       <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">📊 Analytics</h1>
-          <p className="text-gray-500 text-sm">Platform-wide metrics and insights</p>
+          <p className="text-gray-500 text-sm">
+            Platform-wide metrics and insights
+          </p>
         </div>
         <select
           className="select select-bordered bg-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -150,10 +230,13 @@ export const Analytics: React.FC = () => {
         </select>
       </div>
 
+      {/* Status */}
       {isLoading ? (
-        <p className="text-gray-600 text-center animate-pulse">Loading analytics...</p>
+        <p className="text-gray-600 text-center animate-pulse">
+          Loading analytics...
+        </p>
       ) : isError ? (
-        <div className="alert alert-error flex items-center justify-between">
+        <div className="alert alert-error justify-between">
           <span>❌ Failed to load analytics.</span>
           <button onClick={() => refetch()} className="btn btn-sm">
             Retry
@@ -161,18 +244,20 @@ export const Analytics: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
+          {/* Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
             {stats.map((s, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-5 rounded-2xl shadow hover:shadow-xl transition-shadow"
+                className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl bg-opacity-10 ${s.color} bg-current`}>
+                  <div
+                    className={`p-3 rounded-xl bg-opacity-10 ${s.color} bg-current`}
+                  >
                     <s.icon className={`w-6 h-6 ${s.color}`} />
                   </div>
                   <div>
@@ -184,12 +269,12 @@ export const Analytics: React.FC = () => {
             ))}
           </div>
 
-          {/* Line Chart */}
+          {/* Chart */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="bg-white p-6 rounded-2xl shadow"
+            className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm"
           >
             <h2 className="text-lg font-semibold mb-4 text-gray-700">
               Revenue & Booking Trends
@@ -197,10 +282,16 @@ export const Analytics: React.FC = () => {
             <div className="w-full h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
+                  <Tooltip content={<CustomTooltip />} />
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(d) => format(new Date(d), "MMM d")}
+                    tickFormatter={
+                      (d) =>
+                        selectedRangeOption === "year"
+                          ? format(new Date(d + "-01"), "MMM") 
+                          : format(new Date(d), "MMM d") 
+                    }
                   />
                   <YAxis />
                   <Tooltip />
@@ -224,14 +315,16 @@ export const Analytics: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Recent Bookings Table */}
+          {/* Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-10 bg-white p-6 rounded-2xl shadow"
+            className="mt-10 bg-white border border-slate-200 p-6 rounded-2xl shadow-sm"
           >
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">Recent Bookings</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-700">
+              Recent Bookings
+            </h2>
             <div className="overflow-x-auto rounded-xl">
               <table className="table table-zebra text-sm">
                 <thead className="bg-slate-100 text-gray-600">
@@ -257,7 +350,7 @@ export const Analytics: React.FC = () => {
                       <td>{format(new Date(booking.checkOutDate), "PPP")}</td>
                       <td>${Number(booking.totalAmount).toFixed(2)}</td>
                       <td>
-                        <span className="badge badge-outline">
+                        <span className="badge badge-outline capitalize">
                           {booking.bookingStatus}
                         </span>
                       </td>
