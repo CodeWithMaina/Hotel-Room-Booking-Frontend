@@ -1,4 +1,3 @@
-
 import {
   Wifi,
   Bath,
@@ -68,10 +67,15 @@ export const HotelDetailsPage = () => {
           <div className="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
             <div className="w-12 h-12 text-red-500">⚠️</div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h2>
-          <p className="text-gray-600 leading-relaxed">We couldn't load the hotel details. Please try refreshing the page or contact support if the problem persists.</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Oops! Something went wrong
+          </h2>
+          <p className="text-gray-600 leading-relaxed">
+            We couldn't load the hotel details. Please try refreshing the page
+            or contact support if the problem persists.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
             className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Try Again
@@ -82,7 +86,10 @@ export const HotelDetailsPage = () => {
   }
 
   const { hotel, address, amenities } = hotelDetails;
-  const allImages = [hotel.thumbnail, ...(Array.isArray(hotel.gallery) ? hotel.gallery : [])];
+  const allImages = [
+    hotel.thumbnail,
+    ...(Array.isArray(hotel.gallery) ? hotel.gallery : []),
+  ];
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
@@ -100,10 +107,9 @@ export const HotelDetailsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       {/* Hero Section with Image Gallery */}
       <div className="relative bg-white">
-
         {/* Main Image Display */}
         <div className="relative h-[60vh] lg:h-[70vh] overflow-hidden">
           <img
@@ -112,18 +118,26 @@ export const HotelDetailsPage = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-          
+
           {/* Image Navigation */}
           {allImages.length > 1 && (
             <>
               <button
-                onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : allImages.length - 1)}
+                onClick={() =>
+                  setSelectedImage((prev) =>
+                    prev > 0 ? prev - 1 : allImages.length - 1
+                  )
+                }
                 className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full hover:bg-white transition-all shadow-lg"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setSelectedImage(prev => prev < allImages.length - 1 ? prev + 1 : 0)}
+                onClick={() =>
+                  setSelectedImage((prev) =>
+                    prev < allImages.length - 1 ? prev + 1 : 0
+                  )
+                }
                 className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full hover:bg-white transition-all shadow-lg rotate-180"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -136,7 +150,6 @@ export const HotelDetailsPage = () => {
             <Camera className="w-4 h-4 inline mr-2" />
             {selectedImage + 1} of {allImages.length}
           </div>
-
         </div>
 
         {/* Thumbnail Strip */}
@@ -148,12 +161,16 @@ export const HotelDetailsPage = () => {
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
-                    selectedImage === index 
-                      ? "border-white shadow-lg scale-110" 
+                    selectedImage === index
+                      ? "border-white shadow-lg scale-110"
                       : "border-white/50 hover:border-white/80"
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
               {allImages.length > 6 && (
@@ -169,13 +186,10 @@ export const HotelDetailsPage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-4 gap-8">
-          
           {/* Main Hotel Details */}
           <div className="lg:col-span-3 space-y-8">
-            
             {/* Hotel Information Card */}
             <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-              
               {/* Hotel Header */}
               <div className="mb-8">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -186,7 +200,9 @@ export const HotelDetailsPage = () => {
                     <div className="flex items-center">
                       {renderStars(hotel.rating ?? 0)}
                     </div>
-                    <span className="font-bold text-gray-900 text-lg">{hotel.rating}</span>
+                    <span className="font-bold text-gray-900 text-lg">
+                      {hotel.rating}
+                    </span>
                     <span className="text-gray-500 text-sm">(324 reviews)</span>
                   </div>
                 </div>
@@ -202,7 +218,11 @@ export const HotelDetailsPage = () => {
                     <div>
                       <p className="font-medium">Location</p>
                       <p className="text-gray-600">
-                        {address.street}, {address.city}, {address.state}, {address.country} {address.postalCode}
+                        {address?.street ?? ""},
+                        {address?.city ?? ""},
+                        {address?.state ?? ""},
+                        {address?.country ?? ""}
+                        {address?.postalCode ?? ""}
                       </p>
                     </div>
                   </div>
@@ -230,7 +250,14 @@ export const HotelDetailsPage = () => {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {hotel.gallery.map((imgUrl: string, index: number) => (
-                      <div key={index} className="group cursor-pointer" onClick={() => {setSelectedImage(index + 1); window.scrollTo({top: 0, behavior: 'smooth'});}}>
+                      <div
+                        key={index}
+                        className="group cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(index + 1);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
                         <ImageWithSkeleton src={imgUrl} />
                       </div>
                     ))}
@@ -245,16 +272,23 @@ export const HotelDetailsPage = () => {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {amenities.map((amenity) => (
-                    <div key={amenity.amenityId} className="group flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
+                    <div
+                      key={amenity.amenityId}
+                      className="group flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300"
+                    >
                       <div className="flex-shrink-0 p-3 bg-white rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
-                        {typeof amenity.icon === "string" && amenity.icon && amenityIcons[amenity.icon] ? (
+                        {typeof amenity.icon === "string" &&
+                        amenity.icon &&
+                        amenityIcons[amenity.icon] ? (
                           amenityIcons[amenity.icon]
                         ) : (
                           <Sparkles className="w-5 h-5 text-indigo-600" />
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 mb-2">{amenity.name}</h3>
+                        <h3 className="font-bold text-gray-900 mb-2">
+                          {amenity.name}
+                        </h3>
                         <p className="text-gray-600 text-sm leading-relaxed">
                           {amenity.description}
                         </p>
@@ -273,14 +307,18 @@ export const HotelDetailsPage = () => {
                   Available Rooms
                 </h2>
                 <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold">
-                  {Array.isArray(hotelRoomsData) ? hotelRoomsData.length : 0} room{hotelRoomsData?.length !== 1 ? 's' : ''} available
+                  {Array.isArray(hotelRoomsData) ? hotelRoomsData.length : 0}{" "}
+                  room{hotelRoomsData?.length !== 1 ? "s" : ""} available
                 </span>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {Array.isArray(hotelRoomsData) &&
                   hotelRoomsData.map((room: TRoom) => (
-                    <div key={room.roomId} className="group border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 bg-white">
+                    <div
+                      key={room.roomId}
+                      className="group border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 bg-white"
+                    >
                       <RoomCard
                         room={{
                           ...room,
@@ -298,15 +336,19 @@ export const HotelDetailsPage = () => {
             <div className="sticky top-8 space-y-6">
               {/* Quick Actions Card */}
               <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Quick Actions
+                </h3>
                 <div className="space-y-3">
-                  <button onClick={()=> navigate(`/hotel/${hotel.hotelId}/rooms`)} className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold">
+                  <button
+                    onClick={() => navigate(`/hotel/${hotel.hotelId}/rooms`)}
+                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+                  >
                     Book Now
                   </button>
-                 
                 </div>
               </div>
-              
+
               {/* Similar Hotels Sidebar */}
               <SimilarHotelsSidebar currentHotelId={hotelId} />
             </div>
@@ -329,7 +371,7 @@ const ImageWithSkeleton = ({ src }: { src: string }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-pulse" />
         </div>
       )}
-      
+
       {error ? (
         <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
           <div className="text-gray-400 text-center">
@@ -349,7 +391,7 @@ const ImageWithSkeleton = ({ src }: { src: string }) => {
           }`}
         />
       )}
-      
+
       {loaded && !error && (
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
