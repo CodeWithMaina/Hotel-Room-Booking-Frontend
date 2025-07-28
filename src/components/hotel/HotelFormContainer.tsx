@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { HotelFormPage } from "./HotelFormPage";
 import { 
@@ -13,29 +13,20 @@ import type { HotelFormData } from "../../validation/hotelFormSchema";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 
-type HotelFormContainerProps = {
-  mode: "create" | "edit";
-  hotelId?: number;
-  defaultValues?: Partial<HotelFormData>;
-  onSuccess?: () => void;
-};
-
-export const HotelFormContainer = ({
-  mode,
-  hotelId,
-  defaultValues,
-  onSuccess,
-}: HotelFormContainerProps) => {
+export const HotelFormContainer = () => {
   const navigate = useNavigate();
-  const {userId} = useSelector((state: RootState) => state.auth);
+  const { hotelId } = useParams();
+  const { userId } = useSelector((state: RootState) => state.auth);
   const [createHotel, { isLoading: isCreating }] = useCreateHotelMutation();
   const [updateHotel, { isLoading: isUpdating }] = useUpdateHotelMutation();
   
+  const mode = hotelId ? "edit" : "create";
   const id = Number(userId);
-  // For edit mode, fetch the full hotel data if only ID was provided
+
+  // For edit mode, fetch the full hotel data
   const { data: existingHotel, isLoading: isFetchingHotel } = useGetHotelByIdQuery(
-    hotelId as number,
-    { skip: mode !== "edit" || !hotelId }
+    Number(hotelId),
+    { skip: mode !== "edit" }
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,19 +50,14 @@ export const HotelFormContainer = ({
         await createHotel(payload).unwrap();
         toast.success("Hotel created successfully!");
       } else if (mode === "edit" && hotelId) {
-        const id = Number(hotelId);
         await updateHotel({ 
-          hotelId: id,
+          hotelId: Number(hotelId),
           ...payload 
         }).unwrap();
         toast.success("Hotel updated successfully!");
       }
 
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate("/hotels");
-      }
+      navigate("/admin/hotels");
     } catch (error) {
       console.error("Submission error:", error);
       toast.error(
@@ -90,7 +76,7 @@ export const HotelFormContainer = ({
   }
 
   // If in edit mode and we failed to fetch the hotel, show error
-  if (mode === "edit" && hotelId && !existingHotel) {
+  if (mode === "edit" && !existingHotel) {
     return (
       <Error
         message="Failed to load hotel data"
@@ -109,8 +95,7 @@ export const HotelFormContainer = ({
     thumbnail: existingHotel.thumbnail ?? "",
     amenities: existingHotel.amenities ?? [],
     gallery: existingHotel.gallery ?? [],
-    ...defaultValues, // Allow override from props
-  } : defaultValues;
+  } : undefined;
 
   return (
     <HotelFormPage

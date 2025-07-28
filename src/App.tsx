@@ -41,6 +41,7 @@ import { RoomTypes } from "./dashboard/AdminDashboard/RoomTypes";
 import { Amenities } from "./dashboard/AdminDashboard/Amenities";
 import { AdminRouteGuard } from "./utils/AdminRouteGuard";
 import { DashboardWrapper } from "./dashboard/UserDashboard/DashboardWrapper";
+import { HotelFormContainer } from "./components/hotel/HotelFormContainer";
 
 function App() {
   const router = createBrowserRouter([
@@ -144,6 +145,14 @@ function App() {
         {
           path: "/admin/hotels",
           element: <Hotels />,
+        },
+        {
+          path: "/admin/hotels/create",
+          element: <HotelFormContainer />,
+        },
+        {
+          path: "/admin/hotels/edit/:hotelId",
+          element: <HotelFormContainer />,
         },
         {
           path: "/admin/amenities",

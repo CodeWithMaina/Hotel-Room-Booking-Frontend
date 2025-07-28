@@ -23,6 +23,9 @@ import {
   X,
   XCircle,
   type LucideIcon,
+  Building2,
+  Search,
+  Calendar,
 } from "lucide-react";
 import { SearchBar } from "../../components/common/SearchBar";
 import { parseRTKError } from "../../utils/parseRTKError";
@@ -135,174 +138,320 @@ export const Amenities = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-6">
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-semibold">Amenities Management</h2>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => showDrawer()}
-          >
-            <Plus className="w-4 h-4 mr-1" /> Add Amenity
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      {/* Header Section */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+                <Building2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  Amenities Management
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  Manage your property amenities and features
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => showDrawer()} 
+              className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-center space-x-2">
+                <Plus className="w-4 h-4" />
+                <span>Create Amenity</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Search Section */}
+        <div className="mb-8">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <SearchBar
+              placeholder="Search amenities by name or description..."
+              onSearch={setSearchQuery}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
 
-        <div className="mb-4">
-          <SearchBar
-            placeholder="Search amenities..."
-            onSearch={setSearchQuery}
-            isLoading={isLoading}
-          />
-        </div>
+        {/* Error State */}
+        {isError && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+            <div className="flex items-center space-x-2">
+              <XCircle className="w-5 h-5 text-red-500" />
+              <span className="text-red-700 font-medium">Error loading amenities</span>
+            </div>
+          </div>
+        )}
 
-        {isError && <div className="text-red-500">Error loading amenities</div>}
-
+        {/* Loading State */}
         {isLoading ? (
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="skeleton h-12 w-full rounded-lg bg-slate-200 animate-pulse"
-              ></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                  <div className="flex-1">
+                    <div className="h-5 bg-gray-200 rounded-lg mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded-lg w-2/3"></div>
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-gray-200 rounded-lg"></div>
+                  <div className="h-3 bg-gray-200 rounded-lg w-3/4"></div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="h-4 bg-gray-200 rounded-lg w-20"></div>
+                  <div className="flex space-x-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="table w-full">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Icon</th>
-                  <th>Created At</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAmenities?.map((amenity, index) => {
-                  const RawIcon =
-                    LucideIcons[amenity.icon as keyof typeof LucideIcons];
-                  const Icon: LucideIcon =
-                    typeof RawIcon === "function" && "displayName" in RawIcon
-                      ? (RawIcon as LucideIcon)
-                      : XCircle;
+          /* Amenities Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAmenities?.map((amenity) => {
+              const RawIcon = LucideIcons[amenity.icon as keyof typeof LucideIcons];
+              const Icon =
+                typeof RawIcon === "function" && "displayName" in RawIcon
+                  ? RawIcon
+                  : XCircle;
 
-                  return (
-                    <tr
-                      key={amenity.amenityId}
-                      className={index % 2 !== 0 ? "bg-slate-100" : ""}
-                    >
-                      <td>{amenity.name}</td>
-                      <td>{amenity.description || "-"}</td>
-                      <td>
-                        <span className="flex items-center gap-1 text-gray-700">
-                          <Icon className="w-4 h-4" />
-                          <span>{amenity.icon}</span>
+              return (
+                <div
+                  key={amenity.amenityId}
+                  className="group bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-xl hover:shadow-gray-300/25 transition-all duration-300 hover:border-indigo-200 hover:-translate-y-1"
+                >
+                  {/* Icon and Title */}
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl group-hover:from-indigo-100 group-hover:to-purple-100 transition-colors duration-300">
+                      <Icon className="w-6 h-6 text-indigo-600" iconNode={[]} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {amenity.name}
+                      </h3>
+                      <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
+                        <span className="bg-gray-100 px-2 py-1 rounded-full font-mono">
+                          {amenity.icon}
                         </span>
-                      </td>
-                      <td>{new Date(amenity.createdAt).toLocaleString()}</td>
-                      <td>
-                        <div className="flex gap-2">
-                          <button
-                            className="btn btn-sm btn-outline"
-                            onClick={() => showDrawer(amenity)}
-                          >
-                            <PencilLine className="w-4 h-4" />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-error"
-                            onClick={() => handleDelete(amenity.amenityId)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-4">
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {amenity.description || (
+                        <span className="italic text-gray-400">No description provided</span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center space-x-1 text-xs text-gray-500">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(amenity.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => showDrawer(amenity)}
+                        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                        title="Edit amenity"
+                      >
+                        <PencilLine className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(amenity.amenityId)}
+                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                        title="Delete amenity"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredAmenities?.length === 0 && (
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+              <Building2 className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {searchQuery ? "No matching amenities found" : "No amenities yet"}
+            </h3>
+            <p className="text-gray-500 mb-6">
+              {searchQuery 
+                ? "Try adjusting your search terms"
+                : "Get started by creating your first amenity"
+              }
+            </p>
+            {!searchQuery && (
+              <button
+                onClick={() => showDrawer()}
+                className="inline-flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors duration-200"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Your First Amenity</span>
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Drawer Form */}
       <div
-        className={`fixed top-0 right-0 w-full max-w-md h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 right-0 w-full max-w-lg h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
           drawerOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="relative h-full flex flex-col p-6">
-          <button
-            className="absolute top-4 right-4 btn btn-sm btn-circle"
+        {/* Backdrop */}
+        {drawerOpen && (
+          <div 
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10"
             onClick={onClose}
-          >
-            <X className="w-4 h-4" />
-          </button>
-          <h3 className="text-xl font-semibold mb-4 mt-2">
-            {editingAmenity ? "Edit Amenity" : "Create Amenity"}
-          </h3>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4 overflow-auto"
-          >
-            <div>
-              <label className="label">
-                <span className="label-text">Name</span>
-              </label>
-              <input
-                type="text"
-                {...register("name")}
-                className="input input-bordered w-full"
-                placeholder="Amenity name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.name.message}
-                </p>
-              )}
+          />
+        )}
+        
+        <div className="relative h-full flex flex-col">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6 text-white">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="pr-12">
+              <h3 className="text-xl font-semibold mb-1">
+                {editingAmenity ? "Edit Amenity" : "Create New Amenity"}
+              </h3>
+              <p className="text-indigo-100 text-sm">
+                {editingAmenity ? "Update amenity details" : "Add a new amenity to your property"}
+              </p>
             </div>
-            <div>
-              <label className="label">
-                <span className="label-text">Description</span>
-              </label>
-              <textarea
-                {...register("description")}
-                className="textarea textarea-bordered w-full"
-                rows={3}
-                placeholder="Description (optional)"
-              />
-              {errors.description && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.description.message}
+          </div>
+
+          {/* Form */}
+          <div className="flex-1 overflow-auto p-6">
+            <div onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Name Field */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Amenity Name *
+                </label>
+                <input
+                  type="text"
+                  {...register("name")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                  placeholder="e.g., Swimming Pool, Gym, WiFi"
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                    <XCircle className="w-4 h-4" />
+                    <span>{errors.name.message}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Description Field */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  {...register("description")}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 resize-none"
+                  placeholder="Describe what this amenity offers..."
+                />
+                {errors.description && (
+                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                    <XCircle className="w-4 h-4" />
+                    <span>{errors.description.message}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Icon Field */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Icon *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    {...register("icon")}
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                    placeholder="e.g., Wifi, Dumbbell, Waves"
+                  />
+                  {IconComponent && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="p-2 bg-gray-50 rounded-lg">
+                        <IconComponent className="w-5 h-5 text-gray-600" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {errors.icon && (
+                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                    <XCircle className="w-4 h-4" />
+                    <span>{errors.icon.message}</span>
+                  </p>
+                )}
+                <p className="text-xs text-gray-500">
+                  Use Lucide React icon names (e.g., Wifi, Car, Coffee)
                 </p>
-              )}
-            </div>
-            <div>
-              <label className="label">
-                <span className="label-text">Icon</span>
-              </label>
-              <input
-                type="text"
-                {...register("icon")}
-                className="input input-bordered w-full"
-                placeholder="Icon name (e.g. Wifi, Tv)"
-              />
-              {errors.icon && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.icon.message}
-                </p>
-              )}
+              </div>
+
+              {/* Icon Preview */}
               {IconComponent && (
-                <IconComponent className="w-5 h-5 mt-2 text-slate-500" />
+                <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-3 bg-white rounded-xl shadow-sm">
+                      <IconComponent className="w-6 h-6 text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Icon Preview</p>
+                      <p className="text-xs text-gray-500">This is how your icon will appear</p>
+                    </div>
+                  </div>
+                </div>
               )}
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={handleSubmit(onSubmit)}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-medium shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02]"
+                >
+                  {editingAmenity ? "Update Amenity" : "Create Amenity"}
+                </button>
+              </div>
             </div>
-            <div className="pt-2">
-              <button type="submit" className="btn btn-primary w-full">
-                {editingAmenity ? "Update Amenity" : "Create Amenity"}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

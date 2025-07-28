@@ -1,17 +1,14 @@
 import { useState, useMemo } from "react";
 import { useGetHotelsQuery } from "../../features/api/hotelsApi";
-import type { THotel } from "../../types/hotelsTypes";
 import { Building2, Search, Plus } from "lucide-react";
 import { Loading } from "../../components/common/Loading";
 import { DashboardHotelCard } from "../../components/hotel/DashboardHotelCard";
-import { HotelFormContainer } from "../../components/hotel/HotelFormContainer";
+import { useNavigate } from "react-router-dom";
 
 export const Hotels = () => {
-  const { data: hotelsData, isLoading, error, refetch } = useGetHotelsQuery();
+  const { data: hotelsData, isLoading, error } = useGetHotelsQuery();
   const [search, setSearch] = useState("");
-  const [selectedHotel, setSelectedHotel] = useState<THotel | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const navigate = useNavigate();
 
   const filteredHotels = useMemo(() => {
     if (!hotelsData) return [];
@@ -23,27 +20,24 @@ export const Hotels = () => {
     );
   }, [hotelsData, search]);
 
-  const openForm = (mode: "create" | "edit", hotel?: THotel) => {
-    setFormMode(mode);
-    setSelectedHotel(hotel || null);
-    setIsFormOpen(true);
+  const navigateToCreate = () => {
+    navigate("/admin/hotels/create");
   };
 
-  const handleSuccess = () => {
-    refetch();
-    setIsFormOpen(false);
+  const navigateToEdit = (hotelId: number) => {
+    navigate(`/admin/hotels/edit/${hotelId}`);
   };
 
   if (isLoading) return <Loading />;
   if (error) return <span className="text-red-500 text-center">Error fetching hotels.</span>;
-  if (!hotelsData?.length && !isFormOpen) {
+  if (!hotelsData?.length) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
         <div className="max-w-7xl mx-auto p-6">
           <div className="flex flex-col items-center justify-center h-96">
             <span className="text-gray-500 mb-4">No hotels found.</span>
             <button
-              onClick={() => openForm("create")}
+              onClick={navigateToCreate}
               className="btn btn-primary text-white"
             >
               <Plus className="w-4 h-4" /> Add Your First Hotel
@@ -78,7 +72,7 @@ export const Hotels = () => {
               />
             </div>
             <button
-              onClick={() => openForm("create")}
+              onClick={navigateToCreate}
               className="btn btn-primary text-white"
             >
               <Plus className="w-4 h-4" /> Add Hotel
@@ -91,33 +85,11 @@ export const Hotels = () => {
             <DashboardHotelCard
               key={hotel.hotelId}
               hotel={hotel}
-              onEdit={() => openForm("edit", hotel)}
+              onEdit={() => navigateToEdit(hotel.hotelId)}
             />
           ))}
         </section>
       </main>
-
-      {isFormOpen && (
-        <HotelFormContainer
-          mode={formMode}
-          hotelId={formMode === "edit" ? selectedHotel?.hotelId : undefined}
-          defaultValues={
-            formMode === "edit" && selectedHotel
-              ? {
-                  name: selectedHotel.name,
-                  location: selectedHotel.location ?? "",
-                  description: selectedHotel.description ?? "",
-                  contactPhone: selectedHotel.contactPhone ?? "",
-                  category: selectedHotel.category ?? "",
-                  thumbnail: selectedHotel.thumbnail ?? "",
-                  amenities: selectedHotel.amenities ?? [],
-                  gallery: selectedHotel.gallery ?? [],
-                }
-              : undefined
-          }
-          onSuccess={handleSuccess}
-        />
-      )}
     </div>
   );
 };
