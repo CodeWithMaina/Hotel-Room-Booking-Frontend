@@ -1,110 +1,140 @@
 import { useFormContext } from "react-hook-form";
 import { motion } from "framer-motion";
-import { Home, Star, Camera, ImageIcon, Check } from "lucide-react";
+import {
+  Home,
+  Star,
+  Camera,
+  ImageIcon,
+  Check,
+  Edit,
+} from "lucide-react";
 import { type FormData } from "./types";
 
 interface ReviewSubmitProps {
-  roomTypes: {
-    roomTypeId: number;
-    name: string;
-  }[];
-  amenities: {
-    amenityId: number;
-    name: string;
-  }[];
+  roomTypes: { roomTypeId: number; name: string }[];
+  amenities: { amenityId: number; name: string }[];
+  onEditStep: (step: number) => void;
 }
 
-export const ReviewSubmit = ({ roomTypes, amenities }: ReviewSubmitProps) => {
+export const ReviewSubmit = ({ roomTypes, amenities, onEditStep }: ReviewSubmitProps) => {
   const { getValues } = useFormContext<FormData>();
   const values = getValues();
 
-  const getRoomTypeName = (id: number) => {
-    return roomTypes.find((type) => type.roomTypeId === id)?.name || id.toString();
-  };
+  const getRoomTypeName = (id: number) =>
+    roomTypes.find((type) => type.roomTypeId === id)?.name || id.toString();
 
-  const getAmenityName = (id: number) => {
-    return amenities.find((amenity) => amenity.amenityId === id)?.name || id.toString();
-  };
+  const getAmenityName = (name: string) =>
+    amenities.find((a) => a.name === name)?.name || name;
 
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">Review Your Room</h2>
-        <p className="text-gray-600 text-lg">
+    <div className="space-y-12">
+      {/* Title */}
+      <div className="text-center space-y-2">
+        <h2 className="font-playfair text-[20px] font-semibold text-slate-900">
+          Review Your Room
+        </h2>
+        <p className="text-[14px] text-slate-600 font-inter">
           Double-check everything looks perfect before submitting
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Room Details */}
         <motion.div
-          className="bg-gray-50 rounded-2xl p-6 space-y-4"
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
+          className="bg-white/60 backdrop-blur-md border border-slate-200 rounded-2xl shadow-xl p-6 space-y-5 relative"
         >
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Home className="w-5 h-5" />
+          <button
+            onClick={() => onEditStep(0)}
+            className="absolute top-4 right-4 text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800"
+          >
+            <Edit className="w-3 h-3" /> Edit
+          </button>
+          
+          <div className="flex items-center gap-2 text-[16px] text-slate-800 font-semibold font-playfair">
+            <Home className="w-5 h-5 text-indigo-600" />
             Room Details
-          </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-              <span className="font-medium text-gray-700">Room Type:</span>
-              <span className="text-gray-900 font-semibold">
-                {getRoomTypeName(values.roomTypeId)}
+          </div>
+
+          {[
+            {
+              label: "Room Type",
+              value: getRoomTypeName(values.roomTypeId),
+            },
+            {
+              label: "Price Per Night",
+              value: `$${values.pricePerNight}`,
+              className: "text-green-700 font-bold",
+            },
+            {
+              label: "Capacity",
+              value: `${values.capacity} guests`,
+            },
+            {
+              label: "Description",
+              value: values.description || "No description provided",
+            },
+            {
+              label: "Available",
+              value: values.isAvailable ? "✓ Yes" : "✗ No",
+              className: values.isAvailable
+                ? "text-green-600 font-semibold"
+                : "text-red-600 font-semibold",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex justify-between items-center bg-white rounded-xl px-4 py-3 shadow-sm"
+            >
+              <span className="text-[13px] text-slate-700 font-medium font-inter">
+                {item.label}
               </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-              <span className="font-medium text-gray-700">Price Per Night:</span>
-              <span className="text-green-600 font-bold">${values.pricePerNight}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-              <span className="font-medium text-gray-700">Capacity:</span>
-              <span className="text-gray-900 font-semibold">{values.capacity} guests</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-              <span className="font-medium text-gray-700">Description:</span>
-              <span className="text-gray-900 font-semibold">
-                {values.description || "No description provided"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-              <span className="font-medium text-gray-700">Available:</span>
               <span
-                className={`font-semibold ${
-                  values.isAvailable ? "text-green-600" : "text-red-600"
+                className={`text-[13px] font-inter ${
+                  item.className ?? "text-slate-900 font-semibold"
                 }`}
               >
-                {values.isAvailable ? "✓ Yes" : "✗ No"}
+                {item.value}
               </span>
             </div>
-          </div>
+          ))}
         </motion.div>
 
         {/* Amenities */}
         <motion.div
-          className="bg-gray-50 rounded-2xl p-6 space-y-4"
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
+          className="bg-white/60 backdrop-blur-md border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4 relative"
         >
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5" />
+          <button
+            onClick={() => onEditStep(1)}
+            className="absolute top-4 right-4 text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800"
+          >
+            <Edit className="w-3 h-3" /> Edit
+          </button>
+
+          <div className="flex items-center gap-2 text-[16px] text-slate-800 font-semibold font-playfair">
+            <Star className="w-5 h-5 text-yellow-500" />
             Selected Amenities ({values.amenities.length})
-          </h3>
+          </div>
+
           <div className="grid grid-cols-1 gap-2">
-            {values.amenities.length > 0 ? (
-              values.amenities.map((amenityId, i) => (
+            {values.amenities.length ? (
+              values.amenities.map((amenityName, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 bg-white rounded-lg"
+                  className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm"
                 >
-                  <Star className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium text-gray-900">
-                    {getAmenityName(Number(amenityId))}
+                  <Star className="w-4 h-4 text-indigo-600" />
+                  <span className="text-sm text-slate-900 font-medium font-inter">
+                    {getAmenityName(amenityName)}
                   </span>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 italic p-3 bg-white rounded-lg">
+              <p className="text-slate-500 italic text-sm bg-white rounded-xl px-4 py-3 shadow-sm">
                 No amenities selected
               </p>
             )}
@@ -112,49 +142,60 @@ export const ReviewSubmit = ({ roomTypes, amenities }: ReviewSubmitProps) => {
         </motion.div>
       </div>
 
-      {/* Images Preview */}
+      {/* Images */}
       <motion.div
-        className="space-y-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        className="space-y-10"
       >
         {/* Thumbnail */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Camera className="w-5 h-5" />
+        <div className="space-y-3 relative">
+          <button
+            onClick={() => onEditStep(2)}
+            className="absolute top-0 right-0 text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800"
+          >
+            <Edit className="w-3 h-3" /> Edit
+          </button>
+          <div className="flex items-center gap-2 text-[16px] text-slate-800 font-semibold font-playfair">
+            <Camera className="w-5 h-5 text-indigo-600" />
             Thumbnail Image
-          </h3>
-          <div className="relative">
+          </div>
+          <div className="relative max-w-md mx-auto">
             <img
               src={values.thumbnail}
-              alt="Room Thumbnail"
-              className="w-full max-w-md mx-auto h-64 object-cover rounded-xl shadow-lg"
+              alt="Thumbnail"
+              className="w-full h-60 object-cover rounded-2xl shadow-lg border border-slate-200"
             />
-            <div className="absolute top-2 left-2 bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium">
+            <span className="absolute top-2 left-2 bg-indigo-600 text-white text-xs px-3 py-1 rounded-full font-medium">
               Main Image
-            </div>
+            </span>
           </div>
         </div>
 
         {/* Gallery */}
         {values.gallery.length > 0 && (
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5" />
+          <div className="space-y-3 relative">
+            <button
+              onClick={() => onEditStep(3)}
+              className="absolute top-0 right-0 text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800"
+            >
+              <Edit className="w-3 h-3" /> Edit
+            </button>
+            <div className="flex items-center gap-2 text-[16px] text-slate-800 font-semibold font-playfair">
+              <ImageIcon className="w-5 h-5 text-indigo-600" />
               Gallery Images ({values.gallery.length})
-            </h3>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {values.gallery.map((url, idx) => (
                 <div key={idx} className="relative">
                   <img
                     src={url}
                     alt={`Gallery ${idx + 1}`}
-                    className="w-full h-32 object-cover rounded-lg shadow-md"
+                    className="w-full h-32 object-cover rounded-xl shadow-md"
                   />
-                  <div className="absolute bottom-1 right-1 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium">
+                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
                     {idx + 1}
-                  </div>
+                  </span>
                 </div>
               ))}
             </div>
@@ -162,19 +203,17 @@ export const ReviewSubmit = ({ roomTypes, amenities }: ReviewSubmitProps) => {
         )}
       </motion.div>
 
+      {/* Final CTA */}
       <motion.div
-        className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        className="bg-gradient-to-r from-blue-50 to-white border border-blue-100 rounded-2xl p-6 shadow-lg text-center"
       >
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Check className="w-5 h-5 text-blue-600" />
-          <span className="text-blue-800 font-semibold text-lg">
-            Ready to Create Room
-          </span>
+        <div className="flex justify-center items-center gap-2 text-indigo-700 text-[16px] font-semibold font-inter mb-1">
+          <Check className="w-5 h-5 text-indigo-600" />
+          Ready to Create Room
         </div>
-        <p className="text-blue-700">
+        <p className="text-sm text-blue-800 font-inter">
           All information has been reviewed and is ready for submission.
         </p>
       </motion.div>

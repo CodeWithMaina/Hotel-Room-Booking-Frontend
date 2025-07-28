@@ -138,17 +138,10 @@ export const BookingCard = ({
               <span className="text-sm text-slate-500 font-medium">total</span>
             </div>
 
-            {userType === "user" && (
+            {userType === "user" || userType === "admin" && (
               <div className="flex items-center gap-2">
-                {/* <button
-                  onClick={onEdit}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all duration-200 hover:shadow-sm"
-                >
-                  <Pencil size={14} />
-                  Edit
-                </button> */}
                 
-                {bookingStatus !== "Confirmed" && (
+                {bookingStatus !== "Cancelled" && (
                   <button
                     onClick={onCancel}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all duration-200 hover:shadow-sm"

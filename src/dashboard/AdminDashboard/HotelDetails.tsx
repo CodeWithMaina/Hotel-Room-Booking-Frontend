@@ -1,6 +1,7 @@
 // 🏨 HotelDetails.tsx
 import { useNavigate, useParams } from "react-router";
 import {
+  useDeleteHotelMutation,
   useGetHotelByIdQuery,
   useGetRoomByHotelIdQuery,
 } from "../../features/api";
@@ -53,6 +54,8 @@ export const HotelDetails = () => {
     roomRefetch();
   }, [hotelId, roomRefetch]);
 
+  const [deleteHotel] = useDeleteHotelMutation();
+
   const onFilter = (filters: RoomFilters) => {
     if (!rooms) return;
     const filtered = rooms.filter((room: TRoom) => {
@@ -75,21 +78,23 @@ export const HotelDetails = () => {
   };
 
   const handleDelete = () => {
-    Swal.fire({
-      title: "Delete Hotel?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Deleted!", "The hotel has been removed.", "success");
-        hotelRefetch();
-      }
-    });
-  };
+  Swal.fire({
+    title: "Delete Hotel?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await deleteHotel(hotelId);
+      navigate(-1);
+      Swal.fire("Deleted!", "The hotel has been removed.", "success");
+      hotelRefetch();
+    }
+  });
+};
 
   const isLoading = isHotelLoading || isRoomsLoading;
   const isError = isHotelError || isRoomsError;

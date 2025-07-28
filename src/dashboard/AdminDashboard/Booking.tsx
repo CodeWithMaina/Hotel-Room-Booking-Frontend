@@ -28,7 +28,10 @@ export const Booking = () => {
     data: bookingsData,
     isLoading,
     isError,
-  } = useGetBookingsQuery({ page: 1, limit: 10 }, { skip: userType !== "admin" });
+  } = useGetBookingsQuery(
+    { page: 1, limit: 10 },
+    { skip: userType !== "admin" }
+  );
 
   console.log(bookingsData);
 
@@ -48,21 +51,23 @@ export const Booking = () => {
   }, [bookings]);
 
   // Update the filteredBookings function in Booking.tsx
-const filteredBookings = bookings.filter((booking) => {
-  const matchStatus =
-    filterStatus === "All" || booking.bookingStatus === filterStatus;
-  const matchRoom =
-    selectedRoomType === "All" || 
-    booking.room?.roomType?.name === selectedRoomType;
-  const matchSearch =
-    searchQuery.trim() === "" ||
-    booking.room?.roomType?.name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
-    booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredBookings = bookings.filter((booking) => {
+    const matchStatus =
+      filterStatus === "All" || booking.bookingStatus === filterStatus;
+    const matchRoom =
+      selectedRoomType === "All" ||
+      booking.room?.roomType?.name === selectedRoomType;
+    const matchSearch =
+      searchQuery.trim() === "" ||
+      booking.room?.roomType?.name
+        ?.toLowerCase()
+        ?.includes(searchQuery.toLowerCase()) ||
+      booking.bookingStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.checkInDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.checkOutDate.toLowerCase().includes(searchQuery.toLowerCase());
 
-  return matchStatus && matchRoom && matchSearch;
-});
+    return matchStatus && matchRoom && matchSearch;
+  });
 
   const handleDelete = (bookingId: number) => {
     Swal.fire({
@@ -81,8 +86,15 @@ const filteredBookings = bookings.filter((booking) => {
       if (result.isConfirmed) {
         deleteBooking(bookingId)
           .unwrap()
-          .then(() => toast.success("Booking deleted successfully."))
-          .catch(() => Swal.fire("Error", "Failed to delete booking", "error"));
+          .then(() => {
+            return navigate(-1);
+          })
+          .then(() => {
+            toast.success("Booking deleted successfully.");
+          })
+          .catch(() => {
+            Swal.fire("Error", "Failed to delete booking", "error");
+          });
       }
     });
   };
@@ -143,7 +155,9 @@ const filteredBookings = bookings.filter((booking) => {
                     onDelete={() => handleDelete(booking.bookingId!)}
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate(`/admin/booking-details/${booking.bookingId}`);
+                      if (!(e.target instanceof HTMLButtonElement)) {
+                        navigate(`/admin/booking-details/${booking.bookingId}`);
+                      }
                     }}
                     userType={userType || ""}
                   />
@@ -165,7 +179,10 @@ const filteredBookings = bookings.filter((booking) => {
           </label>
 
           {/* 🔵 Booking Edit Modal */}
-          <BookingEditModal show={showEdit} onClose={() => setShowEdit(false)} />
+          <BookingEditModal
+            show={showEdit}
+            onClose={() => setShowEdit(false)}
+          />
         </div>
 
         {/* Drawer Sidebar Content */}

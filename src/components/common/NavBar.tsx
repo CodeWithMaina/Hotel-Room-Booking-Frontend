@@ -1,8 +1,7 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { LayoutDashboard, LogOut, Bell, Menu, X } from "lucide-react";
+import { BedDouble, Building2, Home, Info, LayoutDashboard, LogOut, Menu, Phone, X } from "lucide-react";
 import { clearCredentials } from "../../features/auth/authSlice";
 import type { RootState } from "../../app/store";
 import { cn } from "../../lib/utils";
@@ -13,28 +12,31 @@ import type { AppDispatch } from "../../app/store";
 const NAV_LINKS = ["Home", "Hotels", "Rooms", "About", "Contact"];
 
 const Navbar: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [scrolled, setScrolled] = useState<boolean>(false);
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [notifOpen, setNotifOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const profileRef = useRef<HTMLDivElement>(null);
-  const notifRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   const { pathname } = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
+  const ICON_MAP: Record<string, React.JSX.Element> = {
+  Home: <Home className="w-4 h-4" />,
+  Hotels: <Building2 className="w-4 h-4" />,
+  Rooms: <BedDouble className="w-4 h-4" />,
+  About: <Info className="w-4 h-4" />,
+  Contact: <Phone className="w-4 h-4" />,
+};
 
   const { isAuthenticated, userId, userType } = useSelector(
     (state: RootState) => state.auth
   );
 
   const id = Number(userId);
-  const { data: user } = useGetUserByIdQuery(id, {
-    skip: !userId,
-  });
-
-  const unreadNotifications: number = 3;
+  const { data: user } = useGetUserByIdQuery(id, { skip: !userId });
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -43,18 +45,21 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e: globalThis.MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (!profileRef.current?.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
-      if (!notifRef.current?.contains(e.target as Node)) {
-        setNotifOpen(false);
+      if (
+        drawerOpen &&
+        drawerRef.current &&
+        !drawerRef.current.contains(e.target as Node)
+      ) {
+        setDrawerOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [drawerOpen]);
 
   const handleLogout = async () => {
     await dispatch(clearCredentials());
@@ -100,34 +105,6 @@ const Navbar: React.FC = () => {
             );
           })}
 
-          {isAuthenticated && (
-            <div ref={notifRef} className="relative">
-              <button
-                onClick={() => setNotifOpen((prev) => !prev)}
-                className="relative p-2 rounded-full hover:bg-base-200 transition"
-              >
-                <Bell className="w-5 h-5" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
-                )}
-              </button>
-              {notifOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-base-100 text-base-content rounded-xl shadow-xl border animate-fade-in">
-                  <div className="p-4 space-y-2">
-                    <h4 className="font-semibold text-primary">
-                      Notifications
-                    </h4>
-                    <ul className="text-sm text-muted space-y-1">
-                      <li>🔔 You have 3 new alerts</li>
-                      <li>📅 Booking reminder for 20th Aug</li>
-                      <li>🎁 Loyalty bonus unlocked</li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           {isAuthenticated ? (
             <div ref={profileRef} className="relative">
               <button
@@ -146,8 +123,7 @@ const Navbar: React.FC = () => {
                 <span>{user?.firstName}</span>
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-base-100 text-base-content rounded-xl shadow-xl border border-border animate-fade-in overflow-hidden">
-                  {/* Actions */}
+                <div className="absolute right-0 mt-2 w-64 bg-white text-slate-800 shadow-xl border border-slate-200 rounded-2xl z-50 animate-fade-in">
                   <div className="py-2">
                     <Link
                       to={
@@ -155,15 +131,14 @@ const Navbar: React.FC = () => {
                           ? "/admin/analytics"
                           : "/user/analytics"
                       }
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-base-200 hover:text-primary transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium hover:bg-slate-100 hover:text-primary transition"
                     >
                       <LayoutDashboard className="w-4 h-4" />
                       Dashboard
                     </Link>
-
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+                      className="flex items-center w-full gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 transition"
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
@@ -191,66 +166,81 @@ const Navbar: React.FC = () => {
         </button>
       </div>
 
+      {/* Backdrop */}
+      {drawerOpen && (
+        <div
+          onClick={() => setDrawerOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40 transition-opacity"
+        />
+      )}
+
       {/* Mobile Drawer */}
       <div
+        ref={drawerRef}
         className={cn(
-          "fixed top-0 right-0 h-full w-72 bg-base-100 shadow-xl z-50 transition-transform duration-300 transform",
+          "fixed top-0 right-0 h-full w-72 bg-[#0f172a] text-white z-50 shadow-2xl transition-transform duration-300 transform rounded-l-2xl",
           drawerOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <span className="text-lg font-semibold text-primary">Menu</span>
-          <button onClick={() => setDrawerOpen(false)}>
-            <X className="w-5 h-5 text-muted" />
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
+          <span className="text-xl font-semibold text-white tracking-tight">
+            Menu
+          </span>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            className="text-white hover:text-primary transition"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-4 space-y-3">
-          {NAV_LINKS.map((item) => {
-            const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
-            return (
-              <Link
-                key={item}
-                to={path}
-                onClick={() => setDrawerOpen(false)}
-                className="block text-sm font-medium px-2 py-2 rounded hover:bg-base-200"
-              >
-                {item}
-              </Link>
-            );
-          })}
+        <div className="p-5 space-y-4">
+  {NAV_LINKS.map((item) => {
+    const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+    return (
+      <Link
+        key={item}
+        to={path}
+        onClick={() => setDrawerOpen(false)}
+        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-800 font-medium transition"
+      >
+        {ICON_MAP[item]}
+        {item}
+      </Link>
+    );
+  })}
 
-          {isAuthenticated ? (
-            <>
-              <Link
-                to={
-                  userType === "admin" ? "/admin/analytics" : "/user/analytics"
-                }
-                onClick={() => setDrawerOpen(false)}
-                className="block px-2 py-2 hover:bg-base-200"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setDrawerOpen(false);
-                }}
-                className="block text-red-500 px-2 py-2 hover:bg-red-500/10 w-full text-left"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link
-              to="/login"
-              className="block text-center py-2 bg-primary text-white rounded-md font-medium hover:opacity-90"
-              onClick={() => setDrawerOpen(false)}
-            >
-              Login
-            </Link>
-          )}
-        </div>
+  {isAuthenticated ? (
+    <>
+      <Link
+        to={userType === "admin" ? "/admin/analytics" : "/user/analytics"}
+        onClick={() => setDrawerOpen(false)}
+        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-800 font-medium transition"
+      >
+        <LayoutDashboard className="w-4 h-4" />
+        Dashboard
+      </Link>
+      <button
+        onClick={() => {
+          handleLogout();
+          setDrawerOpen(false);
+        }}
+        className="flex items-center gap-2 w-full text-left px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 font-medium transition"
+      >
+        <LogOut className="w-4 h-4" />
+        Logout
+      </button>
+    </>
+  ) : (
+    <Link
+      to="/login"
+      onClick={() => setDrawerOpen(false)}
+      className="block text-center w-full py-2 bg-primary text-white rounded-xl font-semibold hover:opacity-90 transition"
+    >
+      Login
+    </Link>
+  )}
+</div>
       </div>
     </header>
   );
