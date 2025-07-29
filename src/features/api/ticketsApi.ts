@@ -4,11 +4,25 @@ import type {
   TCreateTicketSchema,
   TReplyTicketSchema,
 } from "../../validation/ticketSchema";
+import type { RootState } from "../../app/store";
 
 export const ticketsApi = createApi({
   reducerPath: "ticketsApi",
 
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL,
+        prepareHeaders: (headers, { getState }) => {
+          try {
+            const token =
+              (getState() as RootState).auth.token || localStorage.getItem("token");
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+          } catch (error) {
+            console.error("Error preparing headers:", error);
+            return headers;
+          }
+        }, }),
 
   tagTypes: ["Ticket"],
   endpoints: (builder) => ({

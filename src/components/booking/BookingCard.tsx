@@ -64,7 +64,7 @@ export const BookingCard = ({
         {/* Image Section */}
         <div className="relative flex-shrink-0 sm:w-64 md:w-72">
           <img
-            src={room?.thumbnail ?? ''}
+            src={room?.thumbnail ?? ""}
             alt={room?.roomType?.name?.toString() ?? "StayCloud"}
             className="w-full h-48 sm:h-full object-cover"
           />
@@ -105,7 +105,7 @@ export const BookingCard = ({
                 </div>
                 <span className="font-medium">Capacity: {room.capacity}</span>
               </div>
-              
+
               <div className="flex items-center gap-3 text-slate-600">
                 <div className="flex items-center justify-center w-8 h-8 bg-slate-100 rounded-lg">
                   <Clock size={16} className="text-slate-600" />
@@ -114,7 +114,7 @@ export const BookingCard = ({
                   {nights} night{nights > 1 && "s"}
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-3 text-slate-600 md:col-span-2">
                 <div className="flex items-center justify-center w-8 h-8 bg-slate-100 rounded-lg">
                   <CalendarDays size={16} className="text-slate-600" />
@@ -138,9 +138,8 @@ export const BookingCard = ({
               <span className="text-sm text-slate-500 font-medium">total</span>
             </div>
 
-            {userType === "user" || userType === "admin" && (
+            {(userType === "user" || userType === "admin") && (
               <div className="flex items-center gap-2">
-                
                 {bookingStatus !== "Cancelled" && (
                   <button
                     onClick={onCancel}

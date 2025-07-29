@@ -2,10 +2,26 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TUser } from "../../types/usersTypes";
+import type { RootState } from "../../app/store";
 
 export const usersApi = createApi({
   reducerPath: "usersApi",
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      try {
+        const token =
+          (getState() as RootState).auth.token || localStorage.getItem("token");
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return headers;
+      } catch (error) {
+        console.error("Error preparing headers:", error);
+        return headers;
+      }
+    },
+  }),
 
   tagTypes: ["User"],
   endpoints: (builder) => ({
@@ -31,9 +47,7 @@ export const usersApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (_, __, { userId }) => [
-        { type: "User", id: userId },
-      ],
+      invalidatesTags: (_, __, { userId }) => [{ type: "User", id: userId }],
     }),
     deleteUser: builder.mutation<void, number>({
       query: (id) => ({

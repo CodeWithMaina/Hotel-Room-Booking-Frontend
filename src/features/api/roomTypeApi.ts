@@ -1,48 +1,25 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { z } from 'zod';
+import type { RootState } from '../../app/store';
+import type { CreateRoomTypeRequest, RoomTypeResponse, RoomTypesResponse, UpdateRoomTypeRequest } from '../../types/roomTypesTypes';
 
-// Zod schemas for validation
-export const roomTypeSchema = z.object({
-  name: z.string().min(2),
-  description: z.string().optional(),
-});
 
-export const updateRoomTypeSchema = z.object({
-  name: z.string().min(2).optional(),
-  description: z.string().optional(),
-});
-
-export type RoomDetailsProps = {
-  roomTypes: {
-    roomTypeId: number;
-    name: string;
-  }[];
-};
-
-// Type definitions
-export type TRoomTypeSelect = {
-  roomTypeId: number;
-  name: string;
-  description: string | null;
-  createdAt: Date;
-};
-
-export type TRoomTypeInsert = {
-  roomTypeId?: number;
-  name: string;
-  description?: string | null;
-  createdAt?: Date;
-};
-
-// Response and request types
-type RoomTypeResponse = TRoomTypeSelect;
-type RoomTypesResponse = TRoomTypeSelect[];
-type CreateRoomTypeRequest = z.infer<typeof roomTypeSchema>;
-type UpdateRoomTypeRequest = z.infer<typeof updateRoomTypeSchema>;
 
 export const roomTypeApi = createApi({
   reducerPath: 'roomTypeApi',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL,
+      prepareHeaders: (headers, { getState }) => {
+        try {
+          const token =
+            (getState() as RootState).auth.token || localStorage.getItem("token");
+          if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+          }
+          return headers;
+        } catch (error) {
+          console.error("Error preparing headers:", error);
+          return headers;
+        }
+      }, }),
   tagTypes: ['RoomType'],
   endpoints: (builder) => ({
     // Get all room types

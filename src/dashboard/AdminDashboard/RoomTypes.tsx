@@ -6,14 +6,13 @@ import {
   useGetRoomTypesQuery,
   useCreateRoomTypeMutation,
   useUpdateRoomTypeMutation,
-  useDeleteRoomTypeMutation,
-  type TRoomTypeSelect,
-  roomTypeSchema,
+  useDeleteRoomTypeMutation
 } from "../../features/api/roomTypeApi";
 import { Plus, Edit, Trash2, X, Check, Search, Building2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import { SearchBar } from "../../components/common/SearchBar";
+import { roomTypeSchema, type TRoomTypeSelect } from "../../types/roomTypesTypes";
 
 export const RoomTypes = () => {
   const { data: roomTypesData, isLoading, refetch } = useGetRoomTypesQuery();

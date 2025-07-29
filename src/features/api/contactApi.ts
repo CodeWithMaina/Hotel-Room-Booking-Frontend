@@ -1,30 +1,26 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "../../app/store";
+import type { ContactError, ContactFormData, ContactResponse } from "../../types/contactTypes";
 
-// ---------------- TYPES ----------------
-export interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
-}
-
-export interface ContactResponse {
-  message: string; // e.g., "Message sent successfully"
-}
-
-export interface ContactError {
-  status: number;
-  data?: {
-    error?: string;
-    message?: string;
-    [key: string]: unknown;
-  };
-}
 
 // ---------------- API ----------------
 export const contactApi = createApi({
   reducerPath: "contactApi",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
+        prepareHeaders: (headers, { getState }) => {
+          try {
+            const token =
+              (getState() as RootState).auth.token || localStorage.getItem("token");
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+          } catch (error) {
+            console.error("Error preparing headers:", error);
+            return headers;
+          }
+        },
   }),
   tagTypes: ["Contact"],
   endpoints: (builder) => ({
