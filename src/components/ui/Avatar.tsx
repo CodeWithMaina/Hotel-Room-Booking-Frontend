@@ -1,46 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "../../lib/utils";
 
 interface AvatarProps {
   src?: string | null;
   alt?: string;
-  fallback?: string; // usually initials like "JD"
+  fallback?: string;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-const sizeMap = {
-  sm: "w-8 h-8 text-sm",
-  md: "w-10 h-10 text-base",
-  lg: "w-12 h-12 text-lg",
-};
+const sizeClasses = {
+  sm: "h-8 w-8 text-xs",
+  md: "h-10 w-10 text-sm", 
+  lg: "h-12 w-12 text-base",
+} as const;
 
 export const Avatar: React.FC<AvatarProps> = ({
   src,
-  alt = "User avatar",
+  alt = "Avatar",
   fallback,
   size = "md",
   className,
 }) => {
-  const isImageAvailable = Boolean(src);
+  const [imageError, setImageError] = useState(false);
+  const shouldShowImage = src && !imageError;
+  
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <div
       className={cn(
-        "inline-flex items-center justify-center rounded-full bg-muted text-muted-foreground font-medium overflow-hidden border border-border transition",
-        sizeMap[size],
+        "relative inline-flex shrink-0 items-center justify-center rounded-full bg-slate-100 font-medium text-slate-600 select-none overflow-hidden",
+        sizeClasses[size],
         className
       )}
     >
-      {isImageAvailable ? (
+      {shouldShowImage ? (
         <img
-          src={src!}
+          src={src}
           alt={alt}
-          className="object-cover w-full h-full"
-          onError={(e) => (e.currentTarget.style.display = "none")}
+          className="h-full w-full object-cover"
+          onError={handleImageError}
         />
       ) : (
-        fallback || "?"
+        <span className="uppercase">
+          {fallback || alt.charAt(0) || "U"}
+        </span>
       )}
     </div>
   );

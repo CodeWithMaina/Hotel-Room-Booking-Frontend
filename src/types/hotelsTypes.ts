@@ -1,3 +1,5 @@
+// import type { TUser } from "./usersTypes";
+
 export type THotel = {
   hotelId: number;
   name: string;
@@ -11,6 +13,7 @@ export type THotel = {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  // owner?: TUser
 };
 
 export type THotelInsert = Omit<
