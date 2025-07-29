@@ -21,9 +21,9 @@ export const HotelDetailsPage = () => {
     isError: isErrorHotelRoomsData,
   } = useGetRoomByHotelIdQuery(hotelId);
 
-  const hotel = hotelDetails?.data?.hotel;
-  const address = hotelDetails?.data?.address;
-  const amenities = hotelDetails?.data?.amenities;
+   const hotel = hotelDetails?.hotel;
+  const address = hotelDetails?.address;
+  const amenities = hotelDetails?.amenities;
   const gallery = hotel?.gallery || [];
   const displayedRooms = hotelRoomsData?.slice(0, 4) || [];
   

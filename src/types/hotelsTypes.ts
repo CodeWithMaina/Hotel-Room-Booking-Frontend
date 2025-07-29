@@ -13,7 +13,13 @@ export type THotel = {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  // owner?: TUser
+  owner: { 
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    profileImage?: string;
+  };
 };
 
 export type THotelInsert = Omit<
