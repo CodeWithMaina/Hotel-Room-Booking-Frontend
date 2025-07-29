@@ -21,9 +21,9 @@ import { motion } from "framer-motion";
 import { format, subDays, subQuarters } from "date-fns";
 import {
   useGetRoleBasedAnalyticsQuery,
-  type AdminDashboardStats,
 } from "../features/api/analyticsApi";
 import { type TooltipProps } from "recharts";
+import type { AdminDashboardStats } from "../types/analyticsTypes";
 
 
 type TType = TooltipProps<number, string> & {
