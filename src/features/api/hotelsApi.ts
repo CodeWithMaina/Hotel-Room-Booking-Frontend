@@ -9,20 +9,22 @@ import type { RootState } from "../../app/store";
 
 export const hotelsApi = createApi({
   reducerPath: "hotelsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL,
-          prepareHeaders: (headers, { getState }) => {
-            try {
-              const token =
-                (getState() as RootState).auth.token || localStorage.getItem("token");
-              if (token) {
-                headers.set("Authorization", `Bearer ${token}`);
-              }
-              return headers;
-            } catch (error) {
-              console.error("Error preparing headers:", error);
-              return headers;
-            }
-          }, }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      try {
+        const token =
+          (getState() as RootState).auth.token || localStorage.getItem("token");
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return headers;
+      } catch (error) {
+        console.error("Error preparing headers:", error);
+        return headers;
+      }
+    },
+  }),
 
   tagTypes: ["Hotel", "HotelAddress", "HotelAmenity"],
   endpoints: (builder) => ({
@@ -51,9 +53,7 @@ export const hotelsApi = createApi({
         method: "PUT",
         body: patch,
       }),
-      invalidatesTags: (_, __, { hotelId }) => [
-        { type: "Hotel", id: hotelId },
-      ],
+      invalidatesTags: (_, __, { hotelId }) => [{ type: "Hotel", id: hotelId }],
     }),
 
     deleteHotel: builder.mutation<void, number>({
@@ -66,34 +66,31 @@ export const hotelsApi = createApi({
     // Hotel Address endpoint
     getHotelAddress: builder.query({
       query: (hotelId) => `hotel/${hotelId}/address`,
-      providesTags: (_, __, hotelId) => [
-        { type: "HotelAddress", id: hotelId },
-      ],
+      providesTags: (_, __, hotelId) => [{ type: "HotelAddress", id: hotelId }],
     }),
 
     // Hotel Entity Amenities endpoint
     getHotelEntityAmenities: builder.query({
       query: (hotelId) => `hotel/${hotelId}/entity-amenities`,
-      providesTags: (_, __, hotelId) => [
-        { type: "HotelAmenity", id: hotelId },
-      ],
+      providesTags: (_, __, hotelId) => [{ type: "HotelAmenity", id: hotelId }],
     }),
 
     // Hotel Amenity Details endpoint
     getHotelAmenityDetails: builder.query({
       query: (hotelId) => `hotel/${hotelId}/amenities`,
-      providesTags: (_, __, hotelId) => [
-        { type: "HotelAmenity", id: hotelId },
-      ],
+      providesTags: (_, __, hotelId) => [{ type: "HotelAmenity", id: hotelId }],
     }),
 
     // Combined Hotel Details endpoint(Used)
     getHotelFullDetails: builder.query<
       {
-        hotel: THotel;
-        address: THotelAddress;
-        amenities: THotelAmenityDetail[];
-        entityAmenities: THotelEntityAmenity[];
+        success: boolean;
+        data: {
+          hotel: THotel;
+          address: THotelAddress;
+          amenities: THotelAmenityDetail[];
+          entityAmenities: THotelEntityAmenity[];
+        };
       },
       number
     >({

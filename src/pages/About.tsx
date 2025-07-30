@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 export const About: React.FC = () => {
+
   return (
     <>
       <Navbar />
