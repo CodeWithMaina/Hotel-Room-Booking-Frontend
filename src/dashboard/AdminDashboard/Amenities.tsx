@@ -33,17 +33,21 @@ import { parseRTKError } from "../../utils/parseRTKError";
 
 const MySwal = withReactContent(Swal);
 
-const getIconComponent = (iconName: string | null | undefined): React.JSX.Element => {
+const getIconComponent = (
+  iconName: string | null | undefined
+): React.JSX.Element => {
   if (!iconName) {
     return <ImagePlus className="w-5 h-5 text-gray-400" />;
   }
-  
+
   const formatted = iconName
     .replace(/_./g, (match) => match[1].toUpperCase())
     .replace(/^\w/, (c) => c.toUpperCase());
-  
-  const IconComponent = (LucideIcons as unknown as Record<string, LucideIcon>)[formatted];
-  
+
+  const IconComponent = (LucideIcons as unknown as Record<string, LucideIcon>)[
+    formatted
+  ];
+
   return IconComponent ? (
     <IconComponent className="w-5 h-5" />
   ) : (
@@ -166,7 +170,7 @@ export const Amenities = () => {
               </div>
             </div>
             <button
-              onClick={() => showDrawer()} 
+              onClick={() => showDrawer()}
               className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-105"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -200,7 +204,9 @@ export const Amenities = () => {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
             <div className="flex items-center space-x-2">
               <XCircle className="w-5 h-5 text-red-500" />
-              <span className="text-red-700 font-medium">Error loading amenities</span>
+              <span className="text-red-700 font-medium">
+                Error loading amenities
+              </span>
             </div>
           </div>
         )}
@@ -209,7 +215,10 @@ export const Amenities = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse">
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse"
+              >
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
                   <div className="flex-1">
@@ -260,7 +269,9 @@ export const Amenities = () => {
                 <div className="mb-4">
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {amenity.description || (
-                      <span className="italic text-gray-400">No description provided</span>
+                      <span className="italic text-gray-400">
+                        No description provided
+                      </span>
                     )}
                   </p>
                 </div>
@@ -269,7 +280,9 @@ export const Amenities = () => {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center space-x-1 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
-                    <span>{new Date(amenity.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(amenity.createdAt).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
@@ -303,10 +316,9 @@ export const Amenities = () => {
               {searchQuery ? "No matching amenities found" : "No amenities yet"}
             </h3>
             <p className="text-gray-500 mb-6">
-              {searchQuery 
+              {searchQuery
                 ? "Try adjusting your search terms"
-                : "Get started by creating your first amenity"
-              }
+                : "Get started by creating your first amenity"}
             </p>
             {!searchQuery && (
               <button
@@ -329,18 +341,18 @@ export const Amenities = () => {
       >
         {/* Backdrop */}
         {drawerOpen && (
-          <div 
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10"
+          <div
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm -z-10"
             onClick={onClose}
           />
         )}
-        
+
         <div className="relative h-full flex flex-col">
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6 text-white">
+          <div className="bg-gradient-to-r from-indigo-700 to-purple-600 px-6 py-5 text-white rounded-tr-xl">
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+              className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-md transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -348,28 +360,30 @@ export const Amenities = () => {
               <h3 className="text-xl font-semibold mb-1">
                 {editingAmenity ? "Edit Amenity" : "Create New Amenity"}
               </h3>
-              <p className="text-indigo-100 text-sm">
-                {editingAmenity ? "Update amenity details" : "Add a new amenity to your property"}
+              <p className="text-sm text-indigo-100">
+                {editingAmenity
+                  ? "Update amenity details"
+                  : "Add a new amenity to your property"}
               </p>
             </div>
           </div>
 
           {/* Form */}
-          <div className="flex-1 overflow-auto p-6">
-            <div onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="flex-1 overflow-auto p-6 bg-gray-50">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Name Field */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
                   Amenity Name *
                 </label>
                 <input
                   type="text"
                   {...register("name")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   placeholder="e.g., Swimming Pool, Gym, WiFi"
                 />
                 {errors.name && (
-                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                  <p className="text-red-500 text-sm flex items-center gap-1">
                     <XCircle className="w-4 h-4" />
                     <span>{errors.name.message}</span>
                   </p>
@@ -377,62 +391,64 @@ export const Amenities = () => {
               </div>
 
               {/* Description Field */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
                   Description
                 </label>
                 <textarea
                   {...register("description")}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 resize-none"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition resize-none"
                   placeholder="Describe what this amenity offers..."
                 />
                 {errors.description && (
-                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                  <p className="text-red-500 text-sm flex items-center gap-1">
                     <XCircle className="w-4 h-4" />
                     <span>{errors.description.message}</span>
                   </p>
                 )}
               </div>
 
-              {/* Icon Field */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+              {/* Icon Input Field */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
                   Icon *
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     {...register("icon")}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                    className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     placeholder="e.g., Wifi, Dumbbell, Waves"
                   />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="p-2 bg-gray-50 rounded-lg">
-                      {getIconComponent(iconName)}
-                    </div>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-100 p-2 rounded-md">
+                    {getIconComponent(iconName)}
                   </div>
                 </div>
                 {errors.icon && (
-                  <p className="text-red-500 text-sm flex items-center space-x-1">
+                  <p className="text-red-500 text-sm flex items-center gap-1">
                     <XCircle className="w-4 h-4" />
                     <span>{errors.icon.message}</span>
                   </p>
                 )}
                 <p className="text-xs text-gray-500">
-                  Use Lucide React icon names (e.g., Wifi, Car, Coffee)
+                  Use Lucide icon names (e.g., Wifi, Car, Coffee)
                 </p>
               </div>
 
               {/* Icon Preview */}
-              <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <div className="p-3 bg-white rounded-xl shadow-sm">
+              <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gray-50 rounded-lg border">
                     {getIconComponent(iconName)}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Icon Preview</p>
-                    <p className="text-xs text-gray-500">This is how your icon will appear</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Icon Preview
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      This is how your icon will appear
+                    </p>
                   </div>
                 </div>
               </div>
@@ -440,14 +456,13 @@ export const Amenities = () => {
               {/* Submit Button */}
               <div className="pt-4">
                 <button
-                  type="button"
-                  onClick={handleSubmit(onSubmit)}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-medium shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02]"
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-[1.02]"
                 >
                   {editingAmenity ? "Update Amenity" : "Create Amenity"}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
