@@ -10,6 +10,7 @@ import {
   type RoomFilterValues,
 } from "../components/room/RoomFilterSidebar";
 import { Loading } from "../components/common/Loading";
+import { Footer } from "../components/common/Footer";
 
 export const Rooms = () => {
   const { data: rooms = [], isLoading, isError } = useGetRoomsQuery();
@@ -209,6 +210,7 @@ export const Rooms = () => {
           )}
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

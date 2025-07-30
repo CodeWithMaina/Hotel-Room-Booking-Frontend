@@ -10,6 +10,7 @@ import { Loading } from "../components/common/Loading";
 import { parseRTKError } from "../utils/parseRTKError";
 import { NoData } from "../components/common/NoData";
 import { ImageCarousel } from "../components/hotel/ImageCarosel";
+import { Footer } from "../components/common/Footer";
 
 export const HotelsPage = () => {
   const {
@@ -55,6 +56,7 @@ export const HotelsPage = () => {
           ))}
         </div>
       </Sections>
+      <Footer/>
     </div>
   );
 };
