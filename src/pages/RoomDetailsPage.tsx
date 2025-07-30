@@ -3,15 +3,16 @@ import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import * as LucideIcons from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import {
   Users,
   Heart,
   Loader2,
-  Circle,
   Star,
   MapPin,
   Bath,
   BedDouble,
+  ImagePlus,
 } from "lucide-react";
 
 import Navbar from "../components/common/NavBar";
@@ -26,7 +27,6 @@ import { Button } from "../components/ui/Button";
 
 import type { RootState } from "../app/store";
 import type { TRoomWithAmenities } from "../types/roomsTypes";
-import { isValidElementType } from "react-is";
 
 export const RoomDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,12 +61,23 @@ export const RoomDetailsPage = () => {
     }
   };
 
-  const getAmenityIcon = (iconName: string): React.JSX.Element => {
-    const IconCandidate = LucideIcons[iconName as keyof typeof LucideIcons];
-    return isValidElementType(IconCandidate)
-      ? React.createElement(IconCandidate as React.ElementType, { size: 20 })
-      : <Circle size={20} />;
-  };
+  const getIconComponent = (iconName: string | null | undefined): React.JSX.Element => {
+  if (!iconName) {
+    return <ImagePlus className="w-5 h-5 text-gray-400" />;
+  }
+  
+  const formatted = iconName
+    .replace(/_./g, (match) => match[1].toUpperCase())
+    .replace(/^\w/, (c) => c.toUpperCase());
+  
+  const IconComponent = (LucideIcons as unknown as Record<string, LucideIcon>)[formatted];
+  
+  return IconComponent ? (
+    <IconComponent className="w-5 h-5" />
+  ) : (
+    <ImagePlus className="w-5 h-5 text-gray-400" />
+  );
+};
 
   if (isRoomLoading) return <Loading />;
   if (isRoomError || !roomDetails) return <Error />;
@@ -134,7 +145,7 @@ export const RoomDetailsPage = () => {
                 {amenities.map((amenity) => (
                   <div key={amenity.amenityId} className="group flex gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-gold-50 hover:border-gold-200 transition">
                     <div className="text-navy-600 group-hover:text-gold-600">
-                      {getAmenityIcon(amenity.icon)}
+                      {getIconComponent(amenity.icon)}
                     </div>
                     <div>
                       <div className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{amenity.name}</div>

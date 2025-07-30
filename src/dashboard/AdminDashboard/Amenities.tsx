@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -26,18 +26,36 @@ import {
   Building2,
   Search,
   Calendar,
+  ImagePlus,
 } from "lucide-react";
 import { SearchBar } from "../../components/common/SearchBar";
 import { parseRTKError } from "../../utils/parseRTKError";
 
 const MySwal = withReactContent(Swal);
 
+const getIconComponent = (iconName: string | null | undefined): React.JSX.Element => {
+  if (!iconName) {
+    return <ImagePlus className="w-5 h-5 text-gray-400" />;
+  }
+  
+  const formatted = iconName
+    .replace(/_./g, (match) => match[1].toUpperCase())
+    .replace(/^\w/, (c) => c.toUpperCase());
+  
+  const IconComponent = (LucideIcons as unknown as Record<string, LucideIcon>)[formatted];
+  
+  return IconComponent ? (
+    <IconComponent className="w-5 h-5" />
+  ) : (
+    <ImagePlus className="w-5 h-5 text-gray-400" />
+  );
+};
+
 export const Amenities = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingAmenity, setEditingAmenity] = useState<TAmenitySelect | null>(
     null
   );
-  const [IconComponent, setIconComponent] = useState<LucideIcon | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: amenities, isLoading, isError } = useGetAmenitiesQuery();
@@ -57,15 +75,6 @@ export const Amenities = () => {
   });
 
   const iconName = watch("icon");
-
-  useEffect(() => {
-    const Raw = LucideIcons[iconName as keyof typeof LucideIcons];
-    if (typeof Raw === "function" && "displayName" in Raw) {
-      setIconComponent(() => Raw as LucideIcon);
-    } else {
-      setIconComponent(() => XCircle);
-    }
-  }, [iconName]);
 
   const showDrawer = (amenity: TAmenitySelect | null = null) => {
     setEditingAmenity(amenity);
@@ -225,70 +234,62 @@ export const Amenities = () => {
         ) : (
           /* Amenities Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAmenities?.map((amenity) => {
-              const RawIcon = LucideIcons[amenity.icon as keyof typeof LucideIcons];
-              const Icon =
-                typeof RawIcon === "function" && "displayName" in RawIcon
-                  ? RawIcon
-                  : XCircle;
-
-              return (
-                <div
-                  key={amenity.amenityId}
-                  className="group bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-xl hover:shadow-gray-300/25 transition-all duration-300 hover:border-indigo-200 hover:-translate-y-1"
-                >
-                  {/* Icon and Title */}
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl group-hover:from-indigo-100 group-hover:to-purple-100 transition-colors duration-300">
-                      <Icon className="w-6 h-6 text-indigo-600" iconNode={[]} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {amenity.name}
-                      </h3>
-                      <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
-                        <span className="bg-gray-100 px-2 py-1 rounded-full font-mono">
-                          {amenity.icon}
-                        </span>
-                      </div>
-                    </div>
+            {filteredAmenities?.map((amenity) => (
+              <div
+                key={amenity.amenityId}
+                className="group bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-xl hover:shadow-gray-300/25 transition-all duration-300 hover:border-indigo-200 hover:-translate-y-1"
+              >
+                {/* Icon and Title */}
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl group-hover:from-indigo-100 group-hover:to-purple-100 transition-colors duration-300">
+                    {getIconComponent(amenity.icon)}
                   </div>
-
-                  {/* Description */}
-                  <div className="mb-4">
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {amenity.description || (
-                        <span className="italic text-gray-400">No description provided</span>
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-1 text-xs text-gray-500">
-                      <Calendar className="w-3 h-3" />
-                      <span>{new Date(amenity.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => showDrawer(amenity)}
-                        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
-                        title="Edit amenity"
-                      >
-                        <PencilLine className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(amenity.amenityId)}
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                        title="Delete amenity"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-gray-900 truncate">
+                      {amenity.name}
+                    </h3>
+                    <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
+                      <span className="bg-gray-100 px-2 py-1 rounded-full font-mono">
+                        {amenity.icon}
+                      </span>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+
+                {/* Description */}
+                <div className="mb-4">
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {amenity.description || (
+                      <span className="italic text-gray-400">No description provided</span>
+                    )}
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="flex items-center space-x-1 text-xs text-gray-500">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(amenity.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => showDrawer(amenity)}
+                      className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                      title="Edit amenity"
+                    >
+                      <PencilLine className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(amenity.amenityId)}
+                      className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                      title="Delete amenity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -406,13 +407,11 @@ export const Amenities = () => {
                     className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                     placeholder="e.g., Wifi, Dumbbell, Waves"
                   />
-                  {IconComponent && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <div className="p-2 bg-gray-50 rounded-lg">
-                        <IconComponent className="w-5 h-5 text-gray-600" />
-                      </div>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="p-2 bg-gray-50 rounded-lg">
+                      {getIconComponent(iconName)}
                     </div>
-                  )}
+                  </div>
                 </div>
                 {errors.icon && (
                   <p className="text-red-500 text-sm flex items-center space-x-1">
@@ -426,19 +425,17 @@ export const Amenities = () => {
               </div>
 
               {/* Icon Preview */}
-              {IconComponent && (
-                <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-3 bg-white rounded-xl shadow-sm">
-                      <IconComponent className="w-6 h-6 text-indigo-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Icon Preview</p>
-                      <p className="text-xs text-gray-500">This is how your icon will appear</p>
-                    </div>
+              <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="p-3 bg-white rounded-xl shadow-sm">
+                    {getIconComponent(iconName)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Icon Preview</p>
+                    <p className="text-xs text-gray-500">This is how your icon will appear</p>
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Submit Button */}
               <div className="pt-4">

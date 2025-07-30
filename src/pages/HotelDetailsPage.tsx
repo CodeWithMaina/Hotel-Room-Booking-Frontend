@@ -4,10 +4,12 @@ import { Loading } from "../components/common/Loading";
 import { useGetHotelFullDetailsQuery } from "../features/api/hotelsApi";
 import { useGetRoomByHotelIdQuery } from "../features/api/roomsApi";
 import { RoomCard } from "../components/room/RoomCard";
-import { ArrowRight, MapPin, Star, X } from "lucide-react";
+import { ArrowRight, ImagePlus, MapPin, Star, X } from "lucide-react";
 import { SimilarHotelsSidebar } from "../components/hotel/SimilarHotelsSidebar";
 import { Footer } from "../components/common/Footer";
 import Navbar from "../components/common/NavBar";
+import * as LucideIcons from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 
 export const HotelDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,6 +59,24 @@ export const HotelDetailsPage = () => {
   const closeImageModal = () => {
     setSelectedImage(null);
   };
+
+  const getIconComponent = (iconName: string | null | undefined): React.JSX.Element => {
+  if (!iconName) {
+    return <ImagePlus className="w-5 h-5 text-gray-400" />;
+  }
+  
+  const formatted = iconName
+    .replace(/_./g, (match) => match[1].toUpperCase())
+    .replace(/^\w/, (c) => c.toUpperCase());
+  
+  const IconComponent = (LucideIcons as unknown as Record<string, LucideIcon>)[formatted];
+  
+  return IconComponent ? (
+    <IconComponent className="w-5 h-5" />
+  ) : (
+    <ImagePlus className="w-5 h-5 text-gray-400" />
+  );
+};
 
   return (
     <>
@@ -119,7 +139,7 @@ export const HotelDetailsPage = () => {
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <span className="text-lg text-blue-600">
-                      {amenity.icon}
+                      {getIconComponent(amenity.icon)}
                     </span>
                     <span className="text-sm text-gray-800 font-medium">
                       {amenity.name}
