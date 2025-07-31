@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DashboardRoomCard } from "../../components/room/DashboardRoomCard";
 import { RoomFilterSidebar } from "../../components/room/RoomFilterSidebar";
 import type { TRoom } from "../../types/roomsTypes";
+import { Loading } from "../../components/common/Loading";
 
 interface RoomFilters {
   search?: string;
@@ -103,9 +104,7 @@ export const HotelDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
+      <Loading/>
     );
   }
 

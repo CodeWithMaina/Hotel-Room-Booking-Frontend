@@ -1,24 +1,10 @@
 // src/redux/api/authApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../../app/store";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   tagTypes: ["Auth"],
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL,
-      prepareHeaders: (headers, { getState }) => {
-        try {
-          const token =
-            (getState() as RootState).auth.token || localStorage.getItem("token");
-          if (token) {
-            headers.set("Authorization", `Bearer ${token}`);
-          }
-          return headers;
-        } catch (error) {
-          console.error("Error preparing headers:", error);
-          return headers;
-        }
-      }, }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL,  credentials: 'include' }),
   endpoints: (builder) => ({
     // Login
     loginUser: builder.mutation({

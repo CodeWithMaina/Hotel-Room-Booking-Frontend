@@ -34,7 +34,7 @@ export const Bookings = () => {
 
   const id = Number(userId);
 
-  const { data, isLoading, isFetching, isError, error } =
+  const { data, isLoading, isFetching, isError } =
     useGetBookingsByUserIdQuery(
       {
         userId: id,
@@ -146,14 +146,6 @@ export const Bookings = () => {
     }
   };
 
-  useEffect(() => {
-    if (isError && "status" in error) {
-      toast.error(
-        "Error fetching bookings from server. Displaying cached data."
-      );
-    }
-  }, [isError, error]);
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-100 to-slate-200 pb-20">
       <div className="max-w-6xl mx-auto px-4 pt-10 pb-4">
@@ -189,7 +181,7 @@ export const Bookings = () => {
           </div>
         ) : isError ? (
           <div className="text-center text-red-600 py-10">
-            Failed to load your bookings. Displaying fallback data.
+            No bookings found.
           </div>
         ) : filteredBookings.length > 0 ? (
           <>
