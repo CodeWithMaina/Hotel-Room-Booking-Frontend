@@ -81,8 +81,8 @@ export const Wishlist = () => {
           </div>
         ) : (
           <div className="text-center text-gray-500 py-20">
-            <p className="text-xl font-semibold">No results found.</p>
-            <p className="text-sm mt-2">Try searching a different room type.</p>
+            <p className="text-xl font-semibold">No wishlist room found.</p>
+            <p className="text-sm mt-2">Add a room to your wishlist.</p>
           </div>
         )}
       </div>

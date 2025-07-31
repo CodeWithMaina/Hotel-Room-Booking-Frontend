@@ -16,17 +16,16 @@ import { SearchBar } from "../../components/common/SearchBar";
 import {
   exportMultiplePaymentsToPDF,
 } from "../../utils/exportPDF";
-import { Error } from "../../components/common/Error";
 import { useNavigate } from "react-router";
 
 export const UserPayment = () => {
   const navigate = useNavigate();
   const { userId } = useSelector((state: RootState) => state.auth);
 
-  const { data, isLoading, isError, error, refetch } =
+  const { data, isLoading, isError, refetch } =
     useGetPaymentsByUserIdQuery(Number(userId));
 
-    console.log(data)
+  console.log(data)
 
   const [query, setQuery] = useState("");
   const [deletePayment, { isLoading: isDeleting }] = useDeletePaymentMutation();
@@ -63,21 +62,20 @@ export const UserPayment = () => {
   }, [data]);
 
   const totalCompletedAmount = useMemo(() => {
-  return (
-    payments
-      .filter((p) => p.paymentStatus === "Completed")
-      .reduce((sum, p) => sum + parseFloat(p.amount), 0)
-  );
-}, [payments]);
+    return (
+      payments
+        .filter((p) => p.paymentStatus === "Completed")
+        .reduce((sum, p) => sum + parseFloat(p.amount), 0)
+    );
+  }, [payments]);
 
-const totalPendingAmount = useMemo(() => {
-  return (
-    payments
-      .filter((p) => p.paymentStatus === "Pending")
-      .reduce((sum, p) => sum + parseFloat(p.amount), 0)
-  );
-}, [payments]);
-
+  const totalPendingAmount = useMemo(() => {
+    return (
+      payments
+        .filter((p) => p.paymentStatus === "Pending")
+        .reduce((sum, p) => sum + parseFloat(p.amount), 0)
+    );
+  }, [payments]);
 
   const filteredPayments = useMemo(() => {
     const q = query.toLowerCase();
@@ -113,8 +111,6 @@ const totalPendingAmount = useMemo(() => {
   };
 
   if (isLoading) return <SkeletonLoader count={5} />;
-  if (isError)
-    return <Error message={parseRTKError(error)} showRetry onRetry={refetch} />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-8">
@@ -155,7 +151,7 @@ const totalPendingAmount = useMemo(() => {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Always shown */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <div className="flex items-center justify-between">
@@ -193,7 +189,7 @@ const totalPendingAmount = useMemo(() => {
               </div>
             </div>
           </div>
-          {/* Pending Amount */}
+          
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -213,157 +209,156 @@ const totalPendingAmount = useMemo(() => {
               </div>
             </div>
           </div>
-
-          {/* <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-600 text-sm font-medium">
-                  Filtered Results
-                </p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {filteredPayments.length}
-                </p>
-              </div>
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <Filter className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div> */}
         </div>
 
-        {/* Payment Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          {filteredPayments.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="bg-slate-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-slate-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                No payments found
-              </h3>
-              <p className="text-slate-600">
-                {query
-                  ? "Try adjusting your search criteria"
-                  : "No payments available to display"}
-              </p>
+        {/* Show error message if there's an error or no payments */}
+        {isError || payments.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+            <div className="bg-slate-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-slate-400" />
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Transaction Details
-                    </th>
-                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Amount
-                    </th>
-                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Date & Time
-                    </th>
-                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Payment Method
-                    </th>
-                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Status
-                    </th>
-                    <th className="text-center py-4 px-6 font-semibold text-slate-700 text-sm">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {filteredPayments.map((payment) => (
-                    <tr
-                      key={payment.paymentId}
-                      className="hover:bg-slate-50 transition-colors duration-200"
-                    >
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="font-mono text-sm font-medium text-slate-900 truncate max-w-40">
-                            {payment.transactionId ?? "N/A"}
-                          </span>
-                          <span className="text-xs text-slate-500">
-                            Booking #{payment.booking.bookingId}
-                          </span>
-                        </div>
-                      </td>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              {isError ? "No payments found" : "No payments found"}
+            </h3>
+            <p className="text-slate-600">
+              {isError ? "You don't have any payments yet" : "You don't have any payments yet"}
+            </p>
+          </div>
+        ) : (
+          /* Payment Table */
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            {filteredPayments.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="bg-slate-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  No payments found
+                </h3>
+                <p className="text-slate-600">
+                  {query
+                    ? "Try adjusting your search criteria"
+                    : "No payments available to display"}
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Transaction Details
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Amount
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Date & Time
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Payment Method
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Status
+                      </th>
+                      <th className="text-center py-4 px-6 font-semibold text-slate-700 text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {filteredPayments.map((payment) => (
+                      <tr
+                        key={payment.paymentId}
+                        className="hover:bg-slate-50 transition-colors duration-200"
+                      >
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="font-mono text-sm font-medium text-slate-900 truncate max-w-40">
+                              {payment.transactionId ?? "N/A"}
+                            </span>
+                            <span className="text-xs text-slate-500">
+                              Booking #{payment.booking.bookingId}
+                            </span>
+                          </div>
+                        </td>
 
-                      <td className="py-4 px-6">
-                        <span className="text-lg font-bold text-green-600">
-                          ${payment.amount.toLocaleString()}
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-slate-900">
-                            {new Date(payment.paymentDate).toLocaleDateString()}
+                        <td className="py-4 px-6">
+                          <span className="text-lg font-bold text-green-600">
+                            ${payment.amount.toLocaleString()}
                           </span>
-                          <span className="text-xs text-slate-500">
-                            {new Date(payment.paymentDate).toLocaleTimeString()}
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-slate-900">
+                              {new Date(payment.paymentDate).toLocaleDateString()}
+                            </span>
+                            <span className="text-xs text-slate-500">
+                              {new Date(payment.paymentDate).toLocaleTimeString()}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border">
+                            {payment.paymentMethod}
                           </span>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td className="py-4 px-6">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border">
-                          {payment.paymentMethod}
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                            payment.paymentStatus ===
-                            ("Confirmed" as TPaymentStatus)
-                              ? "bg-green-100 text-green-800 border border-green-200"
-                              : payment.paymentStatus === "Pending"
-                              ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                              : "bg-red-100 text-red-800 border border-red-200"
-                          }`}
-                        >
-                          <div
-                            className={`w-2 h-2 rounded-full mr-2 ${
+                        <td className="py-4 px-6">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                               payment.paymentStatus ===
                               ("Confirmed" as TPaymentStatus)
-                                ? "bg-green-500"
+                                ? "bg-green-100 text-green-800 border border-green-200"
                                 : payment.paymentStatus === "Pending"
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
+                                ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                                : "bg-red-100 text-red-800 border border-red-200"
                             }`}
-                          />
-                          {payment.paymentStatus}
-                        </span>
-                      </td>
+                          >
+                            <div
+                              className={`w-2 h-2 rounded-full mr-2 ${
+                                payment.paymentStatus ===
+                                ("Confirmed" as TPaymentStatus)
+                                  ? "bg-green-500"
+                                  : payment.paymentStatus === "Pending"
+                                  ? "bg-yellow-500"
+                                  : "bg-red-500"
+                              }`}
+                            />
+                            {payment.paymentStatus}
+                          </span>
+                        </td>
 
-                      <td className="py-4 px-6">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200 hover:border-blue-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            onClick={() => handleViewDetails(payment)}
-                            disabled={isDeleting}
-                            title="View Details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200 hover:border-red-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            onClick={() => handleDelete(payment.paymentId)}
-                            disabled={isDeleting}
-                            title="Delete Payment"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                        <td className="py-4 px-6">
+                          <div className="flex justify-center gap-2">
+                            <button
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200 hover:border-blue-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              onClick={() => handleViewDetails(payment)}
+                              disabled={isDeleting}
+                              title="View Details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200 hover:border-red-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              onClick={() => handleDelete(payment.paymentId)}
+                              disabled={isDeleting}
+                              title="Delete Payment"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Footer */}
         {filteredPayments.length > 0 && (
