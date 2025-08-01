@@ -8,6 +8,7 @@ import {
   Bell,
   Sparkles,
 } from "lucide-react";
+import { hotelName } from "../constants/constants";
 
 export const About: React.FC = () => {
 
@@ -32,7 +33,7 @@ export const About: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              Welcome to <span className="text-yellow-400">Lux Hotel</span>
+              Welcome to <span className="text-yellow-400">{hotelName}</span>
             </motion.h1>
             <motion.p
               className="text-lg lg:text-xl text-white/90 max-w-2xl"
@@ -59,7 +60,7 @@ export const About: React.FC = () => {
                 Experience World-Class Hospitality
               </h2>
               <p className="text-lg text-[#606C38] mb-4 leading-relaxed">
-                At Lux Hotel, every detail is designed to inspire. From
+                At {hotelName}, every detail is designed to inspire. From
                 architecturally stunning interiors to curated gourmet dining, we
                 offer more than just a place to stay — we offer a story worth
                 remembering.
@@ -92,7 +93,7 @@ export const About: React.FC = () => {
         <section className="px-6 py-20 bg-white border-t border-slate-200">
           <div className="max-w-6xl mx-auto">
             <h3 className="text-3xl font-bold text-center mb-12 text-[#283618]">
-              Why Guests Love Lux Hotel
+              Why Guests Love {hotelName}
             </h3>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 text-center">
               {[
