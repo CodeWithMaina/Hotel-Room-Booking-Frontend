@@ -9,6 +9,8 @@ import { authApi } from "../features/api/authApi";
 import { Loading } from "../components/common/Loading";
 import { useDispatch } from "react-redux";
 import { persistCredentials } from "../features/auth/authSlice";
+import Navbar from "../components/common/NavBar";
+import { Footer } from "../components/common/Footer";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -46,6 +48,8 @@ export const Login = () => {
   if (isLoading) return <Loading />;
 
   return (
+    <>
+    <Navbar/>
     <div
       className="min-h-screen w-full flex items-center justify-center bg-cover bg-center px-4 py-12 font-body"
       style={{
@@ -146,5 +150,7 @@ export const Login = () => {
         }
       `}</style>
     </div>
+    <Footer/>
+    </>
   );
 };
