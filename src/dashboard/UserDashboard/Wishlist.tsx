@@ -23,6 +23,8 @@ export const Wishlist = () => {
     refetch,
   } = useGetWishlistByUserIdQuery(id);
 
+  console.log(wishlistItems)
+
   const [deleteWishlist, { isLoading: isDeleting }] = useDeleteFromWishlistMutation();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -41,7 +43,7 @@ export const Wishlist = () => {
   };
 
   const filteredWishlist = wishlistItems?.filter((item) =>
-    item.room.roomType?.toLowerCase().includes(searchTerm)
+    item.room.roomType?.name.toLowerCase().includes(searchTerm)
   );
 
   if (isLoading) return <LoadingSpinner />;

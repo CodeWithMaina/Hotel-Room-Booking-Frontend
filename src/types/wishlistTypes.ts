@@ -1,3 +1,5 @@
+import type { TRoomType } from "./roomsTypes";
+
 export interface TWishlistItem {
   wishlistId: number;
   userId: number;
@@ -7,7 +9,7 @@ export interface TWishlistItem {
   room: {
     roomId: number;
     hotelId: number;
-    roomType: string;
+    roomType: TRoomType;
     pricePerNight: string;
     capacity: number;
     thumbnail: string;

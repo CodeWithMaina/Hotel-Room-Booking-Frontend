@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { BedDouble, Trash2 } from "lucide-react";
 import { Button } from "../ui/Button";
+import type { TRoomType } from "../../types/roomsTypes";
 
 export interface RoomData {
   roomId: number;
-  roomType: string;
+  roomType: TRoomType;
   capacity: number;
   pricePerNight: string;
   thumbnail: string;
@@ -26,7 +27,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ room, wishlistId, on
       <div className="relative">
         <img
           src={room.thumbnail}
-          alt={room.roomType}
+          alt={room.roomType.name}
           className="w-full h-60 object-cover"
         />
         <button
@@ -39,7 +40,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ room, wishlistId, on
       </div>
 
       <div className="p-4 space-y-2">
-        <h2 className="text-xl font-bold text-gray-800">{room.roomType}</h2>
+        <h2 className="text-xl font-bold text-gray-800">{room.roomType.name}</h2>
         <p className="text-gray-600 flex items-center gap-1">
           <BedDouble className="w-4 h-4" />
           Capacity: {room.capacity} guests
